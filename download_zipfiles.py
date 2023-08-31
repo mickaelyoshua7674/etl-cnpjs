@@ -19,6 +19,7 @@ driver = webdriver.Chrome(service=sc, options=op)
 driver.get(URL)
 tr_elements = [e for e in driver.find_elements(By.TAG_NAME, "tr")]
 zipfiles_list =  [e.text.split(" ")[0] for e in tr_elements[2:] if ".zip" in e.text]
+driver.quit()
 
 for zf in zipfiles_list:
     print(f"Downloading {zf}...")
