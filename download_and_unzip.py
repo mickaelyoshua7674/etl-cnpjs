@@ -2,8 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from zipfile import ZipFile
-import wget
-import os
+import wget, os, shutil
 
 CHROMEDRIVER_PATH = "/usr/lib/chromium-browser/chromedriver"
 URL = "https://dadosabertos.rfb.gov.br/CNPJ/"
@@ -35,6 +34,7 @@ for zf in zipfiles_list:
 
     print(f"Extracting {zf}...")
     with ZipFile(full_zip_path, "r") as z:
-        print([i for i in z.infolist()])
-    #     z.extractall(RAWFILES_DIR)
-    # print(f"{zf} extracted.\n")
+        for i in z.infolist():
+            i.filename = zf.split(".")[0] + ".csv"
+            z.extract(i, RAWFILES_DIR)
+shutil.rmtree(ZIPFILES_DIR)
