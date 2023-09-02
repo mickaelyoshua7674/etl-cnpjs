@@ -13,9 +13,15 @@ DROP TABLE IF EXISTS public.estabelecimentos;
 DROP TABLE IF EXISTS public.simples;
 DROP TABLE IF EXISTS public.socios;
 ----------------------------------------------------------------------------------------------------
+CREATE TABLE public.id_porte_empresa (
+    porte_empresa CHARACTER(2) NOT NULL,
+    descricao CHARACTER VARYING(30) NOT NULL,
+    PRIMARY KEY (porte_empresa)
+);
+----------------------------------------------------------------------------------------------------
 CREATE TABLE public.id_identificador (
     identificador INTEGER NOT NULL,
-    descricao CHARACTER (6) NOT NULL,
+    descricao CHARACTER(6) NOT NULL,
     PRIMARY KEY (identificador)
 );
 ----------------------------------------------------------------------------------------------------
@@ -79,9 +85,16 @@ CREATE TABLE public.empresas (
     natureza_juridica CHARACTER VARYING(300) NOT NULL,
     qualificacoes_responsavel CHARACTER VARYING(300),
     capital_social NUMERIC,
-    porte_empresa CHARACTER(2),
+    porte_empresa CHARACTER(2) NOT NULL,
     ente_federativo_responsavel CHARACTER VARYING(300),
-    CONSTRAINT natureza_juridica FOREIGN KEY (natureza_juridica) REFERENCES public.id_natureza_juridica(natureza_juridica)
+    CONSTRAINT natureza_juridica FOREIGN KEY (natureza_juridica) REFERENCES public.id_natureza_juridica(natureza_juridica),
+    CONSTRAINT porte_empresa FOREIGN KEY (porte_empresa) REFERENCES public.id_porte_empresa(porte_empresa)
+);
+----------------------------------------------------------------------------------------------------
+CREATE TABLE public.id_motivo_situacao_cadastral (
+    motivo_situacao_cadastral CHARACTER(2) NOT NULL,
+    descricao CHARACTER VARYING(300),
+    PRIMARY KEY (motivo_situacao_cadastral)
 );
 ----------------------------------------------------------------------------------------------------
 CREATE TABLE public.estabelecimentos (
@@ -92,7 +105,7 @@ CREATE TABLE public.estabelecimentos (
     nome_fantasia CHARACTER VARYING(300),
     situacao_cadastral CHARACTER VARYING(2) NOT NULL,
     data_situacao_cadastral CHARACTER VARYING(300),
-    motivo_situacao_cadastral CHARACTER VARYING(300),
+    motivo_situacao_cadastral CHARACTER VARYING(300) NOT NULL,
     nome_cidade_exterior CHARACTER VARYING(300),
     cod_pais CHARACTER VARYING(300) NOT NULL,
     data_inicio_atividade CHARACTER VARYING(300),
@@ -119,7 +132,8 @@ CREATE TABLE public.estabelecimentos (
     CONSTRAINT situacao_cadastral FOREIGN KEY (situacao_cadastral) REFERENCES public.id_situacao_cadastral(situacao_cadastral),
     CONSTRAINT cod_pais FOREIGN KEY (cod_pais) REFERENCES public.paises(cod_pais),
     CONSTRAINT cod_municipio FOREIGN KEY (cod_municipio) REFERENCES public.municipios(cod_municipio),
-    CONSTRAINT cnae_fiscal_principal FOREIGN KEY (cnae_fiscal_principal) REFERENCES public.id_cnae_fiscal_principal(cnae_fiscal_principal)
+    CONSTRAINT cnae_fiscal_principal FOREIGN KEY (cnae_fiscal_principal) REFERENCES public.id_cnae_fiscal_principal(cnae_fiscal_principal),
+    CONSTRAINT motivo_situacao_cadastral FOREIGN KEY (motivo_situacao_cadastral) REFERENCES public.id_motivo_situacao_cadastral(motivo_situacao_cadastral)
 );
 ----------------------------------------------------------------------------------------------------
 CREATE TABLE public.simples (
@@ -150,3 +164,41 @@ CREATE TABLE public.socios (
     CONSTRAINT cod_pais FOREIGN KEY (cod_pais) REFERENCES public.paises(cod_pais),
     CONSTRAINT qualificacoes_socio FOREIGN KEY (qualificacoes_socio) REFERENCES public.id_qualificacoes_socio(qualificacoes_socio)
 );
+----------------------------------------------------------------------------------------------------
+INSERT INTO TABLE public.id_porte_empresa
+VALUES
+    ('00', 'NAO INFORMADO'),
+    ('01', 'MICRO EMPRESA'),
+    ('03', 'EMPRESA DE PEQUENO PORTE'),
+    ('05', 'DEMAIS');
+
+INSERT INTO TABLE public.id_identificador
+VALUES
+    (1, 'MATRIZ'),
+    (2, 'FILIAL');
+
+INSERT INTO TABLE public.id_situacao_cadastral
+VALUES
+    ('01', 'NULA'),
+    ('2', 'ATIVA'),
+    ('3', 'SUSPENSA'),
+    ('4', 'INAPTA'),
+    ('08', 'BAIXADA');
+
+INSERT INTO TABLE public.id_opcao_simples
+VALUES
+    ('S', 'SIM'),
+    ('N', 'NAO'),
+    ('EM BRANCO', 'OUTROS');
+
+INSERT INTO TABLE public.id_opcao_mei
+VALUES
+    ('S', 'SIM'),
+    ('N', 'NAO'),
+    ('EM BRANCO', 'OUTROS');
+
+INSERT INTO TABLE public.id_identificador_socio
+VALUES
+    (1, 'PESSOA JURIDICA'),
+    (2, 'PESSOA FISICA'),
+    (3, 'ESTRANGEIRO');

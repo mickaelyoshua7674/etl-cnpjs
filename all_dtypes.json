@@ -1,0 +1,113 @@
+{
+    "id_porte_empresa": {
+        "porte_empresa": "str",
+        "descricao": "str"
+    },
+    "id_identificador": {
+        "identificador": "int",
+        "descricao": "str"
+    },
+    "id_situacao_cadastral": {
+        "situacao_cadastral": "str",
+        "descricao": "str"
+    },
+    "id_opcao_simples": {
+        "opcao_simples": "str",
+        "descricao": "str"
+    },
+    "id_opcao_mei": {
+        "opcao_mei": "str",
+        "descricao": "str"
+    },
+    "id_identificador_socio": {
+        "identificador_socio": "int",
+        "descricao": "str"
+    },
+    "paises": {
+        "cod_pais": "str",
+        "pais": "str"
+    },
+    "municipios": {
+        "cod_municipio": "str",
+        "descricao": "str"
+    },
+    "id_qualificacoes_socio": {
+        "qualificacoes_socio": "str",
+        "descricao": "str"
+    },
+    "id_natureza_juridica": {
+        "natureza_juridica": "str",
+        "descricao": "str"
+    },
+    "id_cnae_fiscal_principal": {
+        "cnae_fiscal_principal": "str",
+        "descricao": "str"
+    },
+    "empresas": {
+        "cnpj_basico": "str",
+        "razao_social": "str",
+        "natureza_juridica": "str",
+        "qualificacoes_responsavel": "str",
+        "capital_social": "float",
+        "porte_empresa": "str",
+        "ente_federativo_responsavel": "str"
+    },
+    "id_motivo_situacao_cadastral": {
+        "motivo_situacao_cadastral": "str",
+        "descricao": "str"
+    },
+    "estabelecimentos": {
+        "cnpj_basico": "str",
+        "cnpj_ordem": "str",
+        "cnpj_dv": "str",
+        "identificador": "int",
+        "nome_fantasia": "str",
+        "situacao_cadastral": "str",
+        "data_situacao_cadastral": "str",
+        "motivo_situacao_cadastral": "str",
+        "nome_cidade_exterior": "str",
+        "cod_pais": "str",
+        "data_inicio_atividade": "str",
+        "cnae_fiscal_principal": "str",
+        "cnae_fiscal_secundario": "str",
+        "tipo_logradouro": "str",
+        "logradouro": "str",
+        "numero": "str",
+        "complemento": "str",
+        "bairro": "str",
+        "cep": "str",
+        "uf": "str",
+        "cod_municipio": "str",
+        "ddd1": "str",
+        "telefone1": "str",
+        "ddd2": "str",
+        "telefone2": "str",
+        "ddd_fax": "str",
+        "fax": "str",
+        "email": "str",
+        "situacao_especial": "str",
+        "data_situacao_especial": "str"
+    },
+    "simples": {
+        "cnpj_basico": "str",
+        "opcao_simples": "str",
+        "data_opcao_simples": "str",
+        "data_exclusao_simples": "str",
+        "opcao_mei": "str",
+        "data_opcao_mei": "str",
+        "data_exclusao_mei": "str"
+    },
+    "socios": {
+        "cnpj_basico": "str",
+        "identificador_socio": "int",
+        "nome_socio": "str",
+        "cnpj_cpf_socio": "str",
+        "qualificacoes_socio": "str",
+        "data_entrada_sociedade": "str",
+        "cod_pais": "str",
+        "representante_legal": "str",
+        "nome_representante": "str",
+        "qualificacao_representante": "str",
+        "faixa_etaria": "str"
+    }
+}

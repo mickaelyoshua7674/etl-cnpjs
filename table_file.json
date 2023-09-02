@@ -1,0 +1,10 @@
+[["id_cnae_fiscal_principal", "Cnaes"],
+ ["empresas", "Empresas"],
+ ["estabelecimentos", "Estabelecimentos"],
+ ["id_motivo_situacao_cadastral", "Motivos"],
+ ["municipios", "Municipios"],
+ ["id_natureza_juridica", "Naturezas"],
+ ["paises", "Paises"],
+ ["id_qualificacoes_socio", "Qualificacoes"],
+ ["simples", "Simples"],
+ ["socios", "Socios"]]
