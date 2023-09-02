@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from zipfile import ZipFile
 import wget, os, json, traceback, re
-import pandas as pd
+from helper_functions import *
 
 # CHROMEDRIVER_PATH = "/usr/lib/chromium-browser/chromedriver"
 # URL = "https://dadosabertos.rfb.gov.br/CNPJ/"
@@ -57,32 +57,10 @@ for tf in table_file:
     if number_files > 1:
         header = True
         for i in range(number_files):
-            with open(os.path.join(RAWFILES_DIR, tf[1]+str(i)+".csv"), "r", encoding="latin-1") as f:
-                lines = f.readlines()
-            for j, line in enumerate(lines):
-                data = [d for d in re.sub('( "")|("" )|(""")', "", line.strip()).split('"')[1:-1] if d != ";"]
-                try:
-                    pd.DataFrame(data=[data], columns=[k for k in dtypes[tf[0]].keys()])\
-                    .to_csv(os.path.join(MERGED_DIR, tf[1]+".csv"), header=header, index=False, mode="a")
-                    header = False
-                except:
-                    print(f"\n\n{i}\n{j+1}\n{line}\n\n")
-                    traceback.print_exc()
-                    exit()
+            clean_concat_data(RAWFILES_DIR, tf[1]+str(i)+".csv", dtypes, MERGED_DIR, tf[0], header, i)
     else:
         header = True
-        with open(os.path.join(RAWFILES_DIR, tf[1]+".csv"), "r", encoding="latin-1") as f:
-            lines = f.readlines()
-        for i, line in enumerate(lines):
-            data = [d for d in re.sub('( "")|("" )|(""")|([A-Z]""[A-Z])', "", line.strip()).split('"')[1:-1] if d != ";"]
-            try:
-                pd.DataFrame(data=[data], columns=[k for k in dtypes[tf[0]].keys()])\
-                .to_csv(os.path.join(MERGED_DIR, tf[1]+".csv"), header=header, index=False, mode="a")
-                header = False
-            except:
-                print(f"\n\n{i+1}\n{line}\n\n")
-                traceback.print_exc()
-                exit()
+        clean_concat_data(RAWFILES_DIR, tf[1]+".csv", dtypes, MERGED_DIR, tf[0], header)
             
 
 

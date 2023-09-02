@@ -1,3 +1,10 @@
+-- CREATE DATABASE public_cnpj
+--     WITH
+--     OWNER = postgres
+--     ENCODING = 'UTF8'
+--     CONNECTION LIMIT = -1
+--     IS_TEMPLATE = False;
+
 DROP TABLE IF EXISTS public.id_identificador;
 DROP TABLE IF EXISTS public.id_situacao_cadastral;
 DROP TABLE IF EXISTS public.id_opcao_simples;
@@ -32,13 +39,13 @@ CREATE TABLE public.id_situacao_cadastral (
 );
 ----------------------------------------------------------------------------------------------------
 CREATE TABLE public.id_opcao_simples (
-    opcao_simples CHARACTER(1) NOT NULL,
+    opcao_simples CHARACTER VARYING(9) NOT NULL,
     descricao CHARACTER VARYING(6) NOT NULL,
     PRIMARY KEY (opcao_simples)
 );
 ----------------------------------------------------------------------------------------------------
 CREATE TABLE public.id_opcao_mei (
-    opcao_mei CHARACTER(1) NOT NULL,
+    opcao_mei CHARACTER VARYING(9) NOT NULL,
     descricao CHARACTER VARYING(6) NOT NULL,
     PRIMARY KEY (opcao_mei)
 );
@@ -138,10 +145,10 @@ CREATE TABLE public.estabelecimentos (
 ----------------------------------------------------------------------------------------------------
 CREATE TABLE public.simples (
     cnpj_basico CHARACTER(8) NOT NULL,
-    opcao_simples CHARACTER(1) NOT NULL,
+    opcao_simples CHARACTER VARYING(9) NOT NULL,
     data_opcao_simples CHARACTER VARYING(300),
     data_exclusao_simples CHARACTER VARYING(300),
-    opcao_mei CHARACTER VARYING(300) NOT NULL,
+    opcao_mei CHARACTER VARYING(9) NOT NULL,
     data_opcao_mei CHARACTER VARYING(300),
     data_exclusao_mei CHARACTER VARYING(300),
     CONSTRAINT opcao_simples FOREIGN KEY (opcao_simples) REFERENCES public.id_opcao_simples(opcao_simples),
@@ -165,19 +172,19 @@ CREATE TABLE public.socios (
     CONSTRAINT qualificacoes_socio FOREIGN KEY (qualificacoes_socio) REFERENCES public.id_qualificacoes_socio(qualificacoes_socio)
 );
 ----------------------------------------------------------------------------------------------------
-INSERT INTO TABLE public.id_porte_empresa
+INSERT INTO public.id_porte_empresa
 VALUES
     ('00', 'NAO INFORMADO'),
     ('01', 'MICRO EMPRESA'),
     ('03', 'EMPRESA DE PEQUENO PORTE'),
     ('05', 'DEMAIS');
 
-INSERT INTO TABLE public.id_identificador
+INSERT INTO public.id_identificador
 VALUES
     (1, 'MATRIZ'),
     (2, 'FILIAL');
 
-INSERT INTO TABLE public.id_situacao_cadastral
+INSERT INTO public.id_situacao_cadastral
 VALUES
     ('01', 'NULA'),
     ('2', 'ATIVA'),
@@ -185,19 +192,19 @@ VALUES
     ('4', 'INAPTA'),
     ('08', 'BAIXADA');
 
-INSERT INTO TABLE public.id_opcao_simples
+INSERT INTO public.id_opcao_simples
 VALUES
     ('S', 'SIM'),
     ('N', 'NAO'),
     ('EM BRANCO', 'OUTROS');
 
-INSERT INTO TABLE public.id_opcao_mei
+INSERT INTO public.id_opcao_mei
 VALUES
     ('S', 'SIM'),
     ('N', 'NAO'),
     ('EM BRANCO', 'OUTROS');
 
-INSERT INTO TABLE public.id_identificador_socio
+INSERT INTO public.id_identificador_socio
 VALUES
     (1, 'PESSOA JURIDICA'),
     (2, 'PESSOA FISICA'),
