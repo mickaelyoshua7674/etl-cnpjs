@@ -43,6 +43,10 @@
         "cnae_fiscal_principal": "str",
         "descricao": "str"
     },
+    "id_motivo_situacao_cadastral": {
+        "motivo_situacao_cadastral": "str",
+        "descricao": "str"
+    },
     "empresas": {
         "cnpj_basico": "str",
         "razao_social": "str",
@@ -51,10 +55,6 @@
         "capital_social": "float",
         "porte_empresa": "str",
         "ente_federativo_responsavel": "str"
-    },
-    "id_motivo_situacao_cadastral": {
-        "motivo_situacao_cadastral": "str",
-        "descricao": "str"
     },
     "estabelecimentos": {
         "cnpj_basico": "str",

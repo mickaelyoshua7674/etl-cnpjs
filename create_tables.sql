@@ -5,6 +5,11 @@
 --     CONNECTION LIMIT = -1
 --     IS_TEMPLATE = False;
 
+DROP TABLE IF EXISTS public.empresas CASCADE;
+DROP TABLE IF EXISTS public.estabelecimentos CASCADE;
+DROP TABLE IF EXISTS public.simples CASCADE;
+DROP TABLE IF EXISTS public.socios CASCADE;
+DROP TABLE IF EXISTS public.id_porte_empresa;
 DROP TABLE IF EXISTS public.id_identificador;
 DROP TABLE IF EXISTS public.id_situacao_cadastral;
 DROP TABLE IF EXISTS public.id_opcao_simples;
@@ -15,10 +20,7 @@ DROP TABLE IF EXISTS public.municipios;
 DROP TABLE IF EXISTS public.id_qualificacoes;
 DROP TABLE IF EXISTS public.id_natureza_juridica;
 DROP TABLE IF EXISTS public.id_cnae_fiscal_principal;
-DROP TABLE IF EXISTS public.empresas;
-DROP TABLE IF EXISTS public.estabelecimentos;
-DROP TABLE IF EXISTS public.simples;
-DROP TABLE IF EXISTS public.socios;
+DROP TABLE IF EXISTS public.id_motivo_situacao_cadastral;
 ----------------------------------------------------------------------------------------------------
 CREATE TABLE public.id_porte_empresa (
     porte_empresa CHARACTER(2) NOT NULL,
@@ -86,6 +88,12 @@ CREATE TABLE public.id_cnae_fiscal_principal (
     PRIMARY KEY (cnae_fiscal_principal)
 );
 ----------------------------------------------------------------------------------------------------
+CREATE TABLE public.id_motivo_situacao_cadastral (
+    motivo_situacao_cadastral CHARACTER(2) NOT NULL,
+    descricao CHARACTER VARYING(300),
+    PRIMARY KEY (motivo_situacao_cadastral)
+);
+----------------------------------------------------------------------------------------------------
 CREATE TABLE public.empresas (
     cnpj_basico CHARACTER(8) NOT NULL,
     razao_social CHARACTER VARYING(300),
@@ -99,12 +107,6 @@ CREATE TABLE public.empresas (
     CONSTRAINT qualificacoes FOREIGN KEY (qualificacoes) REFERENCES public.id_qualificacoes(qualificacoes)
 );
 ----------------------------------------------------------------------------------------------------
-CREATE TABLE public.id_motivo_situacao_cadastral (
-    motivo_situacao_cadastral CHARACTER(2) NOT NULL,
-    descricao CHARACTER VARYING(300),
-    PRIMARY KEY (motivo_situacao_cadastral)
-);
-----------------------------------------------------------------------------------------------------
 CREATE TABLE public.estabelecimentos (
     cnpj_basico CHARACTER(8) NOT NULL,
     cnpj_ordem CHARACTER(4) NOT NULL,
@@ -113,7 +115,7 @@ CREATE TABLE public.estabelecimentos (
     nome_fantasia CHARACTER VARYING(300),
     situacao_cadastral CHARACTER VARYING(2) NOT NULL,
     data_situacao_cadastral CHARACTER VARYING(300),
-    motivo_situacao_cadastral CHARACTER VARYING(300) NOT NULL,
+    motivo_situacao_cadastral CHARACTER(2) NOT NULL,
     nome_cidade_exterior CHARACTER VARYING(300),
     cod_pais CHARACTER VARYING(300) NOT NULL,
     data_inicio_atividade CHARACTER VARYING(300),
