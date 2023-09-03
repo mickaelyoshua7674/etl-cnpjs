@@ -12,8 +12,8 @@ from helper_functions import *
 #     os.mkdir(ZIPFILES_DIR)
 
 RAWFILES_DIR = "rawfiles"
-if not os.path.exists(RAWFILES_DIR):
-    os.mkdir(RAWFILES_DIR)
+# if not os.path.exists(RAWFILES_DIR):
+#     os.mkdir(RAWFILES_DIR)
 
 # op = webdriver.ChromeOptions()
 # op.add_argument("log-level=3") # https://stackoverflow.com/questions/46744968/how-to-suppress-console-error-warning-info-messages-when-executing-selenium-pyth
@@ -52,15 +52,13 @@ with open("all_dtypes.json", "r") as f:
     dtypes = json.load(f)
 
 for tf in table_file:
-    print(f"Merging {tf[1]}...")
     number_files = len([f for f in os.listdir(RAWFILES_DIR) if f.startswith(tf[1])])
     if number_files > 1:
         header = True
         for i in range(number_files):
-            clean_concat_data(RAWFILES_DIR, tf[1]+str(i)+".csv", dtypes, MERGED_DIR, tf[0], header, i)
+            clean_concat_data(RAWFILES_DIR, tf[1]+str(i)+".csv", dtypes, MERGED_DIR, tf[0], header)
+            print()
     else:
         header = True
         clean_concat_data(RAWFILES_DIR, tf[1]+".csv", dtypes, MERGED_DIR, tf[0], header)
-            
-
-
+        print()
