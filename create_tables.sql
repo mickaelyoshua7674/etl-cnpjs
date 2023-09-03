@@ -12,7 +12,7 @@ DROP TABLE IF EXISTS public.id_opcao_mei;
 DROP TABLE IF EXISTS public.id_identificador_socio;
 DROP TABLE IF EXISTS public.paises;
 DROP TABLE IF EXISTS public.municipios;
-DROP TABLE IF EXISTS public.id_qualificacoes_socio;
+DROP TABLE IF EXISTS public.id_qualificacoes;
 DROP TABLE IF EXISTS public.id_natureza_juridica;
 DROP TABLE IF EXISTS public.id_cnae_fiscal_principal;
 DROP TABLE IF EXISTS public.empresas;
@@ -68,14 +68,14 @@ CREATE TABLE public.municipios (
     PRIMARY KEY (cod_municipio)
 );
 ----------------------------------------------------------------------------------------------------
-CREATE TABLE public.id_qualificacoes_socio (
-    qualificacoes_socio CHARACTER VARYING(300) NOT NULL,
+CREATE TABLE public.id_qualificacoes (
+    qualificacoes CHARACTER(2) NOT NULL,
     descricao CHARACTER VARYING(300) NOT NULL,
-    PRIMARY KEY (qualificacoes_socio)
+    PRIMARY KEY (qualificacoes)
 );
 ----------------------------------------------------------------------------------------------------
 CREATE TABLE public.id_natureza_juridica (
-    natureza_juridica CHARACTER VARYING(300) NOT NULL,
+    natureza_juridica CHARACTER(4) NOT NULL,
     descricao CHARACTER VARYING(300) NOT NULL,
     PRIMARY KEY (natureza_juridica)
 );
@@ -89,13 +89,14 @@ CREATE TABLE public.id_cnae_fiscal_principal (
 CREATE TABLE public.empresas (
     cnpj_basico CHARACTER(8) NOT NULL,
     razao_social CHARACTER VARYING(300),
-    natureza_juridica CHARACTER VARYING(300) NOT NULL,
-    qualificacoes_responsavel CHARACTER VARYING(300),
+    natureza_juridica CHARACTER(4) NOT NULL,
+    qualificacoes CHARACTER(2) NOT NULL,
     capital_social NUMERIC,
     porte_empresa CHARACTER(2) NOT NULL,
     ente_federativo_responsavel CHARACTER VARYING(300),
     CONSTRAINT natureza_juridica FOREIGN KEY (natureza_juridica) REFERENCES public.id_natureza_juridica(natureza_juridica),
-    CONSTRAINT porte_empresa FOREIGN KEY (porte_empresa) REFERENCES public.id_porte_empresa(porte_empresa)
+    CONSTRAINT porte_empresa FOREIGN KEY (porte_empresa) REFERENCES public.id_porte_empresa(porte_empresa),
+    CONSTRAINT qualificacoes FOREIGN KEY (qualificacoes) REFERENCES public.id_qualificacoes(qualificacoes)
 );
 ----------------------------------------------------------------------------------------------------
 CREATE TABLE public.id_motivo_situacao_cadastral (
@@ -160,7 +161,7 @@ CREATE TABLE public.socios (
     identificador_socio INTEGER NOT NULL,
     nome_socio CHARACTER VARYING(300),
     cnpj_cpf_socio CHARACTER VARYING(300),
-    qualificacoes_socio CHARACTER VARYING(300) NOT NULL,
+    qualificacoes CHARACTER(2) NOT NULL,
     data_entrada_sociedade CHARACTER VARYING(300),
     cod_pais CHARACTER VARYING(300) NOT NULL,
     representante_legal CHARACTER VARYING(300),
@@ -169,7 +170,7 @@ CREATE TABLE public.socios (
     faixa_etaria CHARACTER VARYING(300),
     CONSTRAINT identificador_socio FOREIGN KEY (identificador_socio) REFERENCES public.id_identificador_socio(identificador_socio),
     CONSTRAINT cod_pais FOREIGN KEY (cod_pais) REFERENCES public.paises(cod_pais),
-    CONSTRAINT qualificacoes_socio FOREIGN KEY (qualificacoes_socio) REFERENCES public.id_qualificacoes_socio(qualificacoes_socio)
+    CONSTRAINT qualificacoes FOREIGN KEY (qualificacoes) REFERENCES public.id_qualificacoes(qualificacoes)
 );
 ----------------------------------------------------------------------------------------------------
 INSERT INTO public.id_porte_empresa

@@ -31,8 +31,8 @@
         "cod_municipio": "str",
         "descricao": "str"
     },
-    "id_qualificacoes_socio": {
-        "qualificacoes_socio": "str",
+    "id_qualificacoes": {
+        "qualificacoes": "str",
         "descricao": "str"
     },
     "id_natureza_juridica": {
@@ -47,7 +47,7 @@
         "cnpj_basico": "str",
         "razao_social": "str",
         "natureza_juridica": "str",
-        "qualificacoes_responsavel": "str",
+        "qualificacoes": "str",
         "capital_social": "float",
         "porte_empresa": "str",
         "ente_federativo_responsavel": "str"
@@ -102,7 +102,7 @@
         "identificador_socio": "int",
         "nome_socio": "str",
         "cnpj_cpf_socio": "str",
-        "qualificacoes_socio": "str",
+        "qualificacoes": "str",
         "data_entrada_sociedade": "str",
         "cod_pais": "str",
         "representante_legal": "str",

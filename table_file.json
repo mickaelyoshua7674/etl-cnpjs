@@ -5,6 +5,6 @@
  ["municipios", "Municipios"],
  ["id_natureza_juridica", "Naturezas"],
  ["paises", "Paises"],
- ["id_qualificacoes_socio", "Qualificacoes"],
+ ["id_qualificacoes", "Qualificacoes"],
  ["simples", "Simples"],
  ["socios", "Socios"]]
