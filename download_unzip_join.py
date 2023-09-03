@@ -56,9 +56,14 @@ for tf in table_file:
     if number_files > 1:
         header = True
         for i in range(number_files):
-            clean_concat_data(RAWFILES_DIR, tf[1]+str(i)+".csv", dtypes, MERGED_DIR, tf[0], header)
+            file = tf[1]+str(i)+".csv"
+            clean_concat_data(RAWFILES_DIR, file, dtypes, MERGED_DIR, tf[0], header)
             print()
+            os.remove(os.path.join(RAWFILES_DIR, file))
     else:
+        file = tf[1]+".csv"
         header = True
-        clean_concat_data(RAWFILES_DIR, tf[1]+".csv", dtypes, MERGED_DIR, tf[0], header)
+        clean_concat_data(RAWFILES_DIR, file, dtypes, MERGED_DIR, tf[0], header)
         print()
+        os.remove(os.path.join(RAWFILES_DIR, file))
+os.rmdir(RAWFILES_DIR)
