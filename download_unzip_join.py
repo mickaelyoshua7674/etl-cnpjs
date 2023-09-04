@@ -17,11 +17,13 @@ for tf in table_file:
         header = True
         for i in range(number_files):
             file = tf[1]+str(i)+".csv"
-            clean_concat_data(RAWFILES_DIR, file, dtypes, MERGED_DIR, tf[0], header)
+            columns = [k for k in dtypes[file].keys()]
+            clean_concat_data(RAWFILES_DIR, file, columns, MERGED_DIR, tf[0], header)
             print()
     else:
         file = tf[1]+".csv"
+        columns = [k for k in dtypes[file].keys()]
         header = True
-        clean_concat_data(RAWFILES_DIR, file, dtypes, MERGED_DIR, tf[0], header)
+        clean_concat_data(RAWFILES_DIR, file, columns, MERGED_DIR, tf[0], header)
         print()
 os.rmdir(RAWFILES_DIR)

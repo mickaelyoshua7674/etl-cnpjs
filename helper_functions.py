@@ -55,7 +55,7 @@ def download_and_unzip():
     os.rmdir(ZIPFILES_DIR)
 
 
-def clean_concat_data(files_dir: str, file_name: str, dtypes: dict, save_files_dir: str, save_file_name: str, header: bool):
+def clean_concat_data(files_dir: str, file_name: str, columns: List[str], save_files_dir: str, save_file_name: str, header: bool):
     if not os.path.exists(ERROR_LINE_FILE):
         with open(ERROR_LINE_FILE, "w") as f:
             json.dump([], f)
@@ -70,7 +70,7 @@ def clean_concat_data(files_dir: str, file_name: str, dtypes: dict, save_files_d
         for i, line in enumerate(tqdm(lines, desc=file_name, unit=" lines")):
             if i > last_line:
                 try:
-                    concat_data(header, line, dtypes, save_files_dir, save_file_name)
+                    concat_data(header, line, columns, save_files_dir, save_file_name)
                 except:
                     save_error(i, file_name)
                 header = False
@@ -84,8 +84,8 @@ def get_lines_iterator(files_dir: str, file_name: str) -> Iterable:
     with open(os.path.join(files_dir, file_name), "r", encoding="latin-1") as f:
         return f.readlines()
     
-def concat_data(header: bool, line: str, dtypes: dict, save_dir: str, file: str) -> None:
-    pd.DataFrame(data=[clean_line(line)], columns=[k for k in dtypes[file].keys()])\
+def concat_data(header: bool, line: str, columns: List[str], save_dir: str, file: str) -> None:
+    pd.DataFrame(data=[clean_line(line)], columns=columns)\
     .to_csv(os.path.join(save_dir, file+".csv"), header=header, index=False, mode="a")
 
 def clean_line(line: str) -> List[str]:
