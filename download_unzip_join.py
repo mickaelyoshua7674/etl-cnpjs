@@ -6,24 +6,19 @@ MERGED_DIR = "mergedfiles"
 if not os.path.exists(MERGED_DIR):
     os.mkdir(MERGED_DIR)
 
-with open("table_file.json", "r") as f:
-    table_file = json.load(f)
+with open("file_table.json", "r") as f:
+    file_table = json.load(f)
 with open("all_dtypes.json", "r") as f:
     dtypes = json.load(f)
 
-for tf in table_file:
-    number_files = len([f for f in os.listdir(RAWFILES_DIR) if f.startswith(tf[1])])
-    if number_files > 1:
-        header = True
-        for i in range(number_files):
-            file = tf[1]+str(i)+".csv"
-            columns = [k for k in dtypes[file].keys()]
-            clean_concat_data(RAWFILES_DIR, file, columns, MERGED_DIR, tf[0], header)
-            print()
-    else:
-        file = tf[1]+".csv"
-        columns = [k for k in dtypes[file].keys()]
-        header = True
-        clean_concat_data(RAWFILES_DIR, file, columns, MERGED_DIR, tf[0], header)
-        print()
+remaining_files = get_remaining_files(RAWFILES_DIR)
+
+for file in remaining_files:
+    table_name = file_table[get_core_file_name(file)]
+    columns = [k for k in dtypes[table_name].keys()]
+
+    header = True
+    clean_concat_data(RAWFILES_DIR, file, columns, MERGED_DIR, table_name, header)
+    print()
+
 os.rmdir(RAWFILES_DIR)

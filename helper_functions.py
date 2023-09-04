@@ -6,8 +6,7 @@ from zipfile import ZipFile
 from tqdm import tqdm
 import pandas as pd
 import pickle as pk
-import os, json
-import wget
+import os, json, wget, re
 
 CHROMEDRIVER_PATH = "/usr/lib/chromium-browser/chromedriver"
 URL = "https://dadosabertos.rfb.gov.br/CNPJ/"
@@ -63,30 +62,28 @@ def clean_concat_data(files_dir: str, file_name: str, columns: List[str], save_f
     last_line = get_last_line()
     if last_line > 0:
         header = False
-    remaining_files = get_remaining_files(files_dir)
 
-    if file_name == remaining_files[0]:
-        lines = get_lines_iterator(files_dir, file_name)
-        for i, line in enumerate(tqdm(lines, desc=file_name, unit=" lines")):
-            if i > last_line:
-                try:
-                    concat_data(header, line, columns, save_files_dir, save_file_name)
-                except:
-                    save_error(i, file_name)
-                header = False
-                save_last_line(i)
-        remaining_files.remove(file_name)
-        save_remaining_files(remaining_files)
-        os.remove(os.path.join(files_dir, file_name))
-        os.remove(LAST_LINE_PATH)
+    save_file_path = os.path.join(save_files_dir, save_file_name+".csv")
+
+    lines = get_lines_iterator(files_dir, file_name)
+    for i, line in enumerate(tqdm(lines, desc=file_name, unit=" lines")):
+        if i > last_line:
+            try:
+                concat_data(header, line, columns, save_file_path)
+            except:
+                save_error(i, file_name)
+            header = False
+            save_last_line(i)
+    os.remove(os.path.join(files_dir, file_name))
+    os.remove(LAST_LINE_PATH)
 
 def get_lines_iterator(files_dir: str, file_name: str) -> Iterable:
     with open(os.path.join(files_dir, file_name), "r", encoding="latin-1") as f:
         return f.readlines()
     
-def concat_data(header: bool, line: str, columns: List[str], save_dir: str, file: str) -> None:
+def concat_data(header: bool, line: str, columns: List[str], save_file_path: str) -> None:
     pd.DataFrame(data=[clean_line(line)], columns=columns)\
-    .to_csv(os.path.join(save_dir, file+".csv"), header=header, index=False, mode="a")
+    .to_csv(save_file_path, header=header, index=False, mode="a")
 
 def clean_line(line: str) -> List[str]:
     return [l.replace('"', "")for l in line.replace("\n", "").split('";"')]
@@ -101,10 +98,6 @@ def get_last_line() -> int:
             return pk.load(f)
     return -1
 
-def save_remaining_files(remaining_files: List[str]) -> None:
-    with open(REMAINING_FILE_PATH, "wb") as f:
-        pk.dump(remaining_files, f)
-
 def get_remaining_files(files_dir: str) -> List[str]:
     if os.path.exists(REMAINING_FILE_PATH):
         with open(REMAINING_FILE_PATH, "rb") as f:
@@ -117,3 +110,6 @@ def save_error(i: int, file: str) -> None:
     errors.append((i,file))
     with open(ERROR_LINE_FILE, "w") as f:
         json.dump(errors, f)
+
+def get_core_file_name(file: str) -> str:
+    return re.sub("[0-9]", "", file.split(".")[0])
