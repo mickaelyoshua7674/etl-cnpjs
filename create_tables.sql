@@ -23,19 +23,19 @@ DROP TABLE IF EXISTS public.id_cnae_fiscal_principal;
 DROP TABLE IF EXISTS public.id_motivo_situacao_cadastral;
 ----------------------------------------------------------------------------------------------------
 CREATE TABLE public.id_porte_empresa (
-    porte_empresa CHARACTER(2) NOT NULL,
+    porte_empresa INTEGER NOT NULL,
     descricao CHARACTER VARYING(30) NOT NULL,
     PRIMARY KEY (porte_empresa)
 );
 ----------------------------------------------------------------------------------------------------
 CREATE TABLE public.id_identificador (
     identificador INTEGER NOT NULL,
-    descricao CHARACTER(6) NOT NULL,
+    descricao CHARACTER VARYING(6) NOT NULL,
     PRIMARY KEY (identificador)
 );
 ----------------------------------------------------------------------------------------------------
 CREATE TABLE public.id_situacao_cadastral (
-    situacao_cadastral CHARACTER VARYING(2) NOT NULL,
+    situacao_cadastral INTEGER NOT NULL,
     descricao CHARACTER VARYING(8) NOT NULL,
     PRIMARY KEY (situacao_cadastral)
 );
@@ -59,49 +59,49 @@ CREATE TABLE public.id_identificador_socio (
 );
 ----------------------------------------------------------------------------------------------------
 CREATE TABLE public.paises (
-    cod_pais CHARACTER VARYING(300) NOT NULL,
-    pais CHARACTER VARYING(300) NOT NULL,
+    cod_pais NUMERIC NOT NULL,
+    pais CHARACTER VARYING(100) NOT NULL,
     PRIMARY KEY (cod_pais)
 );
 ----------------------------------------------------------------------------------------------------
 CREATE TABLE public.municipios (
-    cod_municipio CHARACTER VARYING(300) NOT NULL,
-    descricao CHARACTER VARYING(300) NOT NULL,
+    cod_municipio INTEGER NOT NULL,
+    descricao CHARACTER VARYING(100) NOT NULL,
     PRIMARY KEY (cod_municipio)
 );
 ----------------------------------------------------------------------------------------------------
 CREATE TABLE public.id_qualificacoes (
-    qualificacoes CHARACTER(2) NOT NULL,
-    descricao CHARACTER VARYING(300) NOT NULL,
+    qualificacoes INTEGER NOT NULL,
+    descricao CHARACTER VARYING(100) NOT NULL,
     PRIMARY KEY (qualificacoes)
 );
 ----------------------------------------------------------------------------------------------------
 CREATE TABLE public.id_natureza_juridica (
-    natureza_juridica CHARACTER(4) NOT NULL,
-    descricao CHARACTER VARYING(300) NOT NULL,
+    natureza_juridica INTEGER NOT NULL,
+    descricao CHARACTER VARYING(100) NOT NULL,
     PRIMARY KEY (natureza_juridica)
 );
 ----------------------------------------------------------------------------------------------------
 CREATE TABLE public.id_cnae_fiscal_principal (
-    cnae_fiscal_principal CHARACTER VARYING(300) NOT NULL,
-    descricao CHARACTER VARYING(300) NOT NULL,
+    cnae_fiscal_principal INTEGER NOT NULL,
+    descricao CHARACTER VARYING(100) NOT NULL,
     PRIMARY KEY (cnae_fiscal_principal)
 );
 ----------------------------------------------------------------------------------------------------
 CREATE TABLE public.id_motivo_situacao_cadastral (
-    motivo_situacao_cadastral CHARACTER(2) NOT NULL,
-    descricao CHARACTER VARYING(300),
+    motivo_situacao_cadastral INTEGER NOT NULL,
+    descricao CHARACTER VARYING(100),
     PRIMARY KEY (motivo_situacao_cadastral)
 );
 ----------------------------------------------------------------------------------------------------
 CREATE TABLE public.empresas (
     cnpj_basico CHARACTER(8) NOT NULL,
-    razao_social CHARACTER VARYING(300),
-    natureza_juridica CHARACTER(4) NOT NULL,
-    qualificacoes CHARACTER(2) NOT NULL,
+    razao_social CHARACTER VARYING(100),
+    natureza_juridica INTEGER NOT NULL,
+    qualificacoes INTEGER NOT NULL,
     capital_social NUMERIC,
-    porte_empresa CHARACTER(2) NOT NULL,
-    ente_federativo_responsavel CHARACTER VARYING(300),
+    porte_empresa INTEGER NOT NULL,
+    ente_federativo_responsavel CHARACTER VARYING(100),
     CONSTRAINT natureza_juridica FOREIGN KEY (natureza_juridica) REFERENCES public.id_natureza_juridica(natureza_juridica),
     CONSTRAINT porte_empresa FOREIGN KEY (porte_empresa) REFERENCES public.id_porte_empresa(porte_empresa),
     CONSTRAINT qualificacoes FOREIGN KEY (qualificacoes) REFERENCES public.id_qualificacoes(qualificacoes)
@@ -112,32 +112,32 @@ CREATE TABLE public.estabelecimentos (
     cnpj_ordem CHARACTER(4) NOT NULL,
     cnpj_dv CHARACTER(2) NOT NULL,
     identificador INTEGER NOT NULL,
-    nome_fantasia CHARACTER VARYING(300),
-    situacao_cadastral CHARACTER VARYING(2) NOT NULL,
-    data_situacao_cadastral CHARACTER VARYING(300),
-    motivo_situacao_cadastral CHARACTER(2) NOT NULL,
-    nome_cidade_exterior CHARACTER VARYING(300),
-    cod_pais CHARACTER VARYING(300) NOT NULL,
-    data_inicio_atividade CHARACTER VARYING(300),
-    cnae_fiscal_principal CHARACTER VARYING(300) NOT NULL,
-    cnae_fiscal_secundario CHARACTER VARYING(300),
-    tipo_logradouro CHARACTER VARYING(300),
-    logradouro CHARACTER VARYING(300),
-    numero CHARACTER VARYING(300),
-    complemento CHARACTER VARYING(300),
-    bairro CHARACTER VARYING(300),
-    cep CHARACTER VARYING(300),
-    uf CHARACTER VARYING(300),
-    cod_municipio CHARACTER VARYING(300) NOT NULL,
-    ddd1 CHARACTER VARYING(300),
-    telefone1 CHARACTER VARYING(300),
-    ddd2 CHARACTER VARYING(300),
-    telefone2 CHARACTER VARYING(300),
-    ddd_fax CHARACTER VARYING(300),
-    fax CHARACTER VARYING(300),
-    email CHARACTER VARYING(300),
-    situacao_especial CHARACTER VARYING(300),
-    data_situacao_especial CHARACTER VARYING(300),
+    nome_fantasia CHARACTER VARYING(100),
+    situacao_cadastral INTEGER NOT NULL,
+    data_situacao_cadastral CHARACTER VARYING(8),
+    motivo_situacao_cadastral INTEGER NOT NULL,
+    nome_cidade_exterior CHARACTER VARYING(100),
+    cod_pais NUMERIC NOT NULL,
+    data_inicio_atividade CHARACTER VARYING(8),
+    cnae_fiscal_principal INTEGER NOT NULL,
+    cnae_fiscal_secundario CHARACTER VARYING(100),
+    tipo_logradouro CHARACTER VARYING(100),
+    logradouro CHARACTER VARYING(100),
+    numero CHARACTER VARYING(100),
+    complemento CHARACTER VARYING(100),
+    bairro CHARACTER VARYING(100),
+    cep CHARACTER VARYING(100),
+    uf CHARACTER VARYING(100),
+    cod_municipio INTEGER NOT NULL,
+    ddd1 CHARACTER VARYING(100),
+    telefone1 CHARACTER VARYING(100),
+    ddd2 CHARACTER VARYING(100),
+    telefone2 CHARACTER VARYING(100),
+    ddd_fax CHARACTER VARYING(100),
+    fax CHARACTER VARYING(100),
+    email CHARACTER VARYING(100),
+    situacao_especial CHARACTER VARYING(100),
+    data_situacao_especial CHARACTER VARYING(8),
     CONSTRAINT identificador FOREIGN KEY (identificador) REFERENCES public.id_identificador(identificador),
     CONSTRAINT situacao_cadastral FOREIGN KEY (situacao_cadastral) REFERENCES public.id_situacao_cadastral(situacao_cadastral),
     CONSTRAINT cod_pais FOREIGN KEY (cod_pais) REFERENCES public.paises(cod_pais),
@@ -149,11 +149,11 @@ CREATE TABLE public.estabelecimentos (
 CREATE TABLE public.simples (
     cnpj_basico CHARACTER(8) NOT NULL,
     opcao_simples CHARACTER VARYING(9) NOT NULL,
-    data_opcao_simples CHARACTER VARYING(300),
-    data_exclusao_simples CHARACTER VARYING(300),
+    data_opcao_simples CHARACTER VARYING(8),
+    data_exclusao_simples CHARACTER VARYING(8),
     opcao_mei CHARACTER VARYING(9) NOT NULL,
-    data_opcao_mei CHARACTER VARYING(300),
-    data_exclusao_mei CHARACTER VARYING(300),
+    data_opcao_mei CHARACTER VARYING(8),
+    data_exclusao_mei CHARACTER VARYING(8),
     CONSTRAINT opcao_simples FOREIGN KEY (opcao_simples) REFERENCES public.id_opcao_simples(opcao_simples),
     CONSTRAINT opcao_mei FOREIGN KEY (opcao_mei) REFERENCES public.id_opcao_mei(opcao_mei)
 );
@@ -161,15 +161,15 @@ CREATE TABLE public.simples (
 CREATE TABLE public.socios (
     cnpj_basico CHARACTER(8) NOT NULL,
     identificador_socio INTEGER NOT NULL,
-    nome_socio CHARACTER VARYING(300),
-    cnpj_cpf_socio CHARACTER VARYING(300),
-    qualificacoes CHARACTER(2) NOT NULL,
-    data_entrada_sociedade CHARACTER VARYING(300),
-    cod_pais CHARACTER VARYING(300) NOT NULL,
-    representante_legal CHARACTER VARYING(300),
-    nome_representante CHARACTER VARYING(300),
-    qualificacao_representante CHARACTER VARYING(300),
-    faixa_etaria CHARACTER VARYING(300),
+    nome_socio CHARACTER VARYING(100),
+    cnpj_cpf_socio CHARACTER VARYING(100),
+    qualificacoes INTEGER NOT NULL,
+    data_entrada_sociedade CHARACTER VARYING(8),
+    cod_pais NUMERIC NOT NULL,
+    representante_legal CHARACTER VARYING(100),
+    nome_representante CHARACTER VARYING(100),
+    qualificacao_representante CHARACTER VARYING(100),
+    faixa_etaria CHARACTER VARYING(100),
     CONSTRAINT identificador_socio FOREIGN KEY (identificador_socio) REFERENCES public.id_identificador_socio(identificador_socio),
     CONSTRAINT cod_pais FOREIGN KEY (cod_pais) REFERENCES public.paises(cod_pais),
     CONSTRAINT qualificacoes FOREIGN KEY (qualificacoes) REFERENCES public.id_qualificacoes(qualificacoes)
@@ -177,23 +177,24 @@ CREATE TABLE public.socios (
 ----------------------------------------------------------------------------------------------------
 INSERT INTO public.id_porte_empresa
 VALUES
-    ('00', 'NAO INFORMADO'),
-    ('01', 'MICRO EMPRESA'),
-    ('03', 'EMPRESA DE PEQUENO PORTE'),
-    ('05', 'DEMAIS');
+    (0, 'NAO INFORMADO'),
+    (1, 'MICRO EMPRESA'),
+    (3, 'EMPRESA DE PEQUENO PORTE'),
+    (5, 'DEMAIS');
 
 INSERT INTO public.id_identificador
 VALUES
+    (0, 'VAZIO'),
     (1, 'MATRIZ'),
     (2, 'FILIAL');
 
 INSERT INTO public.id_situacao_cadastral
 VALUES
-    ('01', 'NULA'),
-    ('2', 'ATIVA'),
-    ('3', 'SUSPENSA'),
-    ('4', 'INAPTA'),
-    ('08', 'BAIXADA');
+    (1, 'NULA'),
+    (2, 'ATIVA'),
+    (3, 'SUSPENSA'),
+    (4, 'INAPTA'),
+    (8, 'BAIXADA');
 
 INSERT INTO public.id_opcao_simples
 VALUES

@@ -1,6 +1,6 @@
 {
     "id_porte_empresa": {
-        "porte_empresa": "str",
+        "porte_empresa": "int",
         "descricao": "str"
     },
     "id_identificador": {
@@ -8,7 +8,7 @@
         "descricao": "str"
     },
     "id_situacao_cadastral": {
-        "situacao_cadastral": "str",
+        "situacao_cadastral": "int",
         "descricao": "str"
     },
     "id_opcao_simples": {
@@ -24,36 +24,36 @@
         "descricao": "str"
     },
     "paises": {
-        "cod_pais": "str",
+        "cod_pais": "float",
         "pais": "str"
     },
     "municipios": {
-        "cod_municipio": "str",
+        "cod_municipio": "int",
         "descricao": "str"
     },
     "id_qualificacoes": {
-        "qualificacoes": "str",
+        "qualificacoes": "int",
         "descricao": "str"
     },
     "id_natureza_juridica": {
-        "natureza_juridica": "str",
+        "natureza_juridica": "int",
         "descricao": "str"
     },
     "id_cnae_fiscal_principal": {
-        "cnae_fiscal_principal": "str",
+        "cnae_fiscal_principal": "int",
         "descricao": "str"
     },
     "id_motivo_situacao_cadastral": {
-        "motivo_situacao_cadastral": "str",
+        "motivo_situacao_cadastral": "int",
         "descricao": "str"
     },
     "empresas": {
         "cnpj_basico": "str",
         "razao_social": "str",
-        "natureza_juridica": "str",
-        "qualificacoes": "str",
+        "natureza_juridica": "int",
+        "qualificacoes": "int",
         "capital_social": "float",
-        "porte_empresa": "str",
+        "porte_empresa": "int",
         "ente_federativo_responsavel": "str"
     },
     "estabelecimentos": {
@@ -62,13 +62,13 @@
         "cnpj_dv": "str",
         "identificador": "int",
         "nome_fantasia": "str",
-        "situacao_cadastral": "str",
+        "situacao_cadastral": "int",
         "data_situacao_cadastral": "str",
-        "motivo_situacao_cadastral": "str",
+        "motivo_situacao_cadastral": "int",
         "nome_cidade_exterior": "str",
-        "cod_pais": "str",
+        "cod_pais": "float",
         "data_inicio_atividade": "str",
-        "cnae_fiscal_principal": "str",
+        "cnae_fiscal_principal": "int",
         "cnae_fiscal_secundario": "str",
         "tipo_logradouro": "str",
         "logradouro": "str",
@@ -77,7 +77,7 @@
         "bairro": "str",
         "cep": "str",
         "uf": "str",
-        "cod_municipio": "str",
+        "cod_municipio": "int",
         "ddd1": "str",
         "telefone1": "str",
         "ddd2": "str",
@@ -102,9 +102,9 @@
         "identificador_socio": "int",
         "nome_socio": "str",
         "cnpj_cpf_socio": "str",
-        "qualificacoes": "str",
+        "qualificacoes": "int",
         "data_entrada_sociedade": "str",
-        "cod_pais": "str",
+        "cod_pais": "float",
         "representante_legal": "str",
         "nome_representante": "str",
         "qualificacao_representante": "str",

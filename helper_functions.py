@@ -31,7 +31,7 @@ def get_zipfiles_names() -> List[str]:
     driver.quit()
     return zipfiles_list
 
-def download_and_unzip():
+def download_and_unzip() -> None:
     if not os.path.exists(RAWFILES_DIR):
         os.mkdir(RAWFILES_DIR)
     if not os.path.exists(ZIPFILES_DIR):
