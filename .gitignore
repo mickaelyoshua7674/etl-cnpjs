@@ -2,5 +2,8 @@ __pycache__/
 zipfiles/
 rawfiles/
 mergedfiles/
+mergedfiles copy/
 transformedfiles/
+transformedfiles copy/
 *.tmp
+secrets.txt

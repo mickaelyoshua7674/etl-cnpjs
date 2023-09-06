@@ -12,11 +12,11 @@
         "descricao": "str"
     },
     "id_opcao_simples": {
-        "opcao_simples": "str",
+        "opcao_simples": "int",
         "descricao": "str"
     },
     "id_opcao_mei": {
-        "opcao_mei": "str",
+        "opcao_mei": "int",
         "descricao": "str"
     },
     "id_identificador_socio": {
@@ -24,7 +24,7 @@
         "descricao": "str"
     },
     "paises": {
-        "cod_pais": "float",
+        "cod_pais": "int",
         "pais": "str"
     },
     "municipios": {
@@ -66,7 +66,7 @@
         "data_situacao_cadastral": "str",
         "motivo_situacao_cadastral": "int",
         "nome_cidade_exterior": "str",
-        "cod_pais": "float",
+        "cod_pais": "int",
         "data_inicio_atividade": "str",
         "cnae_fiscal_principal": "int",
         "cnae_fiscal_secundario": "str",
@@ -90,10 +90,10 @@
     },
     "simples": {
         "cnpj_basico": "str",
-        "opcao_simples": "str",
+        "opcao_simples": "int",
         "data_opcao_simples": "str",
         "data_exclusao_simples": "str",
-        "opcao_mei": "str",
+        "opcao_mei": "int",
         "data_opcao_mei": "str",
         "data_exclusao_mei": "str"
     },
@@ -104,7 +104,7 @@
         "cnpj_cpf_socio": "str",
         "qualificacoes": "int",
         "data_entrada_sociedade": "str",
-        "cod_pais": "float",
+        "cod_pais": "int",
         "representante_legal": "str",
         "nome_representante": "str",
         "qualificacao_representante": "str",
