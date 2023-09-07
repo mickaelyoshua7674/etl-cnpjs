@@ -2,8 +2,8 @@ from typing import List, Union, Iterable
 from sqlalchemy import text, create_engine
 from sqlalchemy.engine import URL
 from math import isnan
-import os
 import pickle as pk
+import os
 
 INDEX_PATH = "last_inserted_index.pkl"
 
@@ -56,7 +56,7 @@ def insert_into_table(engine, df: Iterable, table_name: str) -> None:
         for chunk in df:
             for i, row in chunk.iterrows():
                 if i > last_inserted_index:
-                    insert_into = insert_into_table_script(row.tolist(), table_name) # get script for insert into
+                    insert_into = insert_into_table_script(row, table_name) # get script for insert into
                     connection.execute(text(insert_into))
                     connection.commit()
                     save_last_inserted_index(i)
