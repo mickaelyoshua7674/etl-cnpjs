@@ -1,10 +1,12 @@
 import pandas as pd
-import os
+import os, re
 import warnings # disable warnings
 warnings.filterwarnings("ignore")
 
 from time import time
 start = time()
+
+clean_chars_fn = lambda x: re.sub(r"(')|(%)|(\()|(\))", "", x)
 
 MERGED_PATH = "mergedfiles"
 TRANSFORMED_PATH = "transformedfiles"
@@ -30,8 +32,8 @@ for chunk in empresas:
                                 "ente_federativo_responsavel": "Nao informado"})
     chunk["qualificacoes"] = chunk["qualificacoes"].replace(36, 0)
     chunk["capital_social"] = chunk["capital_social"].apply(lambda x: x.replace(",", ".")).astype(float)
-    chunk["razao_social"] = chunk["razao_social"].apply(lambda x: x.replace("'", "").replace("%", ""))
-    chunk["ente_federativo_responsavel"] = chunk["ente_federativo_responsavel"].apply(lambda x: x.replace("'", ""))
+    chunk["razao_social"] = chunk["razao_social"].apply(clean_chars_fn)
+    chunk["ente_federativo_responsavel"] = chunk["ente_federativo_responsavel"].apply(clean_chars_fn)
     chunk.to_csv(save_path_empresas, header=header, index=False, mode="a")
     header = False
 
@@ -66,7 +68,7 @@ for chunk in estabelecimentos:
                                 "nome_fantasia": "Nao informado"})
     chunk["cod_pais"] = chunk["cod_pais"].astype(int)
     chunk["cod_pais"] = chunk["cod_pais"].replace((367, 678, 150, 452, 359, 151, 737, 449, 994, 8, 498, 9), 999)
-    chunk["nome_fantasia"] = chunk["nome_fantasia"].apply(lambda x: x.replace("'", "").replace("%", ""))
+    chunk["nome_fantasia"] = chunk["nome_fantasia"].apply(clean_chars_fn)
     chunk.to_csv(save_path_estabelecimentos, header=header, index=False, mode="a")
     header = False
 

@@ -1,13 +1,14 @@
-# import pandas as pd
-# import warnings # disable warnings
-# warnings.filterwarnings("ignore")
+import pandas as pd
+import warnings # disable warnings
+warnings.filterwarnings("ignore")
 
-# df = pd.read_csv("transformedfiles/estabelecimentos.csv", nrows=100_000)
+df = pd.read_csv("transformedfiles/empresas.csv", usecols=["cnpj_basico", "razao_social"], chunksize=100_000)
 
-# for t in df.itertuples(index=False):
-#     print(t)
+unique_values = set()
 
-import pickle as pk
+for chunk in df:
+    for v in chunk.loc[chunk["cnpj_basico"] == "47638738"]["razao_social"].values:
+        print(v)
+        unique_values.add(v)
 
-with open("last_inserted_index.pkl", "rb") as f:
-    print(pk.load(f))
+print(unique_values)

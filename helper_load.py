@@ -3,9 +3,10 @@ from sqlalchemy import text, create_engine
 from sqlalchemy.engine import URL
 from math import isnan
 import pickle as pk
-import os
+import os, json
 
 INDEX_PATH = "last_inserted_index.pkl"
+ERROR_INSERT_PATH = "error_insert.json"
 
 def get_files_list(files_dir: str) -> List[str]:
     return sorted(os.listdir(files_dir))
@@ -47,6 +48,16 @@ def remove_last_inserted_index() -> None:
     """Delete saved index"""
     os.remove(INDEX_PATH)
 
+def save_error_insert(file, error):
+    if os.path.exists(file + "_" + ERROR_INSERT_PATH):
+        with open(file + "_" + ERROR_INSERT_PATH, "r") as f:
+            error_insert = json.load(f)
+        with open(file + "_" + ERROR_INSERT_PATH, "w") as f:
+            json.dump(error_insert + error, f)
+    else:
+        with open(file + "_" + ERROR_INSERT_PATH, "w") as f:
+            json.dump(error, f)
+
 def insert_into_table(engine, df: Iterable, table_name: str) -> None:
     """Insert values from DataFrame into table"""
     last_inserted_index = get_last_inserted_index()
@@ -57,8 +68,10 @@ def insert_into_table(engine, df: Iterable, table_name: str) -> None:
             for row in chunk.itertuples():
                 i = row[0]
                 if i > last_inserted_index:
-                    insert_into = insert_into_table_script(row[1:], table_name) # get script for insert into
-                    connection.execute(text(insert_into))
-                    connection.commit()
+                    try:
+                        connection.execute(text(insert_into_table_script(row[1:], table_name))) # get script for insert into
+                        connection.commit()
+                    except:
+                        save_error_insert(table_name, list(row))
                     save_last_inserted_index(i)
     remove_last_inserted_index()
