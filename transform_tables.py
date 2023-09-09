@@ -6,7 +6,7 @@ warnings.filterwarnings("ignore")
 from time import time
 start = time()
 
-clean_chars_fn = lambda x: re.sub(r"(')|(%)|(\()|(\))", "", x)
+clean_chars_fn = lambda x: re.sub(r"['%\(\):]", "", x)
 
 MERGED_PATH = "mergedfiles"
 TRANSFORMED_PATH = "transformedfiles"

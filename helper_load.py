@@ -68,10 +68,7 @@ def insert_into_table(engine, df: Iterable, table_name: str) -> None:
             for row in chunk.itertuples():
                 i = row[0]
                 if i > last_inserted_index:
-                    try:
-                        connection.execute(text(insert_into_table_script(row[1:], table_name))) # get script for insert into
-                        connection.commit()
-                    except:
-                        save_error_insert(table_name, list(row))
+                    connection.execute(text(insert_into_table_script(row[1:], table_name))) # get script for insert into
+                    connection.commit()
                     save_last_inserted_index(i)
     remove_last_inserted_index()
