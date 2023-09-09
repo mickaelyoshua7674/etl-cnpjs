@@ -1,8 +1,10 @@
 import pandas as pd
-import os
-
-import warnings # disable warnings of pandas
+import os, re
+import warnings # disable warnings
 warnings.filterwarnings("ignore")
+
+from time import time
+start = time()
 
 MERGED_PATH = "mergedfiles"
 TRANSFORMED_PATH = "transformedfiles"
@@ -11,22 +13,27 @@ if not os.path.exists(TRANSFORMED_PATH):
 
 files = sorted(os.listdir(MERGED_PATH))
 
-# # EMPRESAS
-# empresas_filename = files[0]
-# print(f"Transforming {empresas_filename}...")
-# empresas_path = os.path.join(MERGED_PATH, empresas_filename)
-# empresas = pd.read_csv(empresas_path, chunksize=100_000, dtype={"cnpj_basico": "str"})
+# EMPRESAS
+empresas_filename = files[0]
+print(f"Transforming {empresas_filename}...")
+empresas_path = os.path.join(MERGED_PATH, empresas_filename)
+empresas = pd.read_csv(empresas_path, chunksize=100_000, dtype={"cnpj_basico": "str"})
 
-# header = True
-# save_path_empresas = os.path.join(TRANSFORMED_PATH, empresas_filename)
-# for chunk in empresas:
-#     chunk = chunk.loc[chunk["capital_social"].str.find("capital_social") == -1]
-#     chunk = chunk.fillna(value={"natureza_juridica": 0,
-#                                 "qualificacoes": 0,
-#                                 "porte_empresa": 0})
-#     chunk["capital_social"] = chunk["capital_social"].apply(lambda x: x.replace(",", ".")).astype(float)
-#     chunk.to_csv(save_path_empresas, header=header, index=False, mode="a")
-#     header = False
+header = True
+save_path_empresas = os.path.join(TRANSFORMED_PATH, empresas_filename)
+for chunk in empresas:
+    chunk = chunk.loc[chunk["cnpj_basico"] != "cnpj_basico"]
+    chunk = chunk.fillna(value={"natureza_juridica": 0,
+                                "qualificacoes": 0,
+                                "porte_empresa": 0,
+                                "razao_social": "Nao informado",
+                                "ente_federativo_responsavel": "Nao informado"})
+    chunk["qualificacoes"] = chunk["qualificacoes"].replace(36, 0)
+    chunk["capital_social"] = chunk["capital_social"].apply(lambda x: x.replace(",", ".")).astype(float)
+    chunk["razao_social"] = chunk["razao_social"].apply(lambda x: re.sub("(')|(%)", "", x))
+    chunk["ente_federativo_responsavel"] = chunk["ente_federativo_responsavel"].apply(lambda x: x.replace("'", ""))
+    chunk.to_csv(save_path_empresas, header=header, index=False, mode="a")
+    header = False
 
 # ESTABELECIMENTOS
 estabelecimentos_filename = files[1]
@@ -55,9 +62,11 @@ for chunk in estabelecimentos:
                                 "cod_pais": 999,
                                 "cod_municipio": 0,
                                 "cnae_fiscal_principal": 0,
-                                "motivo_situacao_cadastral": 0})
+                                "motivo_situacao_cadastral": 0,
+                                "nome_fantasia": "Nao informado"})
     chunk["cod_pais"] = chunk["cod_pais"].astype(int)
     chunk["cod_pais"] = chunk["cod_pais"].replace((367, 678, 150, 452, 359, 151, 737, 449, 994, 8, 498, 9), 999)
+    chunk["nome_fantasia"] = chunk["nome_fantasia"].apply(lambda x: re.sub("(')|(%)", "", x))
     chunk.to_csv(save_path_estabelecimentos, header=header, index=False, mode="a")
     header = False
 
@@ -135,22 +144,24 @@ for chunk in estabelecimentos:
 #     chunk.to_csv(save_path_simples, header=header, index=False, mode="a")
 #     header = False
 
-# SOCIOS
-socios_filename = files[9]
-print(f"Transforming {socios_filename}...")
-socios_path = os.path.join(MERGED_PATH, socios_filename)
-socios = pd.read_csv(socios_path, chunksize=100_000)
+# # SOCIOS
+# socios_filename = files[9]
+# print(f"Transforming {socios_filename}...")
+# socios_path = os.path.join(MERGED_PATH, socios_filename)
+# socios = pd.read_csv(socios_path, chunksize=100_000)
 
-header = True
-save_path_socios = os.path.join(TRANSFORMED_PATH, socios_filename)
-for chunk in socios:
-    chunk = chunk.loc[chunk["cnpj_basico"] != "cnpj_basico"]
-    chunk = chunk.fillna(value={"identificador_socio": 0,
-                                "cod_pais": 999,
-                                "qualificacoes": 0,
-                                "nome_socio": "Não informado"})
-    chunk["cod_pais"] = chunk["cod_pais"].astype(int)
-    chunk["cod_pais"] = chunk["cod_pais"].replace((367, 678, 150, 452, 359, 151, 737, 449, 994, 8, 498, 9), 999)
-    chunk["nome_socio"] = chunk["nome_socio"].apply(lambda x: x.replace("'", ""))
-    chunk.to_csv(save_path_socios, header=header, index=False, mode="a")
-    header = False
+# header = True
+# save_path_socios = os.path.join(TRANSFORMED_PATH, socios_filename)
+# for chunk in socios:
+#     chunk = chunk.loc[chunk["cnpj_basico"] != "cnpj_basico"]
+#     chunk = chunk.fillna(value={"identificador_socio": 0,
+#                                 "cod_pais": 999,
+#                                 "qualificacoes": 0,
+#                                 "nome_socio": "Não informado"})
+#     chunk["cod_pais"] = chunk["cod_pais"].astype(int)
+#     chunk["cod_pais"] = chunk["cod_pais"].replace((367, 678, 150, 452, 359, 151, 737, 449, 994, 8, 498, 9), 999)
+#     chunk["nome_socio"] = chunk["nome_socio"].apply(lambda x: x.replace("'", ""))
+#     chunk.to_csv(save_path_socios, header=header, index=False, mode="a")
+#     header = False
+
+print(f"Exec time {round(time()-start, 2)}s")

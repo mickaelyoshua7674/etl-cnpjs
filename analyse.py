@@ -1,16 +1,13 @@
-import pandas as pd
-import warnings # disable warnings of pandas
-warnings.filterwarnings("ignore")
+# import pandas as pd
+# import warnings # disable warnings
+# warnings.filterwarnings("ignore")
 
-paises = pd.read_csv("mergedfiles/paises.csv", usecols=["cod_pais"])["cod_pais"].values
+# df = pd.read_csv("transformedfiles/estabelecimentos.csv", nrows=100_000)
 
-df = pd.read_csv("transformedfiles/estabelecimentos.csv", chunksize=100_000)
+# for t in df.itertuples(index=False):
+#     print(t)
 
-unique_values = set()
+import pickle as pk
 
-for chunk in df:
-    for v in chunk["cod_pais"].unique():
-        if v not in paises:
-            unique_values.add(v)
-
-print(unique_values)
+with open("last_inserted_index.pkl", "rb") as f:
+    print(pk.load(f))

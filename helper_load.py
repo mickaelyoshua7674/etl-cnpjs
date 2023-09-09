@@ -1,4 +1,4 @@
-from typing import List, Union, Iterable
+from typing import List, Union, Iterable, Tuple
 from sqlalchemy import text, create_engine
 from sqlalchemy.engine import URL
 from math import isnan
@@ -14,7 +14,7 @@ def get_engine_database(driver: str, username: str, password: str, host: str, po
     """Create and return connection engine to DataBase"""
     return create_engine(URL.create(drivername=driver, username=username, password=password, host=host, port=port, database=database))
 
-def insert_into_table_script(values: List[Union[int, float, str]], table_name: str) -> str:
+def insert_into_table_script(values: List[Union[int, float, str]] | Tuple[Union[int, float, str]], table_name: str) -> str:
     """
     Create SQL script in string format to insert a list of values on a table.
     """
@@ -54,9 +54,10 @@ def insert_into_table(engine, df: Iterable, table_name: str) -> None:
     with engine.connect() as connection:
         print(f"Inserting into public.{table_name}...")
         for chunk in df:
-            for i, row in chunk.iterrows():
+            for row in chunk.itertuples():
+                i = row[0]
                 if i > last_inserted_index:
-                    insert_into = insert_into_table_script(row, table_name) # get script for insert into
+                    insert_into = insert_into_table_script(row[1:], table_name) # get script for insert into
                     connection.execute(text(insert_into))
                     connection.commit()
                     save_last_inserted_index(i)
