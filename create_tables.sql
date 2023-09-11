@@ -120,7 +120,7 @@ CREATE TABLE public.estabelecimentos (
     cod_pais INTEGER NOT NULL,
     data_inicio_atividade CHARACTER VARYING(8),
     cnae_fiscal_principal INTEGER NOT NULL,
-    cnae_fiscal_secundario CHARACTER VARYING(200),
+    cnae_fiscal_secundario CHARACTER VARYING(800),
     tipo_logradouro CHARACTER VARYING(200),
     logradouro CHARACTER VARYING(200),
     numero CHARACTER VARYING(200),

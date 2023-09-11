@@ -113,3 +113,6 @@ def save_error(i: int, file: str) -> None:
 
 def get_core_file_name(file: str) -> str:
     return re.sub("[0-9]", "", file.split(".")[0])
+
+def clean_chars_fn(values: List[str]) -> List[str]:
+    values.apply(lambda x: re.sub(r"['%\(\):]", "", x))
