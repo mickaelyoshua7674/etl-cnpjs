@@ -22,6 +22,7 @@ SELECT
 		   SUBSTRING(estab.data_situacao_cadastral FROM 5 FOR 2), '/',
 		   LEFT(estab.data_situacao_cadastral,4)) AS "Data Situação Cadastral",
 	msc.descricao AS "Motivo Situação Cadastral",
+	count_socios.count_s AS "Quantidade Sócios",
 	estab.nome_cidade_exterior AS "Nome Cidade Exterior",
 	paises.pais AS "País",
 	CONCAT(RIGHT(estab.data_inicio_atividade,2), '/',
@@ -88,10 +89,21 @@ USING(opcao_simples)
 LEFT JOIN public.id_opcao_mei AS om
 USING(opcao_mei)
 
+JOIN (
+	SELECT
+		cnpj_basico,
+		COUNT(cnpj_cpf_socio) AS count_s
+	FROM public.socios
+	GROUP BY cnpj_basico
+) AS count_socios
+USING(cnpj_basico)
+
 WHERE
 	estab.cnae_fiscal_principal = 4646001 AND
-	estab.uf IN ('GO', 'MT', 'MS', 'DF')
-
+	estab.uf IN ('MG', 'PR', 'GO', 'DF', 'MT', 'MS') AND
+	estab.logradouro IS NOT NULL AND
+	estab.telefone1 IS NOT NULL AND
+	estab.email IS NOT NULL
+	
 ORDER BY RANDOM()
-
 LIMIT 1000;
