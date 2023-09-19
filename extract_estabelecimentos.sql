@@ -62,24 +62,24 @@ SELECT
 	estab.email AS "Email"
 FROM public.estabelecimentos AS estab
 
-JOIN public.empresas AS emp
+LEFT JOIN public.empresas AS emp
 USING(cnpj_basico)
-JOIN public.id_natureza_juridica AS nj
+LEFT JOIN public.id_natureza_juridica AS nj
 USING(natureza_juridica)
-JOIN public.id_qualificacoes AS q
+LEFT JOIN public.id_qualificacoes AS q
 USING(qualificacoes)
-JOIN public.id_porte_empresa AS pe
+LEFT JOIN public.id_porte_empresa AS pe
 USING(porte_empresa)
 
-JOIN public.id_identificador AS ident
+LEFT JOIN public.id_identificador AS ident
 USING(identificador)
-JOIN public.id_situacao_cadastral AS sc
+LEFT JOIN public.id_situacao_cadastral AS sc
 USING(situacao_cadastral)
-JOIN public.id_motivo_situacao_cadastral AS msc
+LEFT JOIN public.id_motivo_situacao_cadastral AS msc
 USING(motivo_situacao_cadastral)
-JOIN public.paises AS paises
+LEFT JOIN public.paises AS paises
 USING(cod_pais)
-JOIN public.municipios AS mun
+LEFT JOIN public.municipios AS mun
 USING(cod_municipio)
 
 LEFT JOIN public.simples AS s
@@ -99,11 +99,12 @@ JOIN (
 USING(cnpj_basico)
 
 WHERE
-	estab.cnae_fiscal_principal = 4646001 AND
-	estab.uf IN ('MG', 'PR', 'GO', 'DF', 'MT', 'MS') AND
-	estab.logradouro IS NOT NULL AND
+	estab.cnae_fiscal_principal = 9602501 AND
+	--estab.logradouro IS NOT NULL AND
 	estab.telefone1 IS NOT NULL AND
-	estab.email IS NOT NULL
+	--estab.email IS NOT NULL AND
+	sc.situacao_cadastral = 2 AND -- ATIVA
+	mun.descricao = 'MARINGA'
 	
 ORDER BY RANDOM()
-LIMIT 1000;
+LIMIT 50;

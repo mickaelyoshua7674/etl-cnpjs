@@ -1,6 +1,6 @@
 from helper_load import get_engine_database
 import pandas as pd
-import numpy as np
+
 with open("./secrets.txt", "r") as f:
     driver, username, password, host, port, database = f.read().split(",")
 engine = get_engine_database(driver, username, password, host, port, database)
@@ -35,6 +35,6 @@ with engine.begin() as conn:
 
     socios = pd.read_sql(socios_query, conn)
 
-with pd.ExcelWriter("Empresas-Sócios_CNAE-4646001_Estados-MG PR GO DF MT MS.xlsx") as writer:
+with pd.ExcelWriter("Empresas-Sócios_CNAE-9602501_Cidade-Maringa.xlsx") as writer:
     estab.to_excel(writer, sheet_name="Empresas", index=False)
     socios.to_excel(writer, sheet_name="Sócios", index=False)
