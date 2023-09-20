@@ -1,3 +1,5 @@
+DROP VIEW IF EXISTS dados_empresas;
+CREATE VIEW dados_empresas AS
 SELECT
 	CONCAT(LEFT(estab.cnpj_basico,2), '.',
 		   SUBSTRING(estab.cnpj_basico FROM 3 FOR 3), '.',
@@ -39,24 +41,8 @@ SELECT
 	mun.descricao AS "Município",
 	estab.ddd1,
 	estab.telefone1,
-	CASE
-		WHEN estab.ddd1 IS NOT NULL THEN 
-			CONCAT('(', estab.ddd1, ') ',
-				  LEFT(estab.telefone1,4), '-',
-				  RIGHT(estab.telefone1,4))
-		ELSE
-			estab.ddd1
-	END AS "Telefone 1",
 	estab.ddd2,
 	estab.telefone2,
-	CASE
-		WHEN estab.ddd2 IS NOT NULL THEN 
-			CONCAT('(', estab.ddd2, ') ',
-				  LEFT(estab.telefone2,4), '-',
-				  RIGHT(estab.telefone2,4))
-		ELSE
-			estab.ddd2
-	END AS "Telefone 2",
 	estab.ddd_fax AS "DDD FAX",
 	estab.fax AS "FAX",
 	estab.email AS "Email"
@@ -99,12 +85,8 @@ JOIN (
 USING(cnpj_basico)
 
 WHERE
-	estab.cnae_fiscal_principal = 9602501 AND
-	--estab.logradouro IS NOT NULL AND
-	estab.telefone1 IS NOT NULL AND
-	--estab.email IS NOT NULL AND
-	sc.situacao_cadastral = 2 AND -- ATIVA
-	mun.descricao = 'MARINGA'
+	((estab.ddd1 IS NOT NULL AND estab.telefone1 IS NOT NULL) OR
+	 (estab.ddd2 IS NOT NULL AND estab.telefone2 IS NOT NULL)) AND
+	sc.situacao_cadastral = 2 -- ATIVA
 	
-ORDER BY RANDOM()
-LIMIT 50;
+ORDER BY RANDOM();
