@@ -13,7 +13,6 @@ SELECT
 	"Capital Social",
 	"Porte Empresa",
 	"Ente Federativo Responsável",
-	"Situação Cadastral",
 	"Data Situação Cadastral",
 	"Motivo Situação Cadastral",
 	"Quantidade Sócios",

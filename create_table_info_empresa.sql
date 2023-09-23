@@ -1,4 +1,5 @@
-CREATE TABLE info_empresa AS
+DROP TABLE IF EXISTS public.info_empresa;
+CREATE TABLE public.info_empresa AS
 SELECT
 	CONCAT(LEFT(estab.cnpj_basico,2), '.',
 		   SUBSTRING(estab.cnpj_basico FROM 3 FOR 3), '.',
@@ -18,7 +19,6 @@ SELECT
 	emp.capital_social AS "Capital Social",
 	pe.descricao AS "Porte Empresa",
 	emp.ente_federativo_responsavel AS "Ente Federativo Responsável",
-	sc.descricao AS "Situação Cadastral",
 	CONCAT(RIGHT(estab.data_situacao_cadastral,2), '/',
 		   SUBSTRING(estab.data_situacao_cadastral FROM 5 FOR 2), '/',
 		   LEFT(estab.data_situacao_cadastral,4)) AS "Data Situação Cadastral",
@@ -58,8 +58,6 @@ USING(porte_empresa)
 
 LEFT JOIN public.id_identificador AS ident
 USING(identificador)
-LEFT JOIN public.id_situacao_cadastral AS sc
-USING(situacao_cadastral)
 LEFT JOIN public.id_motivo_situacao_cadastral AS msc
 USING(motivo_situacao_cadastral)
 LEFT JOIN public.paises AS paises
@@ -86,4 +84,4 @@ USING(cnpj_basico)
 WHERE
 	((estab.ddd1 IS NOT NULL AND estab.telefone1 IS NOT NULL) OR
 	 (estab.ddd2 IS NOT NULL AND estab.telefone2 IS NOT NULL)) AND
-	sc.situacao_cadastral = 2; -- ATIVA
+	estab.situacao_cadastral IN (1,2,3,4);
