@@ -33,5 +33,8 @@ SELECT
 	"FAX",
 	"Email"
 FROM public.dados_empresas
-WHERE "Município" = 'JOAO PESSOA'
+
+WHERE
+	"CNAE Fiscal Principal" = 9602501 AND
+	"Município" = 'MARINGA'
 LIMIT 50;
