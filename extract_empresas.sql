@@ -37,4 +37,6 @@ FROM public.info_empresa
 WHERE
 	"CNAE Fiscal Principal" = 9602501 AND
 	"Município" = 'MARINGA'
+
+ORDER BY RANDOM()
 LIMIT 50;
