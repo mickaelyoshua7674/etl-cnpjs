@@ -32,7 +32,7 @@ SELECT
 	"DDD FAX",
 	"FAX",
 	"Email"
-FROM public.dados_empresas
+FROM public.info_empresa
 
 WHERE
 	"CNAE Fiscal Principal" = 9602501 AND

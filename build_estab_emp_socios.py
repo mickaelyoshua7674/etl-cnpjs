@@ -22,15 +22,9 @@ with engine.begin() as conn:
         LEFT(s.data_entrada_sociedade,4)) AS "Data Entrada Sociedade",
     paises.pais AS "País",
     s.representante_legal AS "CPF Representante Legal",
-    s.nome_representante AS "Nome Representante Legal",
-    CASE
-        WHEN de.telefone1 IS NOT NULL THEN CONCAT(de.ddd1,' ',de.telefone1)
-        ELSE CONCAT(de.ddd2,' ',de.telefone2)
-    END AS "Telefone"
+    s.nome_representante AS "Nome Representante Legal"
 FROM public.socios AS s 
 
-LEFT JOIN public.dados_empresas AS de
-ON s.cnpj_basico = de."CNPJ Básico"
 LEFT JOIN public.id_identificador_socio AS isocio
 USING(identificador_socio)
 LEFT JOIN public.id_qualificacoes AS q

@@ -1,5 +1,4 @@
-DROP VIEW IF EXISTS dados_empresas;
-CREATE VIEW dados_empresas AS
+CREATE TABLE info_empresa AS
 SELECT
 	CONCAT(LEFT(estab.cnpj_basico,2), '.',
 		   SUBSTRING(estab.cnpj_basico FROM 3 FOR 3), '.',
@@ -87,6 +86,4 @@ USING(cnpj_basico)
 WHERE
 	((estab.ddd1 IS NOT NULL AND estab.telefone1 IS NOT NULL) OR
 	 (estab.ddd2 IS NOT NULL AND estab.telefone2 IS NOT NULL)) AND
-	sc.situacao_cadastral = 2 -- ATIVA
-	
-ORDER BY RANDOM();
+	sc.situacao_cadastral = 2; -- ATIVA
