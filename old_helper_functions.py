@@ -1,15 +1,12 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
-from typing import List, Iterable
 from zipfile import ZipFile
+from typing import Iterable
 from tqdm import tqdm
 import pandas as pd
 import pickle as pk
 import os, json, wget, re
-
-CHROMEDRIVER_PATH = "/usr/lib/chromium-browser/chromedriver"
-URL = "https://dadosabertos.rfb.gov.br/CNPJ/"
 
 RAWFILES_DIR = "rawfiles"
 ZIPFILES_DIR = "zipfiles"
@@ -18,14 +15,14 @@ LAST_LINE_PATH = "last_line.pkl"
 REMAINING_FILE_PATH = "last_file.pkl"
 ERROR_LINE_FILE = "error_line_file.json"
 
-def get_zipfiles_names() -> List[str]:
+def get_zipfiles_names() -> list[str]:
     op = webdriver.ChromeOptions()
     op.add_argument("log-level=3") # https://stackoverflow.com/questions/46744968/how-to-suppress-console-error-warning-info-messages-when-executing-selenium-pyth
     op.add_argument("headless") # don't open a Chrome window
-    sc = Service(CHROMEDRIVER_PATH)
+    sc = Service("/usr/lib/chromium-browser/chromedriver")
     driver = webdriver.Chrome(service=sc, options=op)
 
-    driver.get(URL)
+    driver.get("https://dadosabertos.rfb.gov.br/CNPJ/")
     tr_elements = [e for e in driver.find_elements(By.TAG_NAME, "tr")]
     zipfiles_list = [e.text.split(" ")[0] for e in tr_elements[2:] if ".zip" in e.text]
     driver.quit()
@@ -41,7 +38,7 @@ def download_and_unzip() -> None:
         full_zip_path = os.path.join(ZIPFILES_DIR, zf)
 
         print(f"Downloading {zf}...")
-        wget.download(URL + zf, ZIPFILES_DIR)
+        wget.download("https://dadosabertos.rfb.gov.br/CNPJ/" + zf, ZIPFILES_DIR)
         print("\n\n")
 
         print(f"Extracting {zf}...")
@@ -54,7 +51,7 @@ def download_and_unzip() -> None:
     os.rmdir(ZIPFILES_DIR)
 
 
-def clean_concat_data(files_dir: str, file_name: str, columns: List[str], save_files_dir: str, save_file_name: str, header: bool):
+def clean_concat_data(files_dir: str, file_name: str, columns: list[str], save_files_dir: str, save_file_name: str, header: bool):
     if not os.path.exists(ERROR_LINE_FILE):
         with open(ERROR_LINE_FILE, "w") as f:
             json.dump([], f)
@@ -81,11 +78,11 @@ def get_lines_iterator(files_dir: str, file_name: str) -> Iterable:
     with open(os.path.join(files_dir, file_name), "r", encoding="latin-1") as f:
         return f.readlines()
     
-def concat_data(header: bool, line: str, columns: List[str], save_file_path: str) -> None:
+def concat_data(header: bool, line: str, columns: list[str], save_file_path: str) -> None:
     pd.DataFrame(data=[clean_line(line)], columns=columns)\
     .to_csv(save_file_path, header=header, index=False, mode="a")
 
-def clean_line(line: str) -> List[str]:
+def clean_line(line: str) -> list[str]:
     return [l.replace('"', "")for l in line.replace("\n", "").split('";"')]
 
 def save_last_line(i: int) -> None:
@@ -98,12 +95,6 @@ def get_last_line() -> int:
             return pk.load(f)
     return -1
 
-def get_remaining_files(files_dir: str) -> List[str]:
-    if os.path.exists(REMAINING_FILE_PATH):
-        with open(REMAINING_FILE_PATH, "rb") as f:
-            return pk.load(f)
-    return sorted(os.listdir(files_dir))
-
 def save_error(i: int, file: str) -> None:
     with open(ERROR_LINE_FILE, "r") as f:
         errors = json.load(f)
@@ -114,5 +105,5 @@ def save_error(i: int, file: str) -> None:
 def get_core_file_name(file: str) -> str:
     return re.sub("[0-9]", "", file.split(".")[0])
 
-def clean_chars_fn(values: List[str]) -> List[str]:
+def clean_chars_fn(values: list[str]) -> list[str]:
     values.apply(lambda x: re.sub(r"['%\(\):]", "", x))

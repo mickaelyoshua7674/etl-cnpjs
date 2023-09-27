@@ -1,6 +1,7 @@
 __pycache__/
+.venv/
 zipfiles/
-rawfiles/
+unzipedfiles/
 mergedfiles/
 mergedfiles copy/
 transformedfiles/

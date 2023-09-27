@@ -1,4 +1,4 @@
-from helper_functions import *
+from old_helper_functions import *
 
 # download_and_unzip()
 
@@ -11,7 +11,7 @@ with open("file_table.json", "r") as f:
 with open("all_dtypes.json", "r") as f:
     dtypes = json.load(f)
 
-remaining_files = get_remaining_files(RAWFILES_DIR)
+remaining_files = os.listdir(RAWFILES_DIR)
 
 for file in remaining_files:
     table_name = file_table[get_core_file_name(file)]
