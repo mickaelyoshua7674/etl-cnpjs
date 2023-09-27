@@ -34,8 +34,8 @@ SELECT
 FROM public.info_empresa
 
 WHERE
-	"CNAE Fiscal Principal" = 9602501 AND
-	"Município" = 'MARINGA'
+	"CNAE Fiscal Principal" = 4772500 --AND
+	--"Município" = 'MARINGA'
 
 ORDER BY RANDOM()
-LIMIT 50;
+LIMIT 100;

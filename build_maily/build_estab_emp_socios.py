@@ -2,7 +2,7 @@ from helper_extract import *
 from random import shuffle
 import re
 
-with open("extract_empresas.sql", "r") as f:
+with open("build_maily/extract_empresas.sql", "r") as f:
     estab_query = f.read()
 
 with engine.begin() as conn:
@@ -65,9 +65,10 @@ r = []
 for chunk in rand_telefones_chunk:
     for value in chunk["telefone"].unique():
         v = value.strip()
-        if re.match(r"[0-9]{2,} [0-9]+", v):
+        if re.match(r"\b[1-9][1-9] [0-9]+", v):
             r.append(v)
-    break
+    if len(r) > 100_000:
+        break
 
 shuffle(r)
 rand_telefones = r[:len(socios_telefones_replace)]
@@ -76,6 +77,6 @@ for nc, t in zip(socios_telefones_replace, rand_telefones):
 st = pd.DataFrame(data=socios_telefones, columns=["Nome Sócio", "CNPJ/CPF Sócio", "Telefone"])
 socios_final = pd.merge(socios, st, how="inner", on=["Nome Sócio","CNPJ/CPF Sócio"])
 
-with pd.ExcelWriter("Empresas-Sócios_CNAE-9602501_Cidade-Maringa_test_2.xlsx") as writer:
+with pd.ExcelWriter("build_maily/Empresas-Sócios_CNAE-4772500.xlsx") as writer:
     estab.to_excel(writer, sheet_name="Empresas", index=False)
     socios_final.to_excel(writer, sheet_name="Sócios", index=False)
