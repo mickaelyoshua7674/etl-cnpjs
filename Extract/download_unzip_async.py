@@ -27,8 +27,8 @@ async def download_file(url:str):
                 print(f"Status code to file {full_file_path}: {s}")
 
 async def download_all_files(download_file:Coroutine, urls:list[str]):
-    tasks = [download_file(url) for url in urls]
-    await asyncio.gather(*tasks)
+    tasks = [download_file(url) for url in urls] # create tasks to all url downloads
+    await asyncio.gather(*tasks) # schedule them
 
 urls = [URL+zf for zf in get_zipfiles_names(URL)]
 
