@@ -1,6 +1,6 @@
 from helper_functions import *
 from aiohttp import ClientSession
-from typing import Coroutine
+from typing import Coroutine, Generator
 from io import BytesIO
 from zipfile import ZipFile
 import asyncio
@@ -29,11 +29,11 @@ async def download_file(url:str):
             else:
                 print(f"Status code to file {file_name}: {s}")
 
-async def download_all_files(download_file:Coroutine, urls:list[str]):
+async def download_all_files(download_file:Coroutine, urls:Generator):
     tasks = [download_file(url) for url in urls] # create tasks to all url downloads
     await asyncio.gather(*tasks) # schedule them
 
-urls = [URL+zf for zf in get_zipfiles_names(URL)]
+urls = (URL+zf for zf in get_zipfiles_names(URL))
 
 print("Downloading all files simultaneously...")
 asyncio.run(download_all_files(download_file, urls))
