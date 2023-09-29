@@ -22,6 +22,7 @@ async def download_file(url:str):
             if s == 200: # check if was successful
                 with open(full_file_path, "wb") as f: # write binary content into zip file
                     f.write(await response.read())
+                print(f"{full_file_path} finished.")
             else:
                 print(f"Status code to file {full_file_path}: {s}")
 
@@ -33,6 +34,7 @@ urls = [URL+zf for zf in get_zipfiles_names(URL)]
 
 print("Downloading all files simultaneously...")
 asyncio.run(download_all_files(download_file, urls))
+print("All finished.")
 
 
 
