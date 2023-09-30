@@ -33,7 +33,7 @@ def get_zipfiles_names(url: str) -> list[str]:
     driver.quit()
     return zipfiles_list
 
-def unzip(b:bytes, file_name:str) -> None:
+def unzip(b:bytearray, file_name:str) -> None:
     """
     Save csv file from zipfile's bytes an rename with given file_name
     """
@@ -48,21 +48,21 @@ async def download_file(url:str) -> None:
     """
     file_name = url.split("/")[-1]
     async with ClientSession() as session: # start a session
-        async with session.get(url) as response: # make get requests to url
-            s = response.status
-            if s == 200: # check if was successful
-                unzip(await response.read(), file_name)
-                print(f"{file_name} extracted.")
-            else:
-                print(f"Status code to file {file_name}: {s}")
+        async with session.get(url, timeout=None) as response: # make get requests to url / deactivate timeout
+            full_content = bytearray()
+            async for data, _ in response.content.iter_chunks():
+                full_content += data
+            unzip(full_content, file_name)
+            print(f"{file_name} extracted.")
 
 async def download_all_files(download_file:Coroutine, urls:Generator) -> None:
     tasks = [download_file(url) for url in urls] # create tasks to all url downloads
     await asyncio.gather(*tasks) # schedule them
 
 urls = (URL+zf for zf in get_zipfiles_names(URL))
-start = time()
 print("Downloading all files simultaneously...")
+start = time()
+# asyncio.get_event_loop().run_until_complete(download_all_files(download_file, urls))
 asyncio.run(download_all_files(download_file, urls))
 end = time()
 print(f"All finished.\nExecution time: {round(end-start,2)}s / {round((end-start)/60,2)}hr")
