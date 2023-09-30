@@ -1,15 +1,16 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
-from aiohttp import ClientSession
 from typing import Coroutine, Generator
-from io import BytesIO
+from aiohttp import ClientSession
 from zipfile import ZipFile
+from io import BytesIO
+from time import time
 import asyncio, os
 
 URL = "https://dadosabertos.rfb.gov.br/CNPJ/"
 EXTRACT_DIR = "Extract"
-UNZIPED_DIR = os.path.join(EXTRACT_DIR, "unzipedfiles")
+UNZIPED_DIR = os.path.join(EXTRACT_DIR, "files")
 if not os.path.exists(UNZIPED_DIR):
     os.mkdir(UNZIPED_DIR)
 
@@ -32,7 +33,16 @@ def get_zipfiles_names(url: str) -> list[str]:
     driver.quit()
     return zipfiles_list
 
-async def download_file(url:str):
+def unzip(b:bytes, file_name:str) -> None:
+    """
+    Save csv file from zipfile's bytes an rename with given file_name
+    """
+    with ZipFile(BytesIO(b)) as zf:
+        for i in zf.infolist():
+            i.filename = file_name.split(".")[0]+".csv" # rename file to extract
+            zf.extract(i, UNZIPED_DIR)
+
+async def download_file(url:str) -> None:
     """
     Coroutine to download a single zip file from given url
     """
@@ -41,20 +51,18 @@ async def download_file(url:str):
         async with session.get(url) as response: # make get requests to url
             s = response.status
             if s == 200: # check if was successful
-                with ZipFile(BytesIO(await response.read())) as zf:
-                    for i in zf.infolist():
-                        i.filename = file_name.split(".")[0] + ".csv" # rename file to extract
-                        zf.extract(i, UNZIPED_DIR)
+                unzip(await response.read(), file_name)
                 print(f"{file_name} extracted.")
             else:
                 print(f"Status code to file {file_name}: {s}")
 
-async def download_all_files(download_file:Coroutine, urls:Generator):
+async def download_all_files(download_file:Coroutine, urls:Generator) -> None:
     tasks = [download_file(url) for url in urls] # create tasks to all url downloads
     await asyncio.gather(*tasks) # schedule them
 
 urls = (URL+zf for zf in get_zipfiles_names(URL))
-
+start = time()
 print("Downloading all files simultaneously...")
 asyncio.run(download_all_files(download_file, urls))
-print("All finished.")
+end = time()
+print(f"All finished.\nExecution time: {round(end-start,2)}s / {round((end-start)/60,2)}hr")
