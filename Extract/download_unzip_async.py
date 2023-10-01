@@ -21,7 +21,7 @@ def get_zipfiles_names(url: str) -> list[str]:
     op = webdriver.ChromeOptions()
     op.add_argument("log-level=3") # https://stackoverflow.com/questions/46744968/how-to-suppress-console-error-warning-info-messages-when-executing-selenium-pyth
     op.add_argument("headless") # don't open a Chrome window
-    sc = Service("/usr/lib/chromium-browser/chromedriver")
+    sc = Service(os.path.join(EXTRACT_DIR,"chromedriver.exe"))
     driver = webdriver.Chrome(service=sc, options=op)
 
     print(f"Going to {url}...")
@@ -63,6 +63,6 @@ urls = (URL+zf for zf in get_zipfiles_names(URL))
 print("Downloading all files simultaneously...")
 start = time()
 # asyncio.get_event_loop().run_until_complete(download_all_files(download_file, urls))
-asyncio.run(download_all_files(download_file, urls))
+asyncio.run(download_all_files(download_file, [list(urls)[1]]))
 end = time()
 print(f"All finished.\nExecution time: {round(end-start,2)}s / {round((end-start)/60,2)}hr")
