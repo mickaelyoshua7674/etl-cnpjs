@@ -65,3 +65,4 @@ start = time()
 asyncio.run(download_all_files())
 end = time()
 print(f"All finished.\nExecution time: {round(end-start,2)}s / {round((end-start)/60,2)}min / {round(((end-start)/60)/60,2)}hr")
+# Execution time -> 1.3hr
