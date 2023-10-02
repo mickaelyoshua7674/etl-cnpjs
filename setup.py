@@ -1,4 +1,1 @@
-import os
-os.environ["PYTHONPATH"] = os.getcwd()
-
-# pip install selenium, aiohttp, pandas
+# pip install selenium, aiohttp, pip install "dask[complete]"
