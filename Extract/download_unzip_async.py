@@ -56,7 +56,7 @@ async def download_file(url:str) -> None:
             print(f"{file_name} extracted.")
 
 async def download_all_files(download_file:Coroutine, urls:Generator) -> None:
-    tasks = [download_file(url) for url in urls] # create tasks to all url downloads
+    tasks = [asyncio.create_task(download_file(url)) for url in urls] # create tasks to all url downloads
     await asyncio.gather(*tasks) # schedule them
 
 urls = (URL+zf for zf in get_zipfiles_names(URL))
