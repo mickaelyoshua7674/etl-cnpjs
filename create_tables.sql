@@ -1,4 +1,4 @@
--- CREATE DATABASE public_cnpj
+-- CREATE DATABASE cnpjs
 --     WITH
 --     OWNER = postgres
 --     ENCODING = 'UTF8'

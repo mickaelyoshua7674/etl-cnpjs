@@ -1,1 +1,3 @@
-# pip install selenium, aiohttp, pip install "dask[complete]"
+
+
+# pip install selenium, aiohttp, pip install "dask[complete]", sqlalchemy, psycopg2
