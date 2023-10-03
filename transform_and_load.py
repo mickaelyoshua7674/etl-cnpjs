@@ -36,4 +36,4 @@ cnaes.columns = get_columns(file_name)
 print(cnaes.dtypes)
 print(cnaes.head())
 
-# dd.to_sql(df=cnaes, name=get_table_name(file_name), uri=str(database_url), if_exists="replace", index=False, parallel=True)
+dd.to_sql(df=cnaes, name=get_table_name(file_name), uri=str(database_url), if_exists="replace", index=False, parallel=True)

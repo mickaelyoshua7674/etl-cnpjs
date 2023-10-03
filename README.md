@@ -1,1 +1,2 @@
 # etl-cnpjs
+The reason because I didn't read directly from url link is because zip compression is not supported for patitions in Dask Dataframe, so was made the asynchronous download and unzip of all files to read then from csv format so the large files could be patitioned.
