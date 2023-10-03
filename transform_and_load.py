@@ -3,13 +3,8 @@ from sqlalchemy.engine import URL
 import dask.dataframe as dd
 import os, json
 
-EXTRACT_DIR = "Extract"
-UNZIPED_DIR = os.path.join(EXTRACT_DIR, "files")
-
-TRANSFORMED_DIR = "Transform"
-TRANSFORMED_FILES_DIR = os.path.join(TRANSFORMED_DIR, "files")
-
-FILES = os.listdir(UNZIPED_DIR)
+FILES_DIR = "Files"
+FILES_LIST = os.listdir(FILES_DIR)
 
 with open("all_dtypes.json", "r") as f:
     all_dtypes = json.load(f)
@@ -35,10 +30,10 @@ def get_columns(file_name:str) -> list[str]:
 with open("./secrets.txt", "r") as f:
     database_url = get_database_url(*f.read().split(","))
 
-file_name = FILES[0]
-cnaes = dd.read_csv(os.path.join(UNZIPED_DIR,file_name), header=None, encoding="latin-1", sep=";", dtype=get_dtypes(file_name))
+file_name = FILES_LIST[0]
+cnaes = dd.read_csv(os.path.join(FILES_DIR,file_name), header=None, encoding="latin-1", sep=";", dtype=get_dtypes(file_name))
 cnaes.columns = get_columns(file_name)
 print(cnaes.dtypes)
-print(cnaes)
+print(cnaes.head())
 
-dd.to_sql(df=cnaes, name=get_table_name(file_name), uri=str(database_url), if_exists="replace", index=False, parallel=True)
+# dd.to_sql(df=cnaes, name=get_table_name(file_name), uri=str(database_url), if_exists="replace", index=False, parallel=True)

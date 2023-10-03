@@ -8,10 +8,9 @@ from time import time
 import asyncio, os
 
 URL = "https://dadosabertos.rfb.gov.br/CNPJ/"
-EXTRACT_DIR = "Extract"
-UNZIPED_DIR = os.path.join(EXTRACT_DIR, "files")
-if not os.path.exists(UNZIPED_DIR):
-    os.mkdir(UNZIPED_DIR)
+FILES_DIR = "Files"
+if not os.path.exists(FILES_DIR):
+    os.mkdir(FILES_DIR)
 
 def get_zipfiles_names(url: str) -> list[str]:
     """
@@ -20,7 +19,7 @@ def get_zipfiles_names(url: str) -> list[str]:
     op = webdriver.ChromeOptions()
     op.add_argument("log-level=3") # https://stackoverflow.com/questions/46744968/how-to-suppress-console-error-warning-info-messages-when-executing-selenium-pyth
     op.add_argument("headless") # don't open a Chrome window
-    sc = Service(os.path.join(EXTRACT_DIR,"chromedriver.exe"))
+    sc = Service("chromedriver.exe")
     driver = webdriver.Chrome(service=sc, options=op)
 
     print(f"Going to {url}...")
@@ -39,7 +38,7 @@ def unzip(b:bytearray, file_name:str) -> None:
     with ZipFile(BytesIO(b)) as zf:
         for i in zf.infolist():
             i.filename = file_name.split(".")[0]+".csv" # rename file to extract
-            zf.extract(i, UNZIPED_DIR)
+            zf.extract(i, FILES_DIR)
 
 async def download_file(session:ClientSession, url:str) -> None:
     """
@@ -61,7 +60,6 @@ async def download_all_files() -> None:
 
 print("Downloading all files simultaneously...")
 start = time()
-# asyncio.get_event_loop().run_until_complete(download_all_files())
 asyncio.run(download_all_files())
 end = time()
 print(f"All finished.\nExecution time: {round(end-start,2)}s / {round((end-start)/60,2)}min / {round(((end-start)/60)/60,2)}hr")
