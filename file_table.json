@@ -1,12 +1,12 @@
 {
-    "Cnaes": "id_cnae_fiscal_principal",
+    "Cnaes": "id_cnae",
     "Motivos": "id_motivo_situacao_cadastral",
-    "Municipios": "municipios",
+    "Municipios": "id_municipios",
     "Naturezas": "id_natureza_juridica",
-    "Paises": "paises",
-    "Qualificacoes": "id_qualificacoes",
+    "Paises": "id_pais",
+    "Qualificacoes": "id_qualificacao",
     "Simples": "simples",
-    "Socios": "socios",
-    "Empresas": "empresas",
-    "Estabelecimentos": "estabelecimentos"
+    "Socios": "socio",
+    "Empresas": "empresa",
+    "Estabelecimentos": "estabelecimento"
 }
