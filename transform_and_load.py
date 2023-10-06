@@ -25,7 +25,7 @@ create_insert(file_name="Cnaes.csv", table_name="id_cnae", pk="cnae") # null -> 
 create_insert(file_name="Motivos.csv", table_name="id_motivo_situacao_cadastral", pk="motivo_situacao_cadastral") # null -> 0
 create_insert(file_name="Municipios.csv", table_name="id_municipio", pk="municipio") # null -> a inserir
 create_insert(file_name="Naturezas.csv", table_name="id_natureza_juridica", pk="natureza_juridica") # null -> 0
-create_insert(file_name="Paises.csv", table_name="id_pais", pk="pais") # null -> "999"
+create_insert(file_name="Paises.csv", table_name="id_pais", pk="pais") # null -> 999
 create_insert(file_name="Qualificacoes.csv", table_name="id_qualificacao", pk="qualificacao") # null -> 0
 
 with engine.begin() as conn:
