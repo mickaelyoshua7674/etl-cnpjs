@@ -1,6 +1,6 @@
-from sqlalchemy.types import Integer, VARCHAR
 from sqlalchemy import text, create_engine
 from sqlalchemy.engine import URL
+from sqlalchemy.types import *
 import pandas as pd
 import os
 
@@ -21,12 +21,9 @@ def create_insert(file_name:str, table_name:str, pk:str) -> None:
         conn.execute(text(f"ALTER TABLE public.{table_name} ADD PRIMARY KEY ({pk});"))
         conn.commit()
 
-create_insert(file_name="Cnaes.csv", table_name="id_cnae", pk="cnae") # null -> 8888888
-create_insert(file_name="Motivos.csv", table_name="id_motivo_situacao_cadastral", pk="motivo_situacao_cadastral") # null -> 0
-create_insert(file_name="Municipios.csv", table_name="id_municipio", pk="municipio") # null -> a inserir
-create_insert(file_name="Naturezas.csv", table_name="id_natureza_juridica", pk="natureza_juridica") # null -> 0
-create_insert(file_name="Paises.csv", table_name="id_pais", pk="pais") # null -> "999"
-create_insert(file_name="Qualificacoes.csv", table_name="id_qualificacao", pk="qualificacao") # null -> 0
-
-with engine.begin() as conn:
-    conn.execute(text("INSERT INTO public.id_municipio VALUES (0,'NÃO INFORMADO');")) # insert value to fill the null fields
+create_insert(file_name="Cnaes.csv", table_name="id_cnae", pk="cnae")
+create_insert(file_name="Motivos.csv", table_name="id_motivo_situacao_cadastral", pk="motivo_situacao_cadastral")
+create_insert(file_name="Municipios.csv", table_name="id_municipio", pk="municipio")
+create_insert(file_name="Naturezas.csv", table_name="id_natureza_juridica", pk="natureza_juridica")
+create_insert(file_name="Paises.csv", table_name="id_pais", pk="pais")
+create_insert(file_name="Qualificacoes.csv", table_name="id_qualificacao", pk="qualificacao")
