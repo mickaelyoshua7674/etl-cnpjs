@@ -1,9 +1,7 @@
 from models.estabelecimento import Estabelecimento
-from helper_functions import get_engine_database
 import pandas as pd
 import os
 
-engine = get_engine_database()
 estab = Estabelecimento()
 columns_to_constraint = ("identificador","situacao_cadastral","motivo_situacao_cadastral","pais","cnae","municipio")
 file_name = "Estabelecimentos0.csv"

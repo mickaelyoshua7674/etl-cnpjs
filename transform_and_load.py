@@ -1,5 +1,5 @@
 from sqlalchemy.types import INTEGER, VARCHAR
-from helper_functions import get_engine_database
+from models.BaseModel import BaseModel
 from sqlalchemy import text
 import pandas as pd
 import os
@@ -19,7 +19,7 @@ def creat_insert_aditional_tables(table_name:str, pk:str, data:tuple[tuple], con
     df.to_sql(name=table_name, con=conn, if_exists="replace", index=False, dtype={pk:INTEGER(), "descricao":VARCHAR(len_descricao)})
     conn.execute(text(f"ALTER TABLE public.{table_name} ADD PRIMARY KEY ({pk});"))
 
-engine = get_engine_database()
+engine = BaseModel().engine
 with engine.connect() as conn:
     create_insert_files(file_name="Cnaes.csv", table_name="id_cnae", pk="cnae", conn=conn) # null -> 8888888
     create_insert_files(file_name="Motivos.csv", table_name="id_motivo_situacao_cadastral", pk="motivo_situacao_cadastral", conn=conn) # null -> 0
