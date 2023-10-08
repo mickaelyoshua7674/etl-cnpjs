@@ -2,6 +2,7 @@ from models.BaseModel import *
 
 class Estabelecimento(BaseModel):
     table_name:str="estabelecimento"
+
     schema:dict={
         "cnpj_basico":VARCHAR(8),
         "cnpj_ordem":VARCHAR(4),
@@ -34,4 +35,5 @@ class Estabelecimento(BaseModel):
         "situacao_especial":VARCHAR(100),
         "data_situacao_especial":DATE()
     }
-    constraints:tuple=("identificador","situacao_cadastral","motivo_situacao_cadastral","pais","cnae","municipio")
+    
+    fk:tuple=("identificador","situacao_cadastral","motivo_situacao_cadastral","pais","cnae","municipio")

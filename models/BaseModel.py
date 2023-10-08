@@ -12,7 +12,7 @@ class BaseModel():
 
     schema:dict
 
-    constraints:tuple
+    fk:tuple
 
     def get_columns(self) -> tuple:
         return tuple(i for i,_ in self.schema.items())
@@ -31,7 +31,7 @@ class BaseModel():
                     dtypes[c] = float
         return dtypes
     
-    def get_constraint_values(self, column_name:str) -> set:
+    def get_fk_values(self, column_name:str) -> set:
         with self.engine.begin() as conn:
             res = conn.execute(text(f"SELECT {column_name} FROM public.id_{column_name};"))
             return set(v[0] for v in res.fetchall())
@@ -41,7 +41,10 @@ class BaseModel():
         with open("./secrets.txt", "r") as f:
             driver, username, password, host, port, database = f.read().split(",")
             return create_engine(URL.create(drivername=driver, username=username, password=password, host=host, port=port, database=database))
-        
+    
+    def check_fk(self, value:int, substitute_value:str, fk_values:set) -> int:
+        return substitute_value if value not in fk_values else value
+
     def date_format(self, value:str) -> str:
         if len(value) == 8:
             return f"{value[:4]}-{value[4:6]}-{value[-2:]}"
@@ -49,4 +52,4 @@ class BaseModel():
     
     def get_add_constraints_script(self) -> str:
         head = f"ALTER TABLE public.{self.table_name} "
-        return head + ",".join([f"ADD CONSTRAINT {c} FOREIGN KEY ({c}) REFERENCES public.id_{c}({c})" for c in self.constraints]) + ";"
+        return head + ",".join([f"ADD CONSTRAINT {c} FOREIGN KEY ({c}) REFERENCES public.id_{c}({c})" for c in self.fk]) + ";"
