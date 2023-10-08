@@ -50,6 +50,7 @@ class BaseModel():
             return f"{value[:4]}-{value[4:6]}-{value[-2:]}"
         return "1900-01-01"
     
-    def get_add_constraints_script(self) -> str:
+    def add_constraints(self, conn) -> str:
         head = f"ALTER TABLE public.{self.table_name} "
-        return head + ",".join([f"ADD CONSTRAINT {c} FOREIGN KEY ({c}) REFERENCES public.id_{c}({c})" for c in self.fk]) + ";"
+        script = head + ",".join([f"ADD CONSTRAINT {c} FOREIGN KEY ({c}) REFERENCES public.id_{c}({c})" for c in self.fk]) + ";"
+        conn.execute(text(script))

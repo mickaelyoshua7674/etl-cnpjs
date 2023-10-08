@@ -1,5 +1,4 @@
 from models.estabelecimento import Estabelecimento
-from sqlalchemy import text
 import pandas as pd
 import os
 
@@ -42,5 +41,5 @@ df = df.astype(dtypes)
 
 with estab.engine.connect() as conn:
     df.to_sql(name=estab.table_name, con=conn, if_exists="replace", index=False, dtype=estab.schema)
-    conn.execute(text(estab.get_add_constraints_script()))
+    estab.add_constraints(conn)
     conn.commit()
