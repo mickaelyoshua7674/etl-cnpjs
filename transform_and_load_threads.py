@@ -4,6 +4,8 @@ import pandas as pd
 import os
 
 estab = Estabelecimento()
+substitute_value = int()
+dtypes = estab.get_dtypes()
 file_name = "Estabelecimentos0.csv"
 df = pd.read_csv(filepath_or_buffer=os.path.join("Files",file_name),
                  sep=";",
@@ -15,8 +17,6 @@ df = pd.read_csv(filepath_or_buffer=os.path.join("Files",file_name),
 
 for k in estab.fk:
     fk_values = estab.get_fk_values(k)
-    substitute_value = int()
-    dtypes = estab.get_dtypes()
     match k:
         case "identificador":
             substitute_value = 0
@@ -38,7 +38,7 @@ for data_field in ("data_situacao_cadastral","data_inicio_atividade","data_situa
     df[data_field] = df[data_field].fillna("19000101")
     df[data_field] = df[data_field].apply(estab.date_format)
 
-df = df.astype(estab.get_dtypes())
+df = df.astype(dtypes)
 
 with estab.engine.connect() as conn:
     df.to_sql(name=estab.table_name, con=conn, if_exists="replace", index=False, dtype=estab.schema)
