@@ -42,9 +42,7 @@ class BaseModel():
             driver, username, password, host, port, database = f.read().split(",")
             return create_engine(URL.create(drivername=driver, username=username, password=password, host=host, port=port, database=database))
     
-    def check_fk(self, value:str, substitute_value:str, fk_values:set) -> int:
-        # print(value, substitute_value, fk_values)
-        # exit()
+    def check_fk(self, value:int, substitute_value:int, fk_values:set) -> int:
         return value if value in fk_values else substitute_value
 
     def date_format(self, value:str) -> str:
