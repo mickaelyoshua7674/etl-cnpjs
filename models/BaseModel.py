@@ -7,8 +7,12 @@ class BaseModel():
     with open("./secrets.txt", "r") as f:
         driver, username, password, host, port, database = f.read().split(",")
         engine = create_engine(URL.create(drivername=driver, username=username, password=password, host=host, port=port, database=database))
-    
+
+    table_name:str
+
     schema:dict
+
+    constraints:tuple
 
     def get_columns(self) -> tuple:
         return tuple(i for i,_ in self.schema.items())
@@ -37,3 +41,12 @@ class BaseModel():
         with open("./secrets.txt", "r") as f:
             driver, username, password, host, port, database = f.read().split(",")
             return create_engine(URL.create(drivername=driver, username=username, password=password, host=host, port=port, database=database))
+        
+    def date_format(self, value:str) -> str:
+        if len(value) == 8:
+            return f"{value[:4]}-{value[4:6]}-{value[-2:]}"
+        return "1900-01-01"
+    
+    def get_add_constraints_script(self) -> str:
+        head = f"ALTER TABLE public.{self.table_name} "
+        return head + ",".join([f"ADD CONSTRAINT {c} FOREIGN KEY ({c}) REFERENCES public.id_{c}({c})" for c in self.constraints]) + ";"
