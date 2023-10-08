@@ -13,37 +13,32 @@ df = pd.read_csv(filepath_or_buffer=os.path.join("Files",file_name),
                  encoding="IBM860", # encoding for Portuguese Language
                  nrows=100_000)
 
-df["identificador"] = df["identificador"].fillna(0)
-df["situacao_cadastral"] = df["situacao_cadastral"].fillna(1)
-df["motivo_situacao_cadastral"] = df["motivo_situacao_cadastral"].fillna(0)
-df["pais"] = df["pais"].fillna(999)
-df["cnae"] = df["cnae"].fillna(8888888)
-df["municipio"] = df["municipio"].fillna(9999)
-df["data_situacao_cadastral"] = df["data_situacao_cadastral"].fillna("19000101")
-df["data_inicio_atividade"] = df["data_inicio_atividade"].fillna("19000101")
-df["data_situacao_especial"] = df["data_situacao_especial"].fillna("19000101")
-
-df = df.astype(estab.get_dtypes())
-
 for k in estab.fk:
     fk_values = estab.get_fk_values(k)
+    substitute_value = int()
+    dtypes = estab.get_dtypes()
     match k:
         case "identificador":
-            df[k] = df[k].apply(estab.check_fk, args=(0,fk_values))
+            substitute_value = 0
         case "situacao_cadastral":
-            df[k] = df[k].apply(estab.check_fk, args=(1,fk_values))
+            substitute_value = 1
         case "motivo_situacao_cadastral":
-            df[k] = df[k].apply(estab.check_fk, args=(0,fk_values))
+            substitute_value = 0
         case "pais":
-            df[k] = df[k].apply(estab.check_fk, args=(999,fk_values))
+            substitute_value = 999
         case "cnae":
-            df[k] = df[k].apply(estab.check_fk, args=(8888888,fk_values))
+            substitute_value = 8888888
         case "municipio":
-            df[k] = df[k].apply(estab.check_fk, args=(9999,fk_values))
+            substitute_value = 9999
+    df[k] = df[k].fillna(substitute_value)
+    df[k] = df[k].astype(dtypes[k])
+    df[k] = df[k].apply(estab.check_fk, args=(substitute_value,fk_values))
 
-df["data_situacao_cadastral"] = df["data_situacao_cadastral"].apply(estab.date_format)
-df["data_inicio_atividade"] = df["data_inicio_atividade"].apply(estab.date_format)
-df["data_situacao_especial"] = df["data_situacao_especial"].apply(estab.date_format)
+for data_field in ("data_situacao_cadastral","data_inicio_atividade","data_situacao_especial"):
+    df[data_field] = df[data_field].fillna("19000101")
+    df[data_field] = df[data_field].apply(estab.date_format)
+
+df = df.astype(estab.get_dtypes())
 
 with estab.engine.connect() as conn:
     df.to_sql(name=estab.table_name, con=conn, if_exists="replace", index=False, dtype=estab.schema)
