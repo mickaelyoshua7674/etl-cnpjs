@@ -50,7 +50,12 @@ class BaseModel():
             return f"{value[:4]}-{value[4:6]}-{value[-2:]}"
         return "1900-01-01"
     
-    def add_constraints(self, conn) -> str:
-        head = f"ALTER TABLE public.{self.table_name} "
-        script = head + ",".join([f"ADD CONSTRAINT {c} FOREIGN KEY ({c}) REFERENCES public.id_{c}({c})" for c in self.fk]) + ";"
-        conn.execute(text(script))
+    def create_table(self) -> None:
+        head = f"DROP TABLE IF EXISTS public.{self.table_name};\nCREATE TABLE public.{self.table_name} (\n  "
+        columns = [f"{k} {i}"for k, i in self.schema.items()]
+        constraints = [f"CONSTRAINT {c} FOREIGN KEY ({c}) REFERENCES public.id_{c}({c})" for c in self.fk]
+        script = head + ",\n    ".join(columns+constraints) + "\n);"
+        with self.engine.begin() as conn:
+            conn.execute(text(script))
+
+

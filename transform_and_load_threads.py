@@ -3,6 +3,8 @@ import pandas as pd
 import os
 
 estab = Estabelecimento()
+estab.create_table()
+
 substitute_value = int()
 dtypes = estab.get_dtypes()
 file_name = "Estabelecimentos0.csv"
@@ -40,6 +42,5 @@ for data_field in ("data_situacao_cadastral","data_inicio_atividade","data_situa
 df = df.astype(dtypes)
 
 with estab.engine.connect() as conn:
-    df.to_sql(name=estab.table_name, con=conn, if_exists="replace", index=False, dtype=estab.schema)
-    estab.add_constraints(conn)
+    df.to_sql(name=estab.table_name, con=conn, if_exists="append", index=False, dtype=estab.schema)
     conn.commit()
