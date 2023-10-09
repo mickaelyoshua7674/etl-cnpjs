@@ -57,5 +57,10 @@ class BaseModel():
         script = head + ",\n    ".join(columns+constraints) + "\n);"
         with self.engine.begin() as conn:
             conn.execute(text(script))
+    
+    def insert_data(self, df) -> None:
+        with self.engine.connect() as conn:
+            df.to_sql(name=self.table_name, con=conn, if_exists="append", index=False, dtype=self.schema)
+            conn.commit()
 
 
