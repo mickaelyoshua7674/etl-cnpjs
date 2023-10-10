@@ -1,4 +1,6 @@
 from models.estabelecimento import Estabelecimento
+from models.MyThread import MyThread
+from sqlalchemy import text
 import pandas as pd
 import os
 
@@ -31,14 +33,33 @@ for k in estab.fk:
             substitute_value = 8888888
         case "municipio":
             substitute_value = 9999
-    df[k] = df[k].fillna(substitute_value)
+    df[k].fillna(substitute_value, inplace=True)
     df[k] = df[k].astype(dtypes[k])
     df[k] = df[k].apply(estab.check_fk, args=(substitute_value,fk_values))
 
-for data_field in ("data_situacao_cadastral","data_inicio_atividade","data_situacao_especial"):
-    df[data_field] = df[data_field].fillna("19000101")
-    df[data_field] = df[data_field].apply(estab.date_format)
+for date_field in ("data_situacao_cadastral","data_inicio_atividade","data_situacao_especial"):
+    df[date_field].fillna("19000101", inplace=True)
+    df[date_field] = df[date_field].apply(estab.date_format)
 
 df = df.astype(dtypes)
+print(df.head(2))
 
-estab.insert_data(df)
+thread1 = MyThread(estab, df)
+thread2 = MyThread(estab, df.iloc[1:,:])
+
+thread1.start()
+thread2.start()
+
+thread1.join()
+thread2.join()
+
+
+
+
+
+
+
+print("Done")
+
+
+
