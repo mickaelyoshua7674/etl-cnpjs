@@ -1,4 +1,3 @@
-from models.estabelecimento import Estabelecimento
 from threading import Thread
 import pandas
 

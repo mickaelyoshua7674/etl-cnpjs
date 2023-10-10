@@ -1,6 +1,5 @@
 from models.estabelecimento import Estabelecimento
 from models.MyThread import MyThread
-from sqlalchemy import text
 import pandas as pd
 import os
 
