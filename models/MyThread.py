@@ -19,4 +19,3 @@ class MyThread(Thread):
                 else:
                     conn.execute(self.insert_script, row)
                     conn.commit()
-                    break

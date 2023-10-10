@@ -2,15 +2,11 @@ from models.estabelecimento import Estabelecimento
 from models.MyThread import MyThread
 from queue import Queue
 import pandas as pd
-import os
+import os, time
 
 NUMBER_OF_THREADS = 2
 
 estab = Estabelecimento()
-estab.create_table()
-my_queue = Queue()
-
-substitute_value = int()
 dtypes = estab.get_dtypes()
 file_name = "Estabelecimentos0.csv"
 df = pd.read_csv(filepath_or_buffer=os.path.join("Files",file_name),
@@ -21,6 +17,7 @@ df = pd.read_csv(filepath_or_buffer=os.path.join("Files",file_name),
                  encoding="IBM860", # encoding for Portuguese Language
                  nrows=100_000)
 
+substitute_value = int()
 for k in estab.fk:
     fk_values = estab.get_fk_values(k)
     match k:
@@ -45,20 +42,21 @@ for date_field in ("data_situacao_cadastral","data_inicio_atividade","data_situa
     df[date_field] = df[date_field].apply(estab.date_format)
 
 df = df.astype(dtypes)
-for d in df.to_dict(orient="records")[:2]:
+
+start = time.time()
+my_queue = Queue()
+for d in df.to_dict(orient="records"):
     my_queue.put(d)
 del df
 
 threads = [MyThread(estab,my_queue) for _ in range(NUMBER_OF_THREADS)]
-
+estab.create_table()
 for thread in threads:
     thread.start()
-
 for thread in threads:
     thread.join()
 
-
-print("\n\nDone")
+print(f"\n\nExecution of data insertion {time.time()-start}")
 
 
 
