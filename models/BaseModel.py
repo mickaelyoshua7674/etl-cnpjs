@@ -66,7 +66,4 @@ class BaseModel():
     def get_insert_script(self) -> str:
         head = f"INSERT INTO public.{self.table_name} VALUES ("
         return text(head + ",".join([f":{k}" for k in self.schema.keys()]) + ");")
-    
-    def row_to_dict(self, row:tuple) -> dict:
-        return {key:value for key, value in zip(self.schema.keys(), row)}
 

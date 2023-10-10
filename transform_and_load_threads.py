@@ -1,10 +1,14 @@
 from models.estabelecimento import Estabelecimento
 from models.MyThread import MyThread
+from queue import Queue
 import pandas as pd
 import os
 
+NUMBER_OF_THREADS = 2
+
 estab = Estabelecimento()
 estab.create_table()
+my_queue = Queue()
 
 substitute_value = int()
 dtypes = estab.get_dtypes()
@@ -41,24 +45,20 @@ for date_field in ("data_situacao_cadastral","data_inicio_atividade","data_situa
     df[date_field] = df[date_field].apply(estab.date_format)
 
 df = df.astype(dtypes)
-print(df.head(2))
+for d in df.to_dict(orient="records")[:2]:
+    my_queue.put(d)
+del df
 
-thread1 = MyThread(estab, df)
-thread2 = MyThread(estab, df.iloc[1:,:])
+threads = [MyThread(estab,my_queue) for _ in range(NUMBER_OF_THREADS)]
 
-thread1.start()
-thread2.start()
+for thread in threads:
+    thread.start()
 
-thread1.join()
-thread2.join()
-
-
-
+for thread in threads:
+    thread.join()
 
 
-
-
-print("Done")
+print("\n\nDone")
 
 
 
