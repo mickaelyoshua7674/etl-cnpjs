@@ -1,5 +1,6 @@
 from sqlalchemy.types import VARCHAR, DATE, INTEGER, FLOAT
 from sqlalchemy import create_engine, text
+from models.MyThread import MyThread
 from sqlalchemy.engine import URL
 
 class BaseModel():
@@ -67,3 +68,5 @@ class BaseModel():
         head = f"INSERT INTO public.{self.table_name} VALUES ("
         return text(head + ",".join([f":{k}" for k in self.schema.keys()]) + ");")
 
+    def get_thread(self, queue) -> MyThread:
+        return MyThread(self.engine, queue, self.get_insert_script())
