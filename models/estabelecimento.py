@@ -40,10 +40,10 @@ class Estabelecimento(BaseModel):
     
     fk:tuple=("identificador","situacao_cadastral","motivo_situacao_cadastral","pais","cnae","municipio")
 
-    def process_file(self, file_name:str, my_queue) -> None:
+    def process_file(self, file_path:str, my_queue) -> None:
         print("Start processing data...")
         dtypes = self.get_dtypes()
-        df = pd.read_csv(filepath_or_buffer=os.path.join("Files",file_name),
+        df = pd.read_csv(filepath_or_buffer=file_path,
                         sep=";",
                         header=None,
                         names=self.get_columns(),
