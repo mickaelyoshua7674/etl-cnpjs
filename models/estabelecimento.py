@@ -38,7 +38,7 @@ class Estabelecimento(BaseModel):
     
     fk:tuple=("identificador","situacao_cadastral","motivo_situacao_cadastral","pais","cnae","municipio")
 
-    def process_file(self, chunk, my_queue) -> None:
+    def process_chunk(self, chunk, my_queue) -> None:
         print("Start processing data...")
         dtypes = self.get_dtypes()
 

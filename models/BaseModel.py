@@ -70,3 +70,6 @@ class BaseModel():
 
     def get_thread(self, queue) -> MyThread:
         return MyThread(self.engine, queue, self.get_insert_script())
+    
+    def process_chunk(self) -> None:
+        ...
