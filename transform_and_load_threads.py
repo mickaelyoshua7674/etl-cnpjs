@@ -1,10 +1,10 @@
 from models.estabelecimento import Estabelecimento
-import multiprocessing as mp
+from multiprocessing import Pool
 from queue import Queue
 from glob import glob
 import time
 
-NUMBER_OF_THREADS = 3
+NUMBER_OF_THREADS = 10
 # files_paths = glob("Files/Estabelecimentos*.csv") + glob("Files/Socios*.csv") + glob("Files/Empresas*.csv") + ["Files\\Simples.csv"]
 files_paths = glob("Files/Estabelecimentos*.csv")
 estab = Estabelecimento()
@@ -27,7 +27,7 @@ def process_and_insert(file_path) -> None:
     print(f"\n\nExecution of data insertion {round(time.time()-start,2)}s")
 
 if __name__ == "__main__":
-    with mp.Pool() as pool:
+    with Pool() as pool:
         pool.map(process_and_insert, files_paths)
 
 
