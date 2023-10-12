@@ -9,20 +9,16 @@ from time import time
 import pandas as pd
 
 NUMBER_OF_THREADS = 10
-# files_paths = glob("Files/Estabelecimentos*.csv") + glob("Files/Socios*.csv") + glob("Files/Empresas*.csv") + ["Files\\Simples.csv"]
-files_paths = glob("Files/Estabelecimentos*.csv")
+
 estab = Estabelecimento()
 estab.create_table()
 
-files_paths = glob("Files/Socios*.csv")
 socio = Socio()
 socio.create_table()
 
-files_paths = glob("Files/Empresas*.csv")
 empresa = Empresa()
 empresa.create_table()
 
-files_paths = ["Files\\Simples.csv"]
 simples = Simples()
 simples.create_table()
 
@@ -41,12 +37,12 @@ def process_and_insert(file_path) -> None:
 
     my_queue = Queue()
     df = pd.read_csv(filepath_or_buffer=file_path,
-                        sep=";",
-                        header=None,
-                        names=obj.get_columns(),
-                        dtype=str,
-                        encoding="IBM860", # encoding for Portuguese Language
-                        chunksize=100_000)
+                     sep=";",
+                     header=None,
+                     names=obj.get_columns(),
+                     dtype=str,
+                     encoding="IBM860", # encoding for Portuguese Language
+                     chunksize=100_000)
     for chunk in df:
         obj.process_chunk(chunk, my_queue)
 
@@ -59,6 +55,7 @@ def process_and_insert(file_path) -> None:
             thread.join()
         print(f"\n\nExecution of data insertion {round(time()-start,2)}s")
 
+files_paths = glob("Files/Estabelecimentos*.csv") + glob("Files/Socios*.csv") + glob("Files/Empresas*.csv") + ["Files\\Simples.csv"]
 if __name__ == "__main__":
     with Pool() as pool:
         pool.map(process_and_insert, files_paths)

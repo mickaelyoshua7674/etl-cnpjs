@@ -23,6 +23,8 @@ class Simples(BaseModel):
         for k in self.fk:
             fk_values = self.get_fk_values(k)
             chunk[k].fillna(substitute_value, inplace=True)
+            chunk[k].replace("N",substitute_value, inplace=True)
+            chunk[k].replace("S",substitute_value, inplace=True)
             chunk[k] = chunk[k].astype(dtypes[k])
             chunk[k] = chunk[k].apply(self.check_fk, args=(substitute_value,fk_values))
 

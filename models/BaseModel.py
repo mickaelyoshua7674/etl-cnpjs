@@ -47,7 +47,7 @@ class BaseModel():
         return value if value in fk_values else substitute_value
 
     def date_format(self, value:str) -> str:
-        if len(value) == 8:
+        if len(value) == 8 and value != "00000000":
             return f"{value[:4]}-{value[4:6]}-{value[-2:]}"
         return "1900-01-01"
     
