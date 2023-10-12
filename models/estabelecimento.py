@@ -1,6 +1,4 @@
 from models.BaseModel import *
-import pandas as pd
-import os
 
 class Estabelecimento(BaseModel):
     table_name:str="estabelecimento"
@@ -40,16 +38,9 @@ class Estabelecimento(BaseModel):
     
     fk:tuple=("identificador","situacao_cadastral","motivo_situacao_cadastral","pais","cnae","municipio")
 
-    def process_file(self, file_path:str, my_queue) -> None:
+    def process_file(self, chunk, my_queue) -> None:
         print("Start processing data...")
         dtypes = self.get_dtypes()
-        df = pd.read_csv(filepath_or_buffer=file_path,
-                        sep=";",
-                        header=None,
-                        names=self.get_columns(),
-                        dtype=str,
-                        encoding="IBM860", # encoding for Portuguese Language
-                        nrows=100_000)
 
         substitute_value = int()
         for k in self.fk:
@@ -67,15 +58,15 @@ class Estabelecimento(BaseModel):
                     substitute_value = 8888888
                 case "municipio":
                     substitute_value = 9999
-            df[k].fillna(substitute_value, inplace=True)
-            df[k] = df[k].astype(dtypes[k])
-            df[k] = df[k].apply(self.check_fk, args=(substitute_value,fk_values))
+            chunk[k].fillna(substitute_value, inplace=True)
+            chunk[k] = chunk[k].astype(dtypes[k])
+            chunk[k] = chunk[k].apply(self.check_fk, args=(substitute_value,fk_values))
 
         for date_field in ("data_situacao_cadastral","data_inicio_atividade","data_situacao_especial"):
-            df[date_field].fillna("19000101", inplace=True)
-            df[date_field] = df[date_field].apply(self.date_format)
+            chunk[date_field].fillna("19000101", inplace=True)
+            chunk[date_field] = chunk[date_field].apply(self.date_format)
 
-        df = df.astype(dtypes)
-        for d in df.to_dict(orient="records"):
+        chunk = chunk.astype(dtypes)
+        for d in chunk.to_dict(orient="records"):
             my_queue.put(d)
         print("Finished processing data.\n")
