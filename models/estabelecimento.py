@@ -39,7 +39,6 @@ class Estabelecimento(BaseModel):
     fk:tuple=("identificador","situacao_cadastral","motivo_situacao_cadastral","pais","cnae","municipio")
 
     def process_chunk(self, chunk, my_queue) -> None:
-        print("Start processing data...")
         dtypes = self.get_dtypes()
 
         substitute_value = int()
@@ -69,4 +68,3 @@ class Estabelecimento(BaseModel):
         chunk = chunk.astype(dtypes)
         for d in chunk.to_dict(orient="records"):
             my_queue.put(d)
-        print("Finished processing data.\n")

@@ -23,7 +23,7 @@ simples = Simples()
 simples.create_table()
 
 def process_and_insert(file_path) -> None:
-    print("Start process...")
+    print(f"Inserting {file_path}...")
     
     obj = None
     if "Estabelecimento" in file_path:
@@ -43,17 +43,18 @@ def process_and_insert(file_path) -> None:
                      dtype=str,
                      encoding="IBM860", # encoding for Portuguese Language
                      chunksize=100_000)
+    start_file = time()
     for chunk in df:
         obj.process_chunk(chunk, my_queue)
 
-        start = time()
-        print("Start inserting into database...")
+        start_chunk = time()
         threads = [obj.get_thread(my_queue) for _ in range(NUMBER_OF_THREADS)]
         for thread in threads:
             thread.start()
         for thread in threads:
             thread.join()
-        print(f"\n\nExecution of data insertion {round(time()-start,2)}s")
+        print(f"\n\nTime execution of chunk in {file_path} {round(time()-start_chunk,2)}s")
+    print(f"\n\nTime execution of {file_path} {round(time()-start_file,2)}s")
 
 files_paths = glob("Files/Estabelecimentos*.csv") + glob("Files/Socios*.csv") + glob("Files/Empresas*.csv") + ["Files\\Simples.csv"]
 if __name__ == "__main__":

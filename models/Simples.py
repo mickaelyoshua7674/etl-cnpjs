@@ -16,7 +16,6 @@ class Simples(BaseModel):
     fk:tuple=("opcao_simples","opcao_mei")
 
     def process_chunk(self, chunk, my_queue) -> None:
-        print("Start processing data...")
         dtypes = self.get_dtypes()
 
         substitute_value = 2
@@ -35,4 +34,3 @@ class Simples(BaseModel):
         chunk = chunk.astype(dtypes)
         for d in chunk.to_dict(orient="records"):
             my_queue.put(d)
-        print("Finished processing data.\n")
