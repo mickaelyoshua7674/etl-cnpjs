@@ -56,9 +56,10 @@ def process_and_insert(file_path) -> None:
         print(f"\n\nTime execution of chunk in {file_path} {round(time()-start_chunk,2)}s")
     print(f"\n\nTime execution of {file_path} {round(time()-start_file,2)}s")
 
+start_all = time()
 files_paths = glob("Files/Estabelecimentos*.csv") + glob("Files/Socios*.csv") + glob("Files/Empresas*.csv") + ["Files\\Simples.csv"]
 if __name__ == "__main__":
     with Pool() as pool:
         pool.map(process_and_insert, files_paths)
-
+print(f"\n\nTotal time of execution {round(time()-start_all,2)}s")
 
