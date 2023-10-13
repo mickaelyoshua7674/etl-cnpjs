@@ -37,7 +37,7 @@ class BaseModel():
                 case VARCHAR():
                     dtypes[c] = str
                 case DATE():
-                    dtypes[c] = str # DATE type will be converted to string so the date values is formated to 'yyyy-mm-dd's
+                    dtypes[c] = str # DATE type will be converted to string so the date values is formated to 'yyyy-mm-dd'
                 case INTEGER():
                     dtypes[c] = int
                 case FLOAT():
@@ -53,7 +53,7 @@ class BaseModel():
             res = conn.execute(text(f"SELECT {column_name} FROM public.id_{column_name};"))
             return set(v[0] for v in res.fetchall())
     
-    def check_fk(self, value:int, substitute_value:int, fk_values:set) -> int:
+    def check_fk(self, value:int, substitute_value:int, fk_values:set) -> int: # return an int because all Foreign Keys are int
         """
         Check if the 'value' is in Foreign Keys set 'fk_values'
         If contains value, then leave the value, if don't them replace with the 'substitute_value'.
@@ -64,31 +64,45 @@ class BaseModel():
 
     def date_format(self, value:str) -> str:
         """
-        
+        From value in date fields return the date as 'yyyy-mm-dd'.
+        the date to be substitute Nulls and not valid values is '1900-01-01'.
         """
         if len(value) == 8 and value != "00000000":
             return f"{value[:4]}-{value[4:6]}-{value[-2:]}"
         return "1900-01-01"
     
     def create_table(self) -> None:
+        """
+        Drop the table if exists (will always reset the table) then create again.
+        This function will use the 'schema' and 'table_name' defined in each table class.
+        """
         head = f"DROP TABLE IF EXISTS public.{self.table_name};\nCREATE TABLE public.{self.table_name} (\n  "
-        columns = [f"{k} {i}"for k, i in self.schema.items()]
-        constraints = [f"CONSTRAINT {c} FOREIGN KEY ({c}) REFERENCES public.id_{c}({c})" for c in self.fk]
+        columns = [f"{k} {i}"for k, i in self.schema.items()] # all Tables columns
+        constraints = [f"CONSTRAINT {c} FOREIGN KEY ({c}) REFERENCES public.id_{c}({c})" for c in self.fk] # all constraints of Foreign Keys
         script = head + ",\n    ".join(columns+constraints) + "\n);"
         with self.engine.begin() as conn:
             conn.execute(text(script))
-    
-    def insert_data(self, df) -> None:
-        with self.engine.connect() as conn:
-            df.to_sql(name=self.table_name, con=conn, if_exists="append", index=False, dtype=self.schema)
-            conn.commit()
 
-    def get_insert_script(self) -> str:
+    def get_insert_script(self):
+        """
+        Return a string that already passed through the 'text()' function from 'sqlalchemy'.
+
+        The String format is: INSERT INTO public.{table_name} VALUES (:{field1},:{field2},...,:{fieldN});
+
+        With this format, the paramns passed to 'execute()' of sqlalchemy must be dictionaries with '{filed}:{value}'.
+        """
         head = f"INSERT INTO public.{self.table_name} VALUES ("
         return text(head + ",".join([f":{k}" for k in self.schema.keys()]) + ");")
 
     def get_thread(self, queue) -> MyThread:
+        """
+        Return an object of MyThread class with the passed 'queue' to share data between threads,
+        the script for insert data and the engine to each thread create a connection to the DataBase.
+        """
         return MyThread(self.engine, queue, self.get_insert_script())
     
     def process_chunk(self) -> None:
+        """
+        Process the data of each chunk to make a clean insertion into the DataBase.
+        """
         ...
