@@ -65,7 +65,7 @@ class BaseModel():
     def date_format(self, value:str) -> str:
         """
         From value in date fields return the date as 'yyyy-mm-dd'.
-        the date to be substitute Nulls and not valid values is '1900-01-01'.
+        The date to be substitute Nulls and not valid values is '1900-01-01'.
         """
         if len(value) == 8 and value != "00000000":
             return f"{value[:4]}-{value[4:6]}-{value[-2:]}"

@@ -39,6 +39,9 @@ class Estabelecimento(BaseModel):
     fk:tuple=("identificador","situacao_cadastral","motivo_situacao_cadastral","pais","cnae","municipio")
 
     def process_chunk(self, chunk, my_queue) -> None:
+        """
+        Process the data of each chunk to make a clean insertion into the DataBase.
+        """
         dtypes = self.get_dtypes()
 
         substitute_value = int()
@@ -57,14 +60,15 @@ class Estabelecimento(BaseModel):
                     substitute_value = 8888888
                 case "municipio":
                     substitute_value = 9999
-            chunk[k].fillna(substitute_value, inplace=True)
-            chunk[k] = chunk[k].astype(dtypes[k])
-            chunk[k] = chunk[k].apply(self.check_fk, args=(substitute_value,fk_values))
+            chunk[k].fillna(substitute_value, inplace=True) # fill null values in Foreign Key field
+            chunk[k] = chunk[k].astype(dtypes[k]) # initially the data is all strings, so change now the data type to compare in the next lines
+            chunk[k] = chunk[k].apply(self.check_fk, args=(substitute_value,fk_values)) # check if the value will be accepted in FOREIGN KEY CONSTRAINTS
+                                                                                        # if not then subtitute the value
 
         for date_field in ("data_situacao_cadastral","data_inicio_atividade","data_situacao_especial"):
-            chunk[date_field].fillna("19000101", inplace=True)
-            chunk[date_field] = chunk[date_field].apply(self.date_format)
+            chunk[date_field].fillna("19000101", inplace=True) # The date to be substitute Nulls is '1900-01-01'
+            chunk[date_field] = chunk[date_field].apply(self.date_format) # format field to 'yyyy-mm-dd'
 
         chunk = chunk.astype(dtypes)
-        for d in chunk.to_dict(orient="records"):
-            my_queue.put(d)
+        for d in chunk.to_dict(orient="records"): # 'orient="records"' will return a list with dictionaries
+            my_queue.put(d) # insert each dictionary into queue to share the data between threads
