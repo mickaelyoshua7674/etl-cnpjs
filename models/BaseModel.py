@@ -4,8 +4,11 @@ from models.MyThread import MyThread
 from sqlalchemy.engine import URL
 
 class BaseModel():
-
-    with open("./secrets.txt", "r") as f:
+    """
+    Base class to all table classes
+    Each table class will define its own 'table_name', 'schema', 'fk' and 'process_chunk' methods.
+    """
+    with open("./secrets.txt", "r") as f: # creating one engine to all table classes
         driver, username, password, host, port, database = f.read().split(",")
         engine = create_engine(URL.create(drivername=driver, username=username, password=password, host=host, port=port, database=database))
 
@@ -13,19 +16,28 @@ class BaseModel():
 
     schema:dict
 
-    fk:tuple
+    fk:tuple # Foreign Keys
 
     def get_columns(self) -> tuple:
+        """
+        From schema implemented in each table class
+        return a tuple with all columns names.
+        """
         return tuple(i for i,_ in self.schema.items())
     
     def get_dtypes(self) -> dict:
+        """
+        From schema implemented in each table class
+        return a dict with format <column _name>:<column_type>
+        where <column_type> is the Python type.
+        """
         dtypes = {}
         for c, t in self.schema.items():
-            match t:
+            match t: # using the new match/case of Python
                 case VARCHAR():
                     dtypes[c] = str
                 case DATE():
-                    dtypes[c] = str
+                    dtypes[c] = str # DATE type will be converted to string so the date values is formated to 'yyyy-mm-dd's
                 case INTEGER():
                     dtypes[c] = int
                 case FLOAT():
@@ -33,20 +45,27 @@ class BaseModel():
         return dtypes
     
     def get_fk_values(self, column_name:str) -> set:
+        """
+        Search by Foreign Key (column_name) and get values.
+        Return values as a set to faster search using the 'in' keyword in method 'check_fk'.
+        """
         with self.engine.begin() as conn:
             res = conn.execute(text(f"SELECT {column_name} FROM public.id_{column_name};"))
             return set(v[0] for v in res.fetchall())
-        
-    def get_engine_database():
-        """Get secrets from '.secrets.txt' file and create and return connection engine to DataBase"""
-        with open("./secrets.txt", "r") as f:
-            driver, username, password, host, port, database = f.read().split(",")
-            return create_engine(URL.create(drivername=driver, username=username, password=password, host=host, port=port, database=database))
     
     def check_fk(self, value:int, substitute_value:int, fk_values:set) -> int:
+        """
+        Check if the 'value' is in Foreign Keys set 'fk_values'
+        If contains value, then leave the value, if don't them replace with the 'substitute_value'.
+
+        This method is to make the CONSTRAINT of Foreign Keys.
+        """
         return value if value in fk_values else substitute_value
 
     def date_format(self, value:str) -> str:
+        """
+        
+        """
         if len(value) == 8 and value != "00000000":
             return f"{value[:4]}-{value[4:6]}-{value[-2:]}"
         return "1900-01-01"
