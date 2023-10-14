@@ -27,7 +27,7 @@ def process_and_insert(file_path) -> None:
     """
     Function to map all files in multiprocessing.Pool making the transformation and insertion of data into the DataBase.
     """
-    print(f"Inserting {file_path}...")
+    print(f"\nInserting {file_path}...\n")
     
     # Switch to correct table
     obj = None
@@ -58,8 +58,8 @@ def process_and_insert(file_path) -> None:
             thread.start()
         for thread in threads: # wait all to finish
             thread.join()
-        print(f"\n\nTime execution of chunk in {file_path} {round(time()-start_chunk,2)}s")
-    print(f"\n\nTime execution of {file_path} {round(time()-start_file,2)}s")
+        print(f"Time execution of chunk in {file_path} {round(time()-start_chunk,2)}s")
+    print(f"Time execution of {file_path} {round(time()-start_file,2)}s")
 
 # getting list of all files
 files_paths = glob("Files/Estabelecimentos*.csv") + glob("Files/Socios*.csv") + glob("Files/Empresas*.csv") + ["Files\\Simples.csv"]
@@ -67,5 +67,5 @@ if __name__ == "__main__":
     with Pool() as pool: # since 'processes' is not defined will use all available cores (mine is 8)
         start_all = time()
         pool.map(process_and_insert, files_paths)
-        print(f"\n\nTotal time of execution {round(time()-start_all,2)}s")
+        print(f"Total time of execution {round(time()-start_all,2)}s")
 
