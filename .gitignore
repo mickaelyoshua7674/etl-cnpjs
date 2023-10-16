@@ -3,4 +3,3 @@ __pycache__/
 Files/
 .env
 *.tmp
-secrets.txt
