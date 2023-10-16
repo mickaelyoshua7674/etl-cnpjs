@@ -1,9 +1,6 @@
 __pycache__/
 .venv/
 Files/
-mergedfiles/
-mergedfiles copy/
-transformedfiles/
-transformedfiles copy/
+.env
 *.tmp
 secrets.txt

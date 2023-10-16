@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
 
-
-# pip install selenium, aiohttp, pip install "dask[complete]", sqlalchemy, psycopg2, tqdm
+from subprocess import call
+from sys import executable
+call([executable,"-m","pip","install","-r","requirements.txt"])

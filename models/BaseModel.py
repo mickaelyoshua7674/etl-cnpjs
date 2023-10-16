@@ -2,6 +2,7 @@ from sqlalchemy.types import VARCHAR, DATE, INTEGER, FLOAT
 from sqlalchemy import create_engine, text
 from models.MyThread import MyThread
 from sqlalchemy.engine import URL
+from os import environ
 
 class BaseModel():
     """
@@ -10,7 +11,12 @@ class BaseModel():
     """
     with open("./secrets.txt", "r") as f: # creating one engine to all table classes
         driver, username, password, host, port, database = f.read().split(",")
-        engine = create_engine(URL.create(drivername=driver, username=username, password=password, host=host, port=port, database=database))
+        engine = create_engine(URL.create(drivername=environ["DB_DRIVERNAME"],
+                                          username=environ["DB_USERNAME"],
+                                          password=environ["DB_PASSWORD"],
+                                          host=environ["DB_HOST"],
+                                          port=environ["DB_PORT"],
+                                          database=environ["DB_NAME"]))
 
     table_name:str
 

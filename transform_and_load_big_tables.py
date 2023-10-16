@@ -4,11 +4,13 @@ from models.Empresa import Empresa
 from models.Socio import Socio
 from multiprocessing import Pool
 from queue import Queue
+from os import environ
 from glob import glob
 from time import time
 import pandas as pd
 
-NUMBER_OF_THREADS = 10 # Warning -> the number of threads will be multiplied by the number of processes
+THREADS_NUMBER = int(environ["THREADS_NUMBER"]) # Warning -> the number of threads will be multiplied by the number of processes
+CHUNKSIZE = int(environ["CHUNKSIZE"]) # Warning -> the size of chunk will be for each process
 
 # Create objects of all table classes and create the DataBase table
 estab = Estabelecimento()
@@ -47,13 +49,13 @@ def process_and_insert(file_path) -> None:
                      names=obj.get_columns(), # give the header
                      dtype=str, # all string to don't force any unwanted type
                      encoding="IBM860", # encoding for Portuguese Language
-                     chunksize=100_000) # reader in chunks / since this function will run in 8 processes will be 800_000 rows in memory at a time
+                     chunksize=CHUNKSIZE) # reader in chunks / since this function will run in 8 processes will be 800_000 rows in memory at a time
     start_file = time()
     for chunk in df:
         obj.process_chunk(chunk, my_queue)
         start_chunk = time()
         # the threads will process one chunck at a time
-        threads = [obj.get_thread(my_queue) for _ in range(NUMBER_OF_THREADS)] # create objects of MyThread
+        threads = [obj.get_thread(my_queue) for _ in range(THREADS_NUMBER)] # create objects of MyThread
         for thread in threads: # Start all threads
             thread.start()
         for thread in threads: # wait all to finish
