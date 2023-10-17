@@ -1,8 +1,8 @@
+from multiprocessing import Pool, cpu_count, Queue as process_queue
 from models.Estabelecimento import Estabelecimento
 from models.Simples import Simples
 from models.Empresa import Empresa
 from models.Socio import Socio
-from multiprocessing import Pool
 from queue import Queue
 from os import environ
 from glob import glob
@@ -10,6 +10,7 @@ from time import time
 from tqdm import tqdm
 
 THREADS_NUMBER = int(environ["THREADS_NUMBER"]) # Warning -> the number of threads will be multiplied by the number of processes
+PROCESSES_NUMBER = cpu_count() # using all cores availables (mine is 8)
 CHUNKSIZE = int(environ["CHUNKSIZE"]) # Warning -> the size of chunk will be for each process
 
 # Create objects of all table classes and create the DataBase table
@@ -46,7 +47,8 @@ def process_and_insert(file_path) -> None:
     df = obj.get_reader_file(file_path, CHUNKSIZE)
     number_of_chunks = sum(1 for _ in obj.get_reader_file(file_path, CHUNKSIZE))
     # getting the file iterator again because can't interate on original 'df'. If iterate the original the iterator state will be at the end
-    with tqdm(total=number_of_chunks, desc=file_path, unit="chunk") as pbar: # see progress of chunk insertion in each file
+    with tqdm(total=number_of_chunks, desc=file_path, unit="chunk", position=position_of_pbar_queue.get()) as pbar: # see progress of chunk insertion in each file
+                                                                    # define a fixed place to each progress bar
         for chunk in df:
             obj.process_chunk(chunk, my_queue)
 
@@ -60,8 +62,13 @@ def process_and_insert(file_path) -> None:
 
 # getting list of all files
 files_paths = glob("Files/Estabelecimentos*.csv") + glob("Files/Socios*.csv") + glob("Files/Empresas*.csv") + ["Files\\Simples.csv"]
+
+position_of_pbar_queue = process_queue()
+for i, _ in enumerate(files_paths):
+    position_of_pbar_queue.put(i)
+
 if __name__ == "__main__":
-    with Pool() as pool: # since 'processes' is not defined will use all available cores (mine is 8)
+    with Pool(processes=PROCESSES_NUMBER) as pool:
         start_all = time()
         pool.map(process_and_insert, files_paths)
         print(f"Total time of execution {round(time()-start_all,2)}s")
