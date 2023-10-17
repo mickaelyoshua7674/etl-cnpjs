@@ -1,4 +1,4 @@
-from multiprocessing import Pool, cpu_count, Queue as process_queue # multiprocessing.Queue are process safe
+from multiprocessing import Pool, cpu_count, current_process
 from models.Estabelecimento import Estabelecimento
 from models.Simples import Simples
 from models.Empresa import Empresa
@@ -30,8 +30,6 @@ def process_and_insert(file_path) -> None:
     """
     Function to map all files in multiprocessing.Pool making the transformation and insertion of data into the DataBase.
     """
-    print(f"\nInserting {file_path}...\n")
-    
     # Switch to correct table
     obj = None
     if "Estabelecimento" in file_path:
@@ -46,9 +44,11 @@ def process_and_insert(file_path) -> None:
     my_queue = Queue() # one queue to each process so the threads inside those processes can safely share data
     df = obj.get_reader_file(file_path, CHUNKSIZE)
     number_of_chunks = sum(1 for _ in obj.get_reader_file(file_path, CHUNKSIZE))
+    pos = current_process()._identity[0]-1 # get number of progress
     # getting the file iterator again because can't interate on original 'df'. If iterate the original the iterator state will be at the end
-    with tqdm(total=number_of_chunks, desc=file_path, unit="chunk", position=position_of_pbar_queue.get()) as pbar: # see progress of chunk insertion in each file
-                                                                    # define a fixed place to each progress bar
+    # this count of chunks and progress bar will add an overhead but is to follow the progress
+    with tqdm(total=number_of_chunks, desc=file_path.split("\\")[-1], unit="chunk", position=pos) as pbar:
+    # see progress of chunk insertion in each file                                  define a fixed place to each progress bar
         for chunk in df:
             obj.process_chunk(chunk, my_queue)
 
@@ -62,10 +62,6 @@ def process_and_insert(file_path) -> None:
 
 # getting list of all files
 files_paths = glob("Files/Estabelecimentos*.csv") + glob("Files/Socios*.csv") + glob("Files/Empresas*.csv") + ["Files\\Simples.csv"]
-
-position_of_pbar_queue = process_queue()
-for i, _ in enumerate(files_paths):
-    position_of_pbar_queue.put(i)
 
 if __name__ == "__main__":
     with Pool(processes=PROCESSES_NUMBER) as pool:

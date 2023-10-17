@@ -10,14 +10,12 @@ class BaseModel():
     Base class to all table classes
     Each table class will define its own 'table_name', 'schema', 'fk' and 'process_chunk' methods.
     """
-    with open("./secrets.txt", "r") as f: # creating one engine to all table classes
-        driver, username, password, host, port, database = f.read().split(",")
-        engine = create_engine(URL.create(drivername=environ["DB_DRIVERNAME"],
-                                          username=environ["DB_USERNAME"],
-                                          password=environ["DB_PASSWORD"],
-                                          host=environ["DB_HOST"],
-                                          port=environ["DB_PORT"],
-                                          database=environ["DB_NAME"]))
+    engine = create_engine(URL.create(drivername=environ["DB_DRIVERNAME"],
+                                        username=environ["DB_USERNAME"],
+                                        password=environ["DB_PASSWORD"],
+                                        host=environ["DB_HOST"],
+                                        port=environ["DB_PORT"],
+                                        database=environ["DB_NAME"]))
 
     table_name:str
 
