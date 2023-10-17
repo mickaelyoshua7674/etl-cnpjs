@@ -4,3 +4,4 @@ psycopg2==2.9.9
 python-dotenv==1.0.0
 selenium==4.13.0
 SQLAlchemy==2.0.21
+tqdm==4.66.1

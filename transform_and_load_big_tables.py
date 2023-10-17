@@ -7,6 +7,7 @@ from queue import Queue
 from os import environ
 from glob import glob
 from time import time
+from tqdm import tqdm
 import pandas as pd
 
 THREADS_NUMBER = int(environ["THREADS_NUMBER"]) # Warning -> the number of threads will be multiplied by the number of processes
@@ -50,18 +51,21 @@ def process_and_insert(file_path) -> None:
                      dtype=str, # all string to don't force any unwanted type
                      encoding="IBM860", # encoding for Portuguese Language
                      chunksize=CHUNKSIZE) # reader in chunks / since this function will run in 8 processes will be 800_000 rows in memory at a time
-    start_file = time()
-    for chunk in df:
-        obj.process_chunk(chunk, my_queue)
-        start_chunk = time()
-        # the threads will process one chunck at a time
-        threads = [obj.get_thread(my_queue) for _ in range(THREADS_NUMBER)] # create objects of MyThread
-        for thread in threads: # Start all threads
-            thread.start()
-        for thread in threads: # wait all to finish
-            thread.join()
-        print(f"Time execution of chunk in {file_path} {round(time()-start_chunk,2)}s")
-    print(f"Time execution of {file_path} {round(time()-start_file,2)}s")
+    
+    number_of_chunks = sum(1 for _ in pd.read_csv(file_path, sep=";",header=None,names=obj.get_columns(),dtype=str,encoding="IBM860",chunksize=CHUNKSIZE))
+    # getting the file iterator again because can't interate on original 'df'. If iterate the original the iterator state will in the end.
+
+    with tqdm(total=number_of_chunks, desc=file_path, unit="chunk") as pbar: # see progress of chunk insertion in each file
+        for chunk in df:
+            obj.process_chunk(chunk, my_queue)
+
+            # the threads will process one chunck at a time
+            threads = [obj.get_thread(my_queue) for _ in range(THREADS_NUMBER)] # create objects of MyThread
+            for thread in threads: # Start all threads
+                thread.start()
+            for thread in threads: # wait all to finish
+                thread.join()
+            pbar.update(1)
 
 # getting list of all files
 files_paths = glob("Files/Estabelecimentos*.csv") + glob("Files/Socios*.csv") + glob("Files/Empresas*.csv") + ["Files\\Simples.csv"]
