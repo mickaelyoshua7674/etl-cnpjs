@@ -8,7 +8,6 @@ from os import environ
 from glob import glob
 from time import time
 from tqdm import tqdm
-import pandas as pd
 
 THREADS_NUMBER = int(environ["THREADS_NUMBER"]) # Warning -> the number of threads will be multiplied by the number of processes
 CHUNKSIZE = int(environ["CHUNKSIZE"]) # Warning -> the size of chunk will be for each process
@@ -44,17 +43,9 @@ def process_and_insert(file_path) -> None:
         obj = simples
 
     my_queue = Queue() # one queue to each process so the threads inside those processes can safely share data
-    df = pd.read_csv(filepath_or_buffer=file_path,
-                     sep=";",
-                     header=None, # the files don't have header
-                     names=obj.get_columns(), # give the header
-                     dtype=str, # all string to don't force any unwanted type
-                     encoding="IBM860", # encoding for Portuguese Language
-                     chunksize=CHUNKSIZE) # reader in chunks / since this function will run in 8 processes will be 800_000 rows in memory at a time
-    
-    number_of_chunks = sum(1 for _ in pd.read_csv(file_path, sep=";",header=None,names=obj.get_columns(),dtype=str,encoding="IBM860",chunksize=CHUNKSIZE))
+    df = obj.get_reader_file(file_path, CHUNKSIZE)
+    number_of_chunks = sum(1 for _ in obj.get_reader_file(file_path, CHUNKSIZE))
     # getting the file iterator again because can't interate on original 'df'. If iterate the original the iterator state will in the end.
-
     with tqdm(total=number_of_chunks, desc=file_path, unit="chunk") as pbar: # see progress of chunk insertion in each file
         for chunk in df:
             obj.process_chunk(chunk, my_queue)

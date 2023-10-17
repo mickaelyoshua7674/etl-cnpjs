@@ -3,6 +3,7 @@ from sqlalchemy import create_engine, text
 from models.MyThread import MyThread
 from sqlalchemy.engine import URL
 from os import environ
+import pandas as pd
 
 class BaseModel():
     """
@@ -23,6 +24,19 @@ class BaseModel():
     schema:dict
 
     fk:tuple # Foreign Keys
+
+    def get_reader_file(self, file_path:str, chunksize:int):
+        """
+        Return an TextFileReader with given chunksize from given file path.
+        Will read all the columns in string format so don't lose left zeros i.g.
+        """
+        return pd.read_csv(filepath_or_buffer=file_path,
+                           sep=";",
+                           header=None, # the files don't have header
+                           names=self.get_columns(), # give the header
+                           dtype=str, # all string to don't force any unwanted type
+                           encoding="IBM860", # encoding for Portuguese Language
+                           chunksize=chunksize) # reader in chunks / since this function will run in 8 processes will be 800_000 rows in memory at a time
 
     def get_columns(self) -> tuple:
         """
