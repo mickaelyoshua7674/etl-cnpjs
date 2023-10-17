@@ -45,7 +45,7 @@ def process_and_insert(file_path) -> None:
     my_queue = Queue() # one queue to each process so the threads inside those processes can safely share data
     df = obj.get_reader_file(file_path, CHUNKSIZE)
     number_of_chunks = sum(1 for _ in obj.get_reader_file(file_path, CHUNKSIZE))
-    # getting the file iterator again because can't interate on original 'df'. If iterate the original the iterator state will in the end.
+    # getting the file iterator again because can't interate on original 'df'. If iterate the original the iterator state will be at the end
     with tqdm(total=number_of_chunks, desc=file_path, unit="chunk") as pbar: # see progress of chunk insertion in each file
         for chunk in df:
             obj.process_chunk(chunk, my_queue)
