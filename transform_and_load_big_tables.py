@@ -1,4 +1,4 @@
-from multiprocessing import Pool, cpu_count, Queue as process_queue
+from multiprocessing import Pool, cpu_count, Queue as process_queue # multiprocessing.Queue are process safe
 from models.Estabelecimento import Estabelecimento
 from models.Simples import Simples
 from models.Empresa import Empresa
