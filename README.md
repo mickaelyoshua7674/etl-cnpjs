@@ -13,9 +13,15 @@ Foram utilizadas três formas diferentes de programação Assíncrona: I/O, Proc
 
 ## Visão geral do algoritmo do projeto
 ### Download dos arquivos
-Download é realizado utilizando lógica Asynchronous I/O através das bibliotecas [aiohttp](https://docs.aiohttp.org/en/stable/) e [asyncio](https://docs.python.org/3/library/asyncio.html). Através de Web Scraping (utilizando [selenium](https://selenium-python.readthedocs.io/)) são coletados os nomes dos arquivos no site, em seguida, de forma paralela, é iniciado o download dos Bytes iterando chunks de Bytes (Stream), em seguida os Bytes são descompactados e é salvo o arquivo `.csv` resultante.
+Download é realizado utilizando lógica Asynchronous I/O através das bibliotecas [aiohttp](https://docs.aiohttp.org/en/stable/) e [asyncio](https://docs.python.org/3/library/asyncio.html). Através de Web Scraping (usando [selenium](https://selenium-python.readthedocs.io/)) são coletados os nomes dos arquivos no site, em seguida, de forma paralela, é iniciado o download dos Bytes iterando chunks do conteúdo do download (Stream), em seguida os Bytes são descompactados e é salvo o arquivo `.csv` resultante.
 
 ### Transformação e Carregamento dos arquivos
+Para a leitura e transformação dos arquivos foi utlizado o [pandas](https://pandas.pydata.org/docs/) e para conexão com o Banco de Dados e inserção dos dados foi utilizado o [SQLAlchemy](https://docs.sqlalchemy.org/en/20/).
+
+#### Arquivos menores
+Os arquivos menores são as tabelas das chaves estrangeiras (Foreign Keys) dos arquivos maiores, por serem pequenas quantidades de dados e tabelas de rápida criação e inserção, foi totalmente feito de forma síncrona levando poucos segundos para ser executado. O script [transform_and_load_small_tables.py](transform_and_load_small_tables.py) cria as tabelas e faz a população delas (inserção dos dados).
+
+#### Arquivos maiores
 
 
 ## Configuração do Ambiente
