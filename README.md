@@ -30,7 +30,7 @@ As tabelas maiores são transformadas e inseridas através da Stream dos arquivo
 
 ![schema process](unit_of_process.png)
 
-Cada processo irá ler em Stream seu arquivo individual, cada chunk de arquivo lido será processado com o Pandas e inserido numa Queue que é compartilhada entre todas as Threads naquele processo. Cada Thread irá estabelecer uma conexão com o banco de dados e iterar na Queue inserindo os dados.
+Cada processo irá ler em `Stream` seu arquivo individual, cada chunk de arquivo lido será processado com o `Pandas` e inserido numa `Queue` que é compartilhada entre todas as `Threads` naquele processo. Cada Thread irá estabelecer uma conexão com o banco de dados e iterar na Queue inserindo os dados.
 
 O processo de transformar e inserir dados se repete para cada chunk de dados.
 
