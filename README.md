@@ -1,15 +1,15 @@
 # Documentação
 ## Descrição
-Este projeto tem como objetivo criar um Banco de Dados com todas as informações disponíveis de CNPJs disponibilzados pela Receita Federal em https://dadosabertos.rfb.gov.br/CNPJ/ e serviu também para meus estudos de Concorrência e Paralelismo (programação Assíncrona). Foram utilizadas três formas diferentes de programação Assíncrona: I/O, Processos e Threads.
+Este projeto tem como objetivo criar um Banco de Dados com todas as informações disponíveis de CNPJs disponibilizados pela Receita Federal em https://dadosabertos.rfb.gov.br/CNPJ/ e serviu também para meus estudos de Concorrência e Paralelismo (programação Assíncrona). Foram utilizadas três formas diferentes de programação Assíncrona: I/O, Processos e Threads.
 
-Como todo projeto sempre possuirá melhorias, este não é diferente. Aceito quaisquer sugestões, correções, conselhos e comentários.
+Como todo projeto sempre possuirá melhorias, este não é diferente. Aceito quaisquer sugestões, correções, conselhos e comentários 😁.
 
 ## Ferramentas
 * Sistema operacional: Windows 11;
 * Liguagens de programação: Python-3.11.5 e SQL;
 * Módulos de Python: [requeriments.txt](requirements.txt);
 * Banco de Dados: PostgreSQL;
-* Aplicação para acesso ao Banco de Dados: pgAdmin 4.
+* Ferramenta para acesso ao Banco de Dados: pgAdmin 4.
 
 ## Visão geral do algoritmo do projeto
 ### Download dos arquivos
@@ -30,11 +30,11 @@ As tabelas maiores são transformadas e inseridas através da Stream dos arquivo
 
 ![schema process](unit_of_process.png)
 
-Cada processo irá ler em Stream seu arquivo individual, cada chunk de arquivo lido será processado com o Pandas e inserido numa Queue que é compartilhada entre todas as Threads naquele processo. Cada Thread irá estabelecer uma conexão com o banco de dados, e iterar na Queue inserindo os dados no Banco de Dados.
+Cada processo irá ler em Stream seu arquivo individual, cada chunk de arquivo lido será processado com o Pandas e inserido numa Queue que é compartilhada entre todas as Threads naquele processo. Cada Thread irá estabelecer uma conexão com o banco de dados e iterar na Queue inserindo os dados.
 
 O processo de transformar e inserir dados se repete para cada chunk de dados.
 
-Os processos criados possuem essa estrutura na imagem acima, sendo cada um lendo de um arquivo diferente, ou seja, não há compartilhamento de dados entre processos, mas há compartilhamento entre Threads através da Queue em cada processo.
+Os processos criados possuem essa estrutura na imagem acima, sendo cada um lendo de um arquivo diferente, ou seja, não há compartilhamento de dados entre processos, mas há compartilhamento entre Threads no mesmo processo através da Queue.
 
 O script [transform_and_load_big_tables.py](transform_and_load_big_tables.py) é responsável pela criação e povoação das tabelas maiores.
 
@@ -57,7 +57,7 @@ Criar um arquivo `.env` para definir as variáveis de ambiente de acordo com o e
 
     Atenção ⚠: Nas variáveis de ambiente THREADS_NUMBER e CHUNKSIZE a quantidade informada será para cada processo definido, e.g.: com THREADS_NUMBER="8" você terá 8 Threads rodando em cada processo, com CHUNKSIZE="100000" serão chunks de dados de tamanho 100000 sendo processados e inseridos no Bando de Dados para cada processo.
 
-Finalmente executar o script [setup.py](setup.py) que irá instalar todas as dependências (módulos) de Python e definiar as variáveis de ambiente infromadas no arquivo `.env`.
+Finalmente executar o script [setup.py](setup.py) que irá instalar todas as dependências (módulos) de Python e definir as variáveis de ambiente infromadas no arquivo `.env`.
 
 ## Ordem de execução dos scripts
 1. [setup.py](setup.py) -> Configuração do ambiente (Síncrono);
@@ -66,7 +66,7 @@ Finalmente executar o script [setup.py](setup.py) que irá instalar todas as dep
 4. [transform_and_load_big_tables.py](transform_and_load_big_tables.py) -> Criação e povoação de tabelas maiores (Assíncrono).
 
 ## Possíveis melhorias
-* SQLAlchemy: Não fui muito a fundo na `engine` e conexões do SQLAlchemy, talvez tenha uma melhor performance caso seja utilizada [`Session()`](https://docs.sqlalchemy.org/en/20/orm/session.html) e até mesmo uso de [`SQLALchemy.orm`](https://docs.sqlalchemy.org/en/20/orm/) e sua criação de modelos de tabelas. Outra ideia seria mexer nas configuração do `engine` de conexão.
+* SQLAlchemy: Não fui muito a fundo na `engine` e conexões do SQLAlchemy, talvez tenha uma melhor performance caso seja utilizada [`Session()`](https://docs.sqlalchemy.org/en/20/orm/session.html) e até mesmo uso de [`SQLALchemy.orm`](https://docs.sqlalchemy.org/en/20/orm/) e sua criação de modelos de tabelas. Outra ideia seria mexer nas configuração do `engine` de conexão;
 * Testes: Este projeto não possui testes automatizados, pretendo criar em algum momento utilizando o [`pytest`](https://docs.pytest.org/en/7.1.x/contents.html);
 * Compiladores: Para tentar aumentar a performance, pricipalmente de processamento dos dados, utilizar compiladores como PyPy e estratégias de Cython podem acrescentar um grande ganho. Ja estudei sobre porém nunca apliquei, seria um bom teste;
-* Iserção dos dados: Como o processo de inserção em Banco de Dados Relacional não é algo exatamente rápido por causa da manutenção das propriedades ACID (atomicity, consistency, isolation, and durability), não sei dizer o q poderia ser feito para essa melhora (pricipalmente porque não pesquisei sobre o assunto). Aceito sugestões 😁.
+* Iserção dos dados: Como o processo de inserção em Banco de Dados Relacional não é algo exatamente rápido por causa da manutenção das propriedades ACID (atomicity, consistency, isolation, and durability), não sei dizer o que poderia ser feito para essa melhora (pricipalmente porque não pesquisei sobre o assunto). Aceito sugestões 🙃.
