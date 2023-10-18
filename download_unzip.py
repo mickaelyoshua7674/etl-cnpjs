@@ -47,7 +47,7 @@ async def download_file(session:ClientSession, url:str) -> None:
     async with session.get(url, timeout=None) as response: # make get requests to url / deactivate timeout
         file_name = url.split("/")[-1]
         full_content = bytearray()
-        async for data, _ in response.content.iter_chunks():
+        async for data, _ in response.content.iter_chunks(): # iterate on content
             full_content += data
         unzip(full_content, file_name)
         print(f"{file_name} extracted.")
