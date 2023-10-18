@@ -1,8 +1,8 @@
 # Documentação
 ## Descrição
-Este projeto tem como objetivo criar um Banco de Dados com todas as informações disponíveis de CNPJs disponibilzados pela Receita Federal em https://dadosabertos.rfb.gov.br/CNPJ/ e serviu também para meus estudos de Concorrência e Paralelismo (programação Assíncrona).
+Este projeto tem como objetivo criar um Banco de Dados com todas as informações disponíveis de CNPJs disponibilzados pela Receita Federal em https://dadosabertos.rfb.gov.br/CNPJ/ e serviu também para meus estudos de Concorrência e Paralelismo (programação Assíncrona). Foram utilizadas três formas diferentes de programação Assíncrona: I/O, Processos e Threads.
 
-Foram utilizadas três formas diferentes de programação Assíncrona: I/O, Processos e Threads.
+Como todo projeto sempre possuirá melhorias, este não é diferente. Aceito quaisquer sugestões, correções, conselhos e comentários.
 
 ## Ferramentas
 * Sistema operacional: Windows 11;
@@ -38,6 +38,14 @@ Os processos criados possuem essa estrutura na imagem acima, sendo cada um lendo
 
 O script [transform_and_load_big_tables.py](transform_and_load_big_tables.py) é responsável pela criação e povoação das tabelas maiores.
 
+### OOP
+A Programação Orientada a Objeto encontra-se na pasta [models](models) e é utilizada na Transformação e Inserção das tabelas maiores (na das menores é utilizada apenas para pegar o `engine`).
+
+As duas principais classes são [BaseModel.py](models\BaseModel.py) e [MyThread.py](models\MyThread.py).
+
+* [BaseModel.py](models\BaseModel.py) declara todas as variáveis e métodos necessários para as classes de cada tabela maior, onde a única diferença entre as classes das tabelas são o `schema`, `table_name`, `fk` (Foreign Keys) e o método `process_chunk`.
+* [MyThread.py](models\MyThread.py) herda da classe `threading.Thread` reescrevendo o método `run()` para pegar dados da `Queue` e inserir no Banco de Dados.
+
 ## Configuração do Ambiente
 ### Banco de Dados
 Criar o Banco de Dados manualmente e localmente utilizando o pgAdmin 4 com as configurações padrão.
@@ -55,6 +63,10 @@ Finalmente executar o script [setup.py](setup.py) que irá instalar todas as dep
 1. [setup.py](setup.py) -> Configuração do ambiente (Síncrono);
 2. [download_unzip.py](download_unzip.py) -> Download dos arquivos (Assíncrono);
 3. [transform_and_load_small_tables.py](transform_and_load_small_tables.py) -> Criação e povoação de tabelas menores (Síncrono);
-4. [transform_and_load_big_tables.py](transform_and_load_big_tables.py) -> Criação e povoação de tabelas maiores (Assíncrono);
+4. [transform_and_load_big_tables.py](transform_and_load_big_tables.py) -> Criação e povoação de tabelas maiores (Assíncrono).
 
 ## Possíveis melhorias
+* SQLAlchemy: Não fui muito a fundo na `engine` e conexões do SQLAlchemy, talvez tenha uma melhor performance caso seja utilizada [`Session()`](https://docs.sqlalchemy.org/en/20/orm/session.html) e até mesmo uso de [`SQLALchemy.orm`](https://docs.sqlalchemy.org/en/20/orm/) e sua criação de modelos de tabelas. Outra ideia seria mexer nas configuração do `engine` de conexão.
+* Testes: Este projeto não possui testes automatizados, pretendo criar em algum momento utilizando o [`pytest`](https://docs.pytest.org/en/7.1.x/contents.html);
+* Compiladores: Para tentar aumentar a performance, pricipalmente de processamento dos dados, utilizar compiladores como PyPy e estratégias de Cython podem acrescentar um grande ganho. Ja estudei sobre porém nunca apliquei, seria um bom teste;
+* Iserção dos dados: Como o processo de inserção em Banco de Dados Relacional não é algo exatamente rápido por causa da manutenção das propriedades ACID (atomicity, consistency, isolation, and durability), não sei dizer o q poderia ser feito para essa melhora (pricipalmente porque não pesquisei sobre o assunto). Aceito sugestões 😁.
