@@ -8,6 +8,8 @@ services:
     environment:
       - POSTGRES_USER=postgres # defining username
       - POSTGRES_PASSWORD=7674 # defining password
-      - POSTGRES_DB=mydb # name of default database created
+      - POSTGRES_DB=cnpjs # name of default database created
     volumes:
       - ./data:/var/lib/postgresql/data # persistent data
+    ports:
+      - 5432:5432
