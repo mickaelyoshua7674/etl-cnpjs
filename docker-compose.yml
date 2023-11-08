@@ -7,9 +7,21 @@ services:
     restart: always # allowing to restart the container
     environment:
       - POSTGRES_USER=postgres # defining username
-      - POSTGRES_PASSWORD=7674 # defining password
+      - POSTGRES_PASSWORD=0000 # defining password
       - POSTGRES_DB=cnpjs # name of default database created
     volumes:
       - ./data:/var/lib/postgresql/data # persistent data
     ports:
       - 5432:5432
+
+  etl:
+    image: <to define>
+    environment:
+      - DB_DRIVERNAME=postgresql
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=0000
+      - DB_HOST=localhost
+      - DB_PORT=5432
+      - DB_NAME=cnpjs
+      - THREADS_NUMBER=8
+      - CHUNKSIZE=100000
