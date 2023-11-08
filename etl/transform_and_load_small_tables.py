@@ -2,9 +2,10 @@ from sqlalchemy.types import INTEGER, VARCHAR
 from models.BaseModel import BaseModel
 from sqlalchemy import text
 import pandas as pd
-import os
 
-def create_insert_files(file_name:str, pk:str, conn) -> None:
+URL = "https://dadosabertos.rfb.gov.br/CNPJ/"
+
+def create_insert_files(url:str, pk:str, conn) -> None:
     """
     Create table and insert data of small files.
     All tables have the following pattern:
@@ -13,7 +14,7 @@ def create_insert_files(file_name:str, pk:str, conn) -> None:
                                         * second column -> descricao
     """
     print(f"Creating and inserting on table id_{pk}...")
-    df = pd.read_csv(os.path.join("Files",file_name), header=None, encoding="latin-1", sep=";", dtype={0:int,1:str})
+    df = pd.read_csv(url, header=None, encoding="latin-1", sep=";", dtype={0:int,1:str})
     df.columns = (pk, "descricao")
     len_descricao = int(df["descricao"].str.len().max()*1.2) # add a 20% margin
     df.to_sql(name=f"id_{pk}", con=conn, if_exists="replace", index=False, dtype={pk:INTEGER(), "descricao":VARCHAR(len_descricao)})
@@ -35,13 +36,13 @@ def creat_insert_aditional_tables(pk:str, data:tuple[tuple], conn) -> None:
 
 engine = BaseModel().engine
 with engine.connect() as conn:
-    create_insert_files(file_name="Cnaes.csv", pk="cnae", conn=conn) # null -> 8888888
-    create_insert_files(file_name="Motivos.csv", pk="motivo_situacao_cadastral", conn=conn) # null -> 0
-    create_insert_files(file_name="Municipios.csv", pk="municipio", conn=conn) # null -> inserted next (9999)
+    create_insert_files(url=URL+"Cnaes.zip", pk="cnae", conn=conn) # null -> 8888888
+    create_insert_files(url=URL+"Motivos.zip", pk="motivo_situacao_cadastral", conn=conn) # null -> 0
+    create_insert_files(url=URL+"Municipios.zip", pk="municipio", conn=conn) # null -> inserted next (9999)
     conn.execute(text("INSERT INTO public.id_municipio VALUES (9999,'NÃO INFORMADO')")) # null -> 9999
-    create_insert_files(file_name="Naturezas.csv", pk="natureza_juridica", conn=conn) # null -> 0
-    create_insert_files(file_name="Paises.csv", pk="pais", conn=conn) # null -> 999
-    create_insert_files(file_name="Qualificacoes.csv", pk="qualificacao", conn=conn) # null -> 0
+    create_insert_files(url=URL+"Naturezas.zip", pk="natureza_juridica", conn=conn) # null -> 0
+    create_insert_files(url=URL+"Paises.zip", pk="pais", conn=conn) # null -> 999
+    create_insert_files(url=URL+"Qualificacoes.zip", pk="qualificacao", conn=conn) # null -> 0
 
     creat_insert_aditional_tables(pk="porte_empresa", data=((0, 'NAO INFORMADO'),
                                                             (1, 'MICRO EMPRESA'),
