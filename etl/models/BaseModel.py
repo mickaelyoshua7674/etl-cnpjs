@@ -23,12 +23,12 @@ class BaseModel():
 
     fk:tuple # Foreign Keys
 
-    def get_reader_file(self, file_path:str, chunksize:int):
+    def get_reader_file(self, url:str, chunksize:int):
         """
         Return an TextFileReader with given chunksize from given file path.
         Will read all the columns in string format so don't lose left zeros i.g.
         """
-        return pd.read_csv(filepath_or_buffer=file_path,
+        return pd.read_csv(filepath_or_buffer=url,
                            sep=";",
                            header=None, # the files don't have header
                            names=self.get_columns(), # give the header
