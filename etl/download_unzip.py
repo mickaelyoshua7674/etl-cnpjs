@@ -1,6 +1,3 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
 from aiohttp import ClientSession
 from zipfile import ZipFile
 from io import BytesIO
@@ -8,28 +5,19 @@ from time import time
 import asyncio, os
 
 URL = "https://dadosabertos.rfb.gov.br/CNPJ/"
+ZIPFILES = ("Cnaes.zip", "Empresas0.zip", "Empresas1.zip", "Empresas2.zip", "Empresas3.zip",
+            "Empresas4.zip", "Empresas5.zip", "Empresas6.zip", "Empresas7.zip", "Empresas8.zip",
+            "Empresas9.zip", "Estabelecimentos0.zip", "Estabelecimentos1.zip", "Estabelecimentos2.zip",
+            "Estabelecimentos3.zip", "Estabelecimentos4.zip", "Estabelecimentos5.zip",
+            "Estabelecimentos6.zip", "Estabelecimentos7.zip", "Estabelecimentos8.zip",
+            "Estabelecimentos9.zip", "Motivos.zip", "Municipios.zip", "Naturezas.zip",
+            "Paises.zip", "Qualificacoes.zip", "Simples.zip", "Socios0.zip", "Socios1.zip",
+            "Socios2.zip", "Socios3.zip", "Socios4.zip", "Socios5.zip", "Socios6.zip",
+            "Socios7.zip", "Socios8.zip", "Socios9.zip")
+URLS = (URL+zf for zf in ZIPFILES)
 FILES_DIR = "Files"
 if not os.path.exists(FILES_DIR):
     os.mkdir(FILES_DIR)
-
-def get_zipfiles_names(url: str) -> list[str]:
-    """
-    Go to the given 'url' then search for TAG_NAME 'tr' and return all .zip files founded.
-    """
-    op = webdriver.ChromeOptions()
-    op.add_argument("log-level=3") # https://stackoverflow.com/questions/46744968/how-to-suppress-console-error-warning-info-messages-when-executing-selenium-pyth
-    op.add_argument("headless") # don't open a Chrome window
-    sc = Service("chromedriver.exe")
-    driver = webdriver.Chrome(service=sc, options=op)
-
-    print(f"Going to {url}...")
-    driver.get(url)
-    print("Getting list of zipfiles...")
-    tr_elements = [e for e in driver.find_elements(By.TAG_NAME, "tr")]
-    zipfiles_list = [e.text.split(" ")[0] for e in tr_elements if ".zip" in e.text]
-    print("List collected.\n")
-    driver.quit()
-    return zipfiles_list
 
 def unzip(b:bytearray, file_name:str) -> None:
     """
@@ -52,10 +40,9 @@ async def download_file(session:ClientSession, url:str) -> None:
         unzip(full_content, file_name)
         print(f"{file_name} extracted.")
 
-urls = (URL+zf for zf in get_zipfiles_names(URL))
 async def download_all_files() -> None:
     async with ClientSession() as session: # start a session
-        tasks = [asyncio.create_task(download_file(session, url)) for url in urls] # create tasks to all url downloads
+        tasks = [asyncio.create_task(download_file(session, url)) for url in URLS] # create tasks to all url downloads
         await asyncio.gather(*tasks) # schedule them
 
 print("Downloading all files simultaneously...")
