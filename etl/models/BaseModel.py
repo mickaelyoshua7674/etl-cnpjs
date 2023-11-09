@@ -23,6 +23,19 @@ class BaseModel():
 
     fk:tuple # Foreign Keys
 
+    def wait_connection(self) -> None:
+        """
+        Loop will break when connection is checked.
+        """
+        print("Checking connection...")
+        with self.engine.begin() as conn:
+            s1 = text("SELECT 1;")
+            while True:
+                r = conn.execute(s1).fetchone()[0]
+                if r == 1:
+                    print("\n\n############## Connected to Database ##############\n\n")
+                    break
+
     def get_reader_file(self, url:str, chunksize:int):
         """
         Return an TextFileReader with given chunksize from given file path.
@@ -68,7 +81,7 @@ class BaseModel():
         Return values as a set to faster search using the 'in' keyword in method 'check_fk'.
         """
         with self.engine.begin() as conn:
-            res = conn.execute(text(f"SELECT {column_name} FROM public.id_{column_name};"))
+            res = conn.execute(text(f"SELECT {column_name} FROM id_{column_name};"))
             return set(v[0] for v in res.fetchall())
     
     def check_fk(self, value:int, substitute_value:int, fk_values:set) -> int: # return an int because all Foreign Keys are int
@@ -94,9 +107,9 @@ class BaseModel():
         Drop the table if exists (will always reset the table) then create again.
         This function will use the 'schema' and 'table_name' defined in each table class.
         """
-        head = f"DROP TABLE IF EXISTS public.{self.table_name};\nCREATE TABLE public.{self.table_name} (\n  "
+        head = f"DROP TABLE IF EXISTS {self.table_name};\nCREATE TABLE {self.table_name} (\n  "
         columns = [f"{k} {i}"for k, i in self.schema.items()] # all Tables columns
-        constraints = [f"CONSTRAINT {c} FOREIGN KEY ({c}) REFERENCES public.id_{c}({c})" for c in self.fk] # all constraints of Foreign Keys
+        constraints = [f"CONSTRAINT {c} FOREIGN KEY ({c}) REFERENCES id_{c}({c})" for c in self.fk] # all constraints of Foreign Keys
         script = head + ",\n    ".join(columns+constraints) + "\n);"
         with self.engine.begin() as conn:
             conn.execute(text(script))
@@ -105,11 +118,11 @@ class BaseModel():
         """
         Return a string that already passed through the 'text()' function from 'sqlalchemy'.
 
-        The String format is: INSERT INTO public.{table_name} VALUES (:{field1},:{field2},...,:{fieldN});
+        The String format is: INSERT INTO {table_name} VALUES (:{field1},:{field2},...,:{fieldN});
 
         With this format, the paramns passed to 'execute()' of sqlalchemy must be dictionaries with '{filed}:{value}'.
         """
-        head = f"INSERT INTO public.{self.table_name} VALUES ("
+        head = f"INSERT INTO {self.table_name} VALUES ("
         return text(head + ",".join([f":{k}" for k in self.schema.keys()]) + ");")
 
     def get_thread(self, queue) -> MyThread:

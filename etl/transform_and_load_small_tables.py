@@ -18,7 +18,7 @@ def create_insert_files(url:str, pk:str, conn) -> None:
     df.columns = (pk, "descricao")
     len_descricao = int(df["descricao"].str.len().max()*1.2) # add a 20% margin
     df.to_sql(name=f"id_{pk}", con=conn, if_exists="replace", index=False, dtype={pk:INTEGER(), "descricao":VARCHAR(len_descricao)})
-    conn.execute(text(f"ALTER TABLE public.id_{pk} ADD PRIMARY KEY ({pk});"))
+    conn.execute(text(f"ALTER TABLE id_{pk} ADD PRIMARY KEY ({pk});"))
 
 def creat_insert_aditional_tables(pk:str, data:tuple[tuple], conn) -> None:
     """
@@ -32,14 +32,15 @@ def creat_insert_aditional_tables(pk:str, data:tuple[tuple], conn) -> None:
     df = pd.DataFrame(columns=(pk,"descricao"), data=data)
     len_descricao = int(df["descricao"].str.len().max()*1.2) # add a 20% margin
     df.to_sql(name=f"id_{pk}", con=conn, if_exists="replace", index=False, dtype={pk:INTEGER(), "descricao":VARCHAR(len_descricao)})
-    conn.execute(text(f"ALTER TABLE public.id_{pk} ADD PRIMARY KEY ({pk});"))
+    conn.execute(text(f"ALTER TABLE id_{pk} ADD PRIMARY KEY ({pk});"))
 
+BaseModel().wait_connection()
 engine = BaseModel().engine
 with engine.connect() as conn:
     create_insert_files(url=URL+"Cnaes.zip", pk="cnae", conn=conn) # null -> 8888888
     create_insert_files(url=URL+"Motivos.zip", pk="motivo_situacao_cadastral", conn=conn) # null -> 0
     create_insert_files(url=URL+"Municipios.zip", pk="municipio", conn=conn) # null -> inserted next (9999)
-    conn.execute(text("INSERT INTO public.id_municipio VALUES (9999,'NÃO INFORMADO')")) # null -> 9999
+    conn.execute(text("INSERT INTO id_municipio VALUES (9999,'NÃO INFORMADO')")) # null -> 9999
     create_insert_files(url=URL+"Naturezas.zip", pk="natureza_juridica", conn=conn) # null -> 0
     create_insert_files(url=URL+"Paises.zip", pk="pais", conn=conn) # null -> 999
     create_insert_files(url=URL+"Qualificacoes.zip", pk="qualificacao", conn=conn) # null -> 0
