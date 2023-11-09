@@ -11,14 +11,15 @@ services:
       - POSTGRES_DB=cnpjs # name of default database created
     volumes:
       - ./data:/var/lib/postgresql/data # persistent data
-    command: bash -c "max_connections=200" # max of 200 connections to postgres
+    command: >
+      bash -c "max_connections=200" # max of 200 connections to postgres
     ports:
       - 5432:5432 # exposing port 5432
 
   etl:
     build: .
     depends_on: # db will start before etl
-      - "db"
+      - db
     environment:
       - DB_DRIVERNAME=postgresql
       - DB_USERNAME=postgres

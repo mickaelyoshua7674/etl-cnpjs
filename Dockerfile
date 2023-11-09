@@ -24,10 +24,18 @@ ENV PATH="/home/etl-user/.local/bin:$PATH"
 
     # upgrade pip
 RUN python -m pip install --upgrade pip && \
+    # in order to psycopg2 connect to postgres the dependencie 'postgresql-client' must be installed
+    apk add --update --no-cache postgresql-client && \
+    # sets virtual dependencies package inside '.tmp-build-deps'
+    apk add --update --no-cache --virtual .tmp-build-deps \
+        # packages to set the postgres adaptor
+        build-base postgresql-dev musl-dev && \
     # install requirements
     python -m pip install -r /tmp/requirements.txt && \
     # remove temporary folder
-    rm -rf /tmp
+    rm -rf /tmp && \
+    # remove the installed packages
+    apk del .tmp-build-deps
 
 # change to created user
 USER etl-user
