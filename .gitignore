@@ -1,6 +1,10 @@
+# Python
+etl/models/__pycache__/
+etl/__pycache__/
 __pycache__/
 .venv/
-Files/
-.env
-*.tmp
-data/
+venv/
+
+# Others
+.vscode/
+database-data/

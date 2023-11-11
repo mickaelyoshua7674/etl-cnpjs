@@ -10,6 +10,7 @@ class BaseModel():
     Base class to all table classes
     Each table class will define its own 'table_name', 'schema', 'fk' and 'process_chunk' methods.
     """
+
     engine = create_engine(URL.create(drivername=environ["DB_DRIVERNAME"],
                                         username=environ["DB_USERNAME"],
                                         password=environ["DB_PASSWORD"],
@@ -22,19 +23,6 @@ class BaseModel():
     schema:dict
 
     fk:tuple # Foreign Keys
-
-    def wait_connection(self) -> None:
-        """
-        Loop will break when connection is checked.
-        """
-        print("Checking connection...")
-        with self.engine.begin() as conn:
-            s1 = text("SELECT 1;")
-            while True:
-                r = conn.execute(s1).fetchone()[0]
-                if r == 1:
-                    print("\n\n############## Connected to Database ##############\n\n")
-                    break
 
     def get_reader_file(self, url:str, chunksize:int):
         """

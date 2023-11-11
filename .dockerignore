@@ -11,3 +11,7 @@ etl/__pycache__/
 __pycache__/
 .venv/
 venv/
+
+# Others
+.vscode/
+database-data/

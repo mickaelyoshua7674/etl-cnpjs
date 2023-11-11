@@ -1,31 +1,45 @@
-version: "3.1"
+version: "3.4"
 
 services:
 
   db:
+    container_name: postgres-database
     image: postgres:16-alpine3.18 # alpine is a light version of Linux
     restart: always # allowing to restart the container
     environment:
       - POSTGRES_USER=postgres # defining username
       - POSTGRES_PASSWORD=0000 # defining password
       - POSTGRES_DB=cnpjs # name of default database created
+      # this ENV variable is only required for the healthcheck section - if you don't specify it, the check command will fail stating the root user doesn't exist in posgres
+      - PGUSER=postgres
     volumes:
-      - ./data:/var/lib/postgresql/data # persistent data
-    command: >
-      bash -c "max_connections=200" # max of 200 connections to postgres
+      - ./database-data:/var/lib/postgresql/data # persistent data
     ports:
-      - 5432:5432 # exposing port 5432
+      - 5432:5432
+    expose:
+      - 5432
+    healthcheck:
+      # this command checks if the database is ready, right on the source db server
+      test: pg_isready
+      interval: 5s
+      timeout: 10s
+      retries: 5
+      start_period: 20s # added in file format version 3.4
 
   etl:
+    container_name: etl-cnpjs
     build: .
     depends_on: # db will start before etl
-      - db
+      db:
+        condition: service_healthy
     environment:
       - DB_DRIVERNAME=postgresql
       - DB_USERNAME=postgres
       - DB_PASSWORD=0000
-      - DB_HOST=localhost
+      - DB_HOST=postgres-database # name given to db container
       - DB_PORT=5432
       - DB_NAME=cnpjs
       - THREADS_NUMBER=8
       - CHUNKSIZE=100000
+    command: >
+      sh -c "python etl-tables.py"
