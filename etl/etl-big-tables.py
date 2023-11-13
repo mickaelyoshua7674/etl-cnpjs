@@ -5,7 +5,6 @@ from multiprocessing import Pool
 from models.Socio import Socio
 
 from sqlalchemy import create_engine
-from sqlalchemy.pool import NullPool
 from sqlalchemy.engine import URL
 
 from queue import Queue
@@ -17,7 +16,7 @@ engine = create_engine(URL.create(drivername=environ["DB_DRIVERNAME"],
                                     password=environ["DB_PASSWORD"],
                                     host=environ["DB_HOST"],
                                     port=environ["DB_PORT"],
-                                    database=environ["DB_NAME"]), poolclass=NullPool)
+                                    database=environ["DB_NAME"]))
 
 ZIPFILES = ("Empresas0.zip", "Empresas1.zip", "Empresas2.zip", "Empresas3.zip", "Empresas4.zip",
             "Empresas5.zip", "Empresas6.zip", "Empresas7.zip", "Empresas8.zip", "Empresas9.zip",
@@ -30,19 +29,6 @@ link = "https://dadosabertos.rfb.gov.br/CNPJ/"
 URLS = tuple((link+zf for zf in ZIPFILES))
 THREADS_NUMBER = int(environ["THREADS_NUMBER"]) # Warning -> the number of threads will be multiplied by the number of processes
 CHUNKSIZE = int(environ["CHUNKSIZE"]) # Warning -> the size of chunk will be for each process
-
-# Create objects of all table classes and create the DataBase table
-estab = Estabelecimento()
-estab.create_table(engine)
-
-socio = Socio()
-socio.create_table(engine)
-
-empresa = Empresa()
-empresa.create_table(engine)
-
-simples = Simples()
-simples.create_table(engine)
 
 def process_and_insert(url:str) -> None:
     """
@@ -75,10 +61,32 @@ def process_and_insert(url:str) -> None:
         chunk_count += 1
         print(f"\nChunk number {chunk_count} from {filename}\n")
 
+print(f"Start multiprocessing pool...")
 engine.dispose()
 if __name__ == "__main__":
-    with Pool() as pool:
-        start_all = time()
-        pool.map(process_and_insert, URLS)
-        exec_time_hr = ((time()-start_all)/60)/60
-        print(f"\n\n############ Total time of execution {round(exec_time_hr,2)}hr ############\n\n")
+    print("main")
+
+    # Create objects of all table classes and create the DataBase table
+    print("Creating tables...")
+    estab = Estabelecimento()
+    estab.create_table(engine)
+
+    socio = Socio()
+    socio.create_table(engine)
+
+    empresa = Empresa()
+    empresa.create_table(engine)
+
+    simples = Simples()
+    simples.create_table(engine)
+    print("Tables created.")
+
+    process_and_insert(URLS[0])
+
+
+    # with Pool() as pool:
+    #     print("Started")
+    #     start_all = time()
+    #     pool.map(process_and_insert, URLS)
+    #     exec_time_hr = ((time()-start_all)/60)/60
+    #     print(f"\n\n############ Total time of execution {round(exec_time_hr,2)}hr ############\n\n")
