@@ -1,8 +1,6 @@
 from sqlalchemy.types import VARCHAR, DATE, INTEGER, FLOAT
-from sqlalchemy import create_engine, text
 from models.MyThread import MyThread
-from sqlalchemy.engine import URL
-from os import environ
+from sqlalchemy import text
 import pandas as pd
 
 class BaseModel():
@@ -10,13 +8,6 @@ class BaseModel():
     Base class to all table classes
     Each table class will define its own 'table_name', 'schema', 'fk' and 'process_chunk' methods.
     """
-
-    engine = create_engine(URL.create(drivername=environ["DB_DRIVERNAME"],
-                                        username=environ["DB_USERNAME"],
-                                        password=environ["DB_PASSWORD"],
-                                        host=environ["DB_HOST"],
-                                        port=environ["DB_PORT"],
-                                        database=environ["DB_NAME"]))
 
     table_name:str
 
@@ -27,7 +18,7 @@ class BaseModel():
     def get_reader_file(self, url:str, chunksize:int):
         """
         Return an TextFileReader with given chunksize from given file path.
-        Will read all the columns in string format so don't lose left zeros i.g.
+        Will read all the columns in string format so don't lose left zeros i.e.
         """
         return pd.read_csv(filepath_or_buffer=url,
                            sep=";",
@@ -63,12 +54,12 @@ class BaseModel():
                     dtypes[c] = float
         return dtypes
     
-    def get_fk_values(self, column_name:str) -> set:
+    def get_fk_values(self, column_name:str, engine) -> set:
         """
         Search by Foreign Key (column_name) and get values.
         Return values as a set to faster search using the 'in' keyword in method 'check_fk'.
         """
-        with self.engine.begin() as conn:
+        with engine.begin() as conn:
             res = conn.execute(text(f"SELECT {column_name} FROM id_{column_name};"))
             return set(v[0] for v in res.fetchall())
     
@@ -90,7 +81,7 @@ class BaseModel():
             return f"{value[:4]}-{value[4:6]}-{value[-2:]}"
         return "1900-01-01"
     
-    def create_table(self) -> None:
+    def create_table(self, engine) -> None:
         """
         Drop the table if exists (will always reset the table) then create again.
         This function will use the 'schema' and 'table_name' defined in each table class.
@@ -99,7 +90,7 @@ class BaseModel():
         columns = [f"{k} {i}"for k, i in self.schema.items()] # all Tables columns
         constraints = [f"CONSTRAINT {c} FOREIGN KEY ({c}) REFERENCES id_{c}({c})" for c in self.fk] # all constraints of Foreign Keys
         script = head + ",\n    ".join(columns+constraints) + "\n);"
-        with self.engine.begin() as conn:
+        with engine.begin() as conn:
             conn.execute(text(script))
 
     def get_insert_script(self):
@@ -113,12 +104,12 @@ class BaseModel():
         head = f"INSERT INTO {self.table_name} VALUES ("
         return text(head + ",".join([f":{k}" for k in self.schema.keys()]) + ");")
 
-    def get_thread(self, queue) -> MyThread:
+    def get_thread(self, queue, engine) -> MyThread:
         """
         Return an object of MyThread class with the passed 'queue' to share data between threads,
         the script for insert data and the engine to each thread create a connection to the DataBase.
         """
-        return MyThread(self.engine, queue, self.get_insert_script())
+        return MyThread(engine, queue, self.get_insert_script())
     
     def process_chunk(self) -> None:
         """

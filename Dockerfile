@@ -7,10 +7,6 @@ ENV PYTHONUNBUFERRED 1
 
 # copy files to image
 COPY ./requirements.txt /tmp/requirements.txt
-COPY ./etl /etl
-
-# change working directory
-WORKDIR /etl
 
     # best practice not use the root user
 RUN adduser \

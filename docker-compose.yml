@@ -20,11 +20,11 @@ services:
       - 5432
     healthcheck:
       # this command checks if the database is ready, right on the source db server
-      test: pg_isready
+      test: pg_isready -d cnpjs -h localhost -p 5432 -U postgres
       interval: 5s
       timeout: 10s
       retries: 5
-      start_period: 20s # added in file format version 3.4
+      start_period: 25s # added in file format version 3.4
 
   etl:
     container_name: etl-cnpjs
@@ -41,5 +41,8 @@ services:
       - DB_NAME=cnpjs
       - THREADS_NUMBER=8
       - CHUNKSIZE=100000
-    command: >
-      sh -c "python etl-tables.py"
+    volumes:
+      - ./etl:/etl
+    working_dir: /etl
+    # command: tail -F anything
+    command: python etl-small-tables.py && python etl-big-tables.py

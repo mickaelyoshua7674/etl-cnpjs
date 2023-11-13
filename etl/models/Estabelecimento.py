@@ -38,7 +38,7 @@ class Estabelecimento(BaseModel):
     
     fk:tuple=("identificador","situacao_cadastral","motivo_situacao_cadastral","pais","cnae","municipio")
 
-    def process_chunk(self, chunk, my_queue) -> None:
+    def process_chunk(self, chunk, my_queue, engine) -> None:
         """
         Process the data of each chunk to make a clean insertion into the DataBase.
         """
@@ -46,7 +46,7 @@ class Estabelecimento(BaseModel):
 
         substitute_value = int()
         for k in self.fk:
-            fk_values = self.get_fk_values(k)
+            fk_values = self.get_fk_values(k, engine)
             match k:
                 case "identificador":
                     substitute_value = 0
