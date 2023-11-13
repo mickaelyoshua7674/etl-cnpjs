@@ -26,7 +26,8 @@ ZIPFILES = ("Empresas0.zip", "Empresas1.zip", "Empresas2.zip", "Empresas3.zip", 
             "Simples.zip",
             "Socios0.zip", "Socios1.zip", "Socios2.zip", "Socios3.zip", "Socios4.zip",
             "Socios5.zip", "Socios6.zip", "Socios7.zip", "Socios8.zip", "Socios9.zip")
-URLS = tuple((URL+zf for zf in ZIPFILES))
+link = "https://dadosabertos.rfb.gov.br/CNPJ/"
+URLS = tuple((link+zf for zf in ZIPFILES))
 THREADS_NUMBER = int(environ["THREADS_NUMBER"]) # Warning -> the number of threads will be multiplied by the number of processes
 CHUNKSIZE = int(environ["CHUNKSIZE"]) # Warning -> the size of chunk will be for each process
 

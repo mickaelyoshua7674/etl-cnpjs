@@ -13,7 +13,7 @@ engine = create_engine(URL.create(drivername=environ["DB_DRIVERNAME"],
                                     port=environ["DB_PORT"],
                                     database=environ["DB_NAME"]), poolclass=NullPool)
 
-URL = "https://dadosabertos.rfb.gov.br/CNPJ/"
+link = "https://dadosabertos.rfb.gov.br/CNPJ/"
 
 def create_insert_files(url:str, pk:str, conn) -> None:
     """
@@ -45,13 +45,13 @@ def creat_insert_aditional_tables(pk:str, data:tuple[tuple], conn) -> None:
     conn.execute(text(f"ALTER TABLE id_{pk} ADD PRIMARY KEY ({pk});"))
 
 with engine.connect() as conn:
-    create_insert_files(url=URL+"Cnaes.zip", pk="cnae", conn=conn) # null -> 8888888
-    create_insert_files(url=URL+"Motivos.zip", pk="motivo_situacao_cadastral", conn=conn) # null -> 0
-    create_insert_files(url=URL+"Municipios.zip", pk="municipio", conn=conn) # null -> inserted next (9999)
+    create_insert_files(url=link+"Cnaes.zip", pk="cnae", conn=conn) # null -> 8888888
+    create_insert_files(url=link+"Motivos.zip", pk="motivo_situacao_cadastral", conn=conn) # null -> 0
+    create_insert_files(url=link+"Municipios.zip", pk="municipio", conn=conn) # null -> inserted next (9999)
     conn.execute(text("INSERT INTO id_municipio VALUES (9999,'NÃO INFORMADO')")) # null -> 9999
-    create_insert_files(url=URL+"Naturezas.zip", pk="natureza_juridica", conn=conn) # null -> 0
-    create_insert_files(url=URL+"Paises.zip", pk="pais", conn=conn) # null -> 999
-    create_insert_files(url=URL+"Qualificacoes.zip", pk="qualificacao", conn=conn) # null -> 0
+    create_insert_files(url=link+"Naturezas.zip", pk="natureza_juridica", conn=conn) # null -> 0
+    create_insert_files(url=link+"Paises.zip", pk="pais", conn=conn) # null -> 999
+    create_insert_files(url=link+"Qualificacoes.zip", pk="qualificacao", conn=conn) # null -> 0
 
     creat_insert_aditional_tables(pk="porte_empresa", data=((0, 'NAO INFORMADO'),
                                                             (1, 'MICRO EMPRESA'),
