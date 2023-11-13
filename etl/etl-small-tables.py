@@ -1,7 +1,17 @@
-from sqlalchemy.types import INTEGER, VARCHAR
-from models.BaseModel import BaseModel
-from sqlalchemy import text
+from os import environ
 import pandas as pd
+
+from sqlalchemy.types import INTEGER, VARCHAR
+from sqlalchemy import create_engine, text
+from sqlalchemy.pool import NullPool
+from sqlalchemy.engine import URL
+
+engine = create_engine(URL.create(drivername=environ["DB_DRIVERNAME"],
+                                    username=environ["DB_USERNAME"],
+                                    password=environ["DB_PASSWORD"],
+                                    host=environ["DB_HOST"],
+                                    port=environ["DB_PORT"],
+                                    database=environ["DB_NAME"]), poolclass=NullPool)
 
 URL = "https://dadosabertos.rfb.gov.br/CNPJ/"
 
@@ -34,7 +44,6 @@ def creat_insert_aditional_tables(pk:str, data:tuple[tuple], conn) -> None:
     df.to_sql(name=f"id_{pk}", con=conn, if_exists="replace", index=False, dtype={pk:INTEGER(), "descricao":VARCHAR(len_descricao)})
     conn.execute(text(f"ALTER TABLE id_{pk} ADD PRIMARY KEY ({pk});"))
 
-engine = BaseModel().engine
 with engine.connect() as conn:
     create_insert_files(url=URL+"Cnaes.zip", pk="cnae", conn=conn) # null -> 8888888
     create_insert_files(url=URL+"Motivos.zip", pk="motivo_situacao_cadastral", conn=conn) # null -> 0
