@@ -24,7 +24,7 @@ def create_insert_files(url:str, pk:str, conn) -> None:
                                         * second column -> descricao
     """
     print(f"Creating and inserting on table id_{pk}...")
-    df = pd.read_csv(url, header=None, encoding="latin-1", sep=";", dtype={0:int,1:str})
+    df = pd.read_csv(url, compression="zip", header=None, encoding="latin-1", sep=";", dtype={0:int,1:str})
     df.columns = (pk, "descricao")
     len_descricao = int(df["descricao"].str.len().max()*1.2) # add a 20% margin
     df.to_sql(name=f"id_{pk}", con=conn, if_exists="replace", index=False, dtype={pk:INTEGER(), "descricao":VARCHAR(len_descricao)})

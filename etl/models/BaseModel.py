@@ -21,6 +21,7 @@ class BaseModel():
         Will read all the columns in string format so don't lose left zeros i.e.
         """
         return pd.read_csv(filepath_or_buffer=url,
+                           compression="zip",
                            sep=";",
                            header=None, # the files don't have header
                            names=self.get_columns(), # give the header
