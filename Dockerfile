@@ -2,9 +2,6 @@
 FROM python:3.12-alpine3.18
 LABEL maintainer="mickaelyoshua7674"
 
-# the output of python will be printed directly on console
-ENV PYTHONUNBUFERRED 1
-
 # copy files to image
 COPY ./requirements.txt /tmp/requirements.txt
 
@@ -16,7 +13,8 @@ RUN adduser \
         etl-user
 
 # Adding folder of created user where pip will install packages to PATH
-ENV PATH="/home/etl-user/.local/bin:$PATH"
+ENV PATH="/home/etl-user/.local/bin:$PATH" PYTHONUNBUFFERED="1"
+                                            # the output of python will be printed directly on console
 
     # upgrade pip
 RUN python -m pip install --upgrade pip && \

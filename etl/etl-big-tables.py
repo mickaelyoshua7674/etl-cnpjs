@@ -1,4 +1,3 @@
-print("Hi from file")
 from models.Estabelecimento import Estabelecimento
 from models.Simples import Simples
 from models.Empresa import Empresa
@@ -31,6 +30,21 @@ engine = create_engine(URL.create(drivername=environ["DB_DRIVERNAME"],
                                     host=environ["DB_HOST"],
                                     port=environ["DB_PORT"],
                                     database=environ["DB_NAME"]))
+
+# Create objects of all table classes and create the DataBase table
+print("Creating tables...")
+estab = Estabelecimento()
+estab.create_table(engine)
+
+socio = Socio()
+socio.create_table(engine)
+
+empresa = Empresa()
+empresa.create_table(engine)
+
+simples = Simples()
+simples.create_table(engine)
+print("Tables created.")
 
 def insert_data(engine, insert_script, my_queue) -> None:
     """
@@ -81,29 +95,8 @@ def process_and_insert(url:str) -> None:
 print(f"Start multiprocessing pool...")
 engine.dispose()
 if __name__ == "__main__":
-    print("main")
-
-    # Create objects of all table classes and create the DataBase table
-    print("Creating tables...")
-    estab = Estabelecimento()
-    estab.create_table(engine)
-
-    socio = Socio()
-    socio.create_table(engine)
-
-    empresa = Empresa()
-    empresa.create_table(engine)
-
-    simples = Simples()
-    simples.create_table(engine)
-    print("Tables created.")
-
-    process_and_insert(URLS[0])
-
-
-    # with Pool() as pool:
-    #     print("Started")
-    #     start_all = time()
-    #     pool.map(process_and_insert, URLS)
-    #     exec_time_hr = ((time()-start_all)/60)/60
-    #     print(f"\n\n############ Total time of execution {round(exec_time_hr,2)}hr ############\n\n")
+    with Pool() as pool:
+        start_all = time()
+        pool.map(process_and_insert, URLS)
+        exec_time_hr = ((time()-start_all)/60)/60
+        print(f"\n\n############ Total time of execution {round(exec_time_hr,2)}hr ############\n\n")
