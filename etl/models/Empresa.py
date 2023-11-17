@@ -1,4 +1,5 @@
 from models.BaseModel import *
+from queue import Queue
 
 class Empresa(BaseModel):
     table_name:str="empresa"
@@ -15,7 +16,7 @@ class Empresa(BaseModel):
     
     fk:tuple=("natureza_juridica","qualificacao","porte_empresa")
 
-    def process_chunk(self, chunk, my_queue) -> None:
+    def process_chunk(self, chunk, engine) -> None:
         """
         Process the data of each chunk to make a clean insertion into the DataBase.
         """
@@ -23,7 +24,7 @@ class Empresa(BaseModel):
 
         substitute_value = 0
         for k in self.fk:
-            fk_values = self.get_fk_values(k)
+            fk_values = self.get_fk_values(k, engine)
             chunk[k].fillna(substitute_value, inplace=True) # fill null values in Foreign Key field
             chunk[k] = chunk[k].astype(dtypes[k]) # initially the data is all strings, so change now the data type to compare in the next lines
             chunk[k] = chunk[k].apply(self.check_fk, args=(substitute_value,fk_values)) # check if the value will be accepted in FOREIGN KEY CONSTRAINTS
@@ -31,5 +32,7 @@ class Empresa(BaseModel):
 
         chunk["capital_social"] = chunk["capital_social"].apply(lambda x: x.replace(",",".")) # replace to convert field to float
         chunk = chunk.astype(dtypes)
+        my_queue = Queue() # one queue to each process so the threads inside those processes can safely share data
         for d in chunk.to_dict(orient="records"): # 'orient="records"' will return a list with dictionaries
             my_queue.put(d) # insert each dictionary into queue to share the data between threads
+        return my_queue

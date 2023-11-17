@@ -1,4 +1,5 @@
 from models.BaseModel import *
+from queue import Queue
 
 class Socio(BaseModel):
     table_name:str="socio"
@@ -19,7 +20,7 @@ class Socio(BaseModel):
     
     fk:tuple=("identificador_socio","pais","qualificacao")
 
-    def process_chunk(self, chunk, my_queue) -> None:
+    def process_chunk(self, chunk, engine) -> None:
         """
         Process the data of each chunk to make a clean insertion into the DataBase.
         """
@@ -27,7 +28,7 @@ class Socio(BaseModel):
 
         substitute_value = int()
         for k in self.fk:
-            fk_values = self.get_fk_values(k)
+            fk_values = self.get_fk_values(k, engine)
             match k:
                 case "identificador_socio":
                     substitute_value = 0
@@ -45,5 +46,7 @@ class Socio(BaseModel):
         chunk[date_field] = chunk[date_field].apply(self.date_format) # format field to 'yyyy-mm-dd'
 
         chunk = chunk.astype(dtypes)
+        my_queue = Queue() # one queue to each process so the threads inside those processes can safely share data
         for d in chunk.to_dict(orient="records"): # 'orient="records"' will return a list with dictionaries
             my_queue.put(d) # insert each dictionary into queue to share the data between threads
+        return my_queue

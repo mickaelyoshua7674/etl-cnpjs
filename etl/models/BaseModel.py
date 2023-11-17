@@ -1,5 +1,4 @@
 from sqlalchemy.types import VARCHAR, DATE, INTEGER, FLOAT
-from models.MyThread import MyThread
 from sqlalchemy import text
 import pandas as pd
 
@@ -97,20 +96,11 @@ class BaseModel():
     def get_insert_script(self):
         """
         Return a string that already passed through the 'text()' function from 'sqlalchemy'.
-
         The String format is: INSERT INTO {table_name} VALUES (:{field1},:{field2},...,:{fieldN});
-
         With this format, the paramns passed to 'execute()' of sqlalchemy must be dictionaries with '{filed}:{value}'.
         """
         head = f"INSERT INTO {self.table_name} VALUES ("
         return text(head + ",".join([f":{k}" for k in self.schema.keys()]) + ");")
-
-    def get_thread(self, queue, engine) -> MyThread:
-        """
-        Return an object of MyThread class with the passed 'queue' to share data between threads,
-        the script for insert data and the engine to each thread create a connection to the DataBase.
-        """
-        return MyThread(engine, queue, self.get_insert_script())
     
     def process_chunk(self) -> None:
         """

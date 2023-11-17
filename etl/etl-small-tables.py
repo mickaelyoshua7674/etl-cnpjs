@@ -76,3 +76,4 @@ with engine.connect() as conn:
                                                                   (2, 'PESSOA FISICA'),
                                                                   (3, 'ESTRANGEIRO')), conn=conn)
     conn.commit()
+engine.dispose()

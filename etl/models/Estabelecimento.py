@@ -1,4 +1,5 @@
 from models.BaseModel import *
+from queue import Queue
 
 class Estabelecimento(BaseModel):
     table_name:str="estabelecimento"
@@ -38,7 +39,7 @@ class Estabelecimento(BaseModel):
     
     fk:tuple=("identificador","situacao_cadastral","motivo_situacao_cadastral","pais","cnae","municipio")
 
-    def process_chunk(self, chunk, my_queue, engine) -> None:
+    def process_chunk(self, chunk, engine) -> None:
         """
         Process the data of each chunk to make a clean insertion into the DataBase.
         """
@@ -70,5 +71,7 @@ class Estabelecimento(BaseModel):
             chunk[date_field] = chunk[date_field].apply(self.date_format) # format field to 'yyyy-mm-dd'
 
         chunk = chunk.astype(dtypes)
+        my_queue = Queue() # one queue to each process so the threads inside those processes can safely share data
         for d in chunk.to_dict(orient="records"): # 'orient="records"' will return a list with dictionaries
             my_queue.put(d) # insert each dictionary into queue to share the data between threads
+        return my_queue

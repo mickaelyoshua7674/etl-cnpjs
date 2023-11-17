@@ -1,4 +1,5 @@
 from models.BaseModel import *
+from queue import Queue
 
 class Simples(BaseModel):
     table_name:str="simples"
@@ -15,7 +16,7 @@ class Simples(BaseModel):
     
     fk:tuple=("opcao_simples","opcao_mei")
 
-    def process_chunk(self, chunk, my_queue) -> None:
+    def process_chunk(self, chunk, engine) -> None:
         """
         Process the data of each chunk to make a clean insertion into the DataBase.
         """
@@ -23,7 +24,7 @@ class Simples(BaseModel):
 
         substitute_value = 2
         for k in self.fk:
-            fk_values = self.get_fk_values(k)
+            fk_values = self.get_fk_values(k, engine)
             chunk[k].fillna(substitute_value, inplace=True) # fill null values in Foreign Key field
             chunk[k].replace("N",substitute_value, inplace=True) # replace to number equivalent in 'opcao_simples'/'opcao_mei'
             chunk[k].replace("S",substitute_value, inplace=True) # replace to number equivalent in 'opcao_simples'/'opcao_mei'
@@ -36,5 +37,7 @@ class Simples(BaseModel):
             chunk[date_field] = chunk[date_field].apply(self.date_format) # format field to 'yyyy-mm-dd'
 
         chunk = chunk.astype(dtypes)
+        my_queue = Queue() # one queue to each process so the threads inside those processes can safely share data
         for d in chunk.to_dict(orient="records"): # 'orient="records"' will return a list with dictionaries
             my_queue.put(d) # insert each dictionary into queue to share the data between threads
+        return my_queue
