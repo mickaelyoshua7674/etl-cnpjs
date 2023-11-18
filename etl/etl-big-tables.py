@@ -25,11 +25,11 @@ THREADS_NUMBER = int(environ["THREADS_NUMBER"]) # Warning -> the number of threa
 CHUNKSIZE = int(environ["CHUNKSIZE"]) # Warning -> the size of chunk will be for each process
 
 engine = create_engine(URL.create(drivername=environ["DB_DRIVERNAME"],
-                                    username=environ["DB_USERNAME"],
-                                    password=environ["DB_PASSWORD"],
-                                    host=environ["DB_HOST"],
-                                    port=environ["DB_PORT"],
-                                    database=environ["DB_NAME"]))
+                                  username=environ["DB_USERNAME"],
+                                  password=environ["DB_PASSWORD"],
+                                  host=environ["DB_HOST"],
+                                  port=environ["DB_PORT"],
+                                  database=environ["DB_NAME"]))
 
 # Create objects of all table classes and create the DataBase table
 print("Creating tables...")
