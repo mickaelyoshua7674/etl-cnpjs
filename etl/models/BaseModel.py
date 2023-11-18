@@ -22,18 +22,18 @@ class BaseModel():
         return pd.read_csv(filepath_or_buffer=url,
                            compression="zip",
                            sep=";",
-                           header=None, # the files don't have header
+                           header=None, # the files doesn't have header
                            names=self.get_columns(), # give the header
                            dtype=str, # all string to don't force any unwanted type
                            encoding="IBM860", # encoding for Portuguese Language
-                           chunksize=chunksize) # reader in chunks / since this function will run in 8 processes will be 800_000 rows in memory at a time
+                           chunksize=chunksize) # reader in chunks
 
     def get_columns(self) -> tuple:
         """
         From schema implemented in each table class
         return a tuple with all columns names.
         """
-        return tuple(i for i,_ in self.schema.items())
+        return tuple(k for k in self.schema.keys())
     
     def get_dtypes(self) -> dict:
         """
@@ -62,7 +62,7 @@ class BaseModel():
         with engine.begin() as conn:
             res = conn.execute(text(f"SELECT {column_name} FROM id_{column_name};"))
             return set(v[0] for v in res.fetchall())
-    
+
     def check_fk(self, value:int, substitute_value:int, fk_values:set) -> int: # return an int because all Foreign Keys are int
         """
         Check if the 'value' is in Foreign Keys set 'fk_values'
@@ -100,7 +100,7 @@ class BaseModel():
         With this format, the paramns passed to 'execute()' of sqlalchemy must be dictionaries with '{filed}:{value}'.
         """
         head = f"INSERT INTO {self.table_name} VALUES ("
-        return text(head + ",".join([f":{k}" for k in self.schema.keys()]) + ");")
+        return text(head + ",".join([f":{k}" for k in self.get_columns()]) + ");")
     
     def process_chunk(self) -> None:
         """
