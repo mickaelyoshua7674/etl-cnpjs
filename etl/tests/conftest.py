@@ -20,11 +20,3 @@ def my_engine():
                                     host=environ["DB_HOST"],
                                     port=environ["DB_PORT"],
                                     database=environ["DB_NAME"]))
-
-from sys import path
-path.insert(0, "./etl")
-from tests.TestClass import TestClass
-
-@pytest.fixture
-def my_testclass():
-    return TestClass()
