@@ -2,6 +2,7 @@
 etl/models/__pycache__/
 etl/__pycache__/
 __pycache__/
+.pytest_cache
 .venv/
 venv/
 

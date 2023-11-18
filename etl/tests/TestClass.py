@@ -4,10 +4,10 @@ class TestClass(BaseModel):
     table_name:str="test"
 
     schema:dict={
-        "column1":VARCHAR(8),
+        "column1":VARCHAR(),
         "column2":FLOAT(),
-        "column3":VARCHAR(2),
+        "column3":INTEGER(),
         "column4":DATE()
     }
     
-    fk:tuple=("identificador","situacao_cadastral","motivo_situacao_cadastral","pais","cnae","municipio")
+    fk:tuple=("column3")
