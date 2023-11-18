@@ -3,7 +3,6 @@ import pandas as pd
 
 from sqlalchemy.types import INTEGER, VARCHAR
 from sqlalchemy import create_engine, text
-from sqlalchemy.pool import NullPool
 from sqlalchemy.engine import URL
 
 engine = create_engine(URL.create(drivername=environ["DB_DRIVERNAME"],
@@ -11,7 +10,7 @@ engine = create_engine(URL.create(drivername=environ["DB_DRIVERNAME"],
                                     password=environ["DB_PASSWORD"],
                                     host=environ["DB_HOST"],
                                     port=environ["DB_PORT"],
-                                    database=environ["DB_NAME"]), poolclass=NullPool)
+                                    database=environ["DB_NAME"]))
 
 link = "https://dadosabertos.rfb.gov.br/CNPJ/"
 
@@ -53,27 +52,27 @@ with engine.connect() as conn:
     create_insert_files(url=link+"Paises.zip", pk="pais", conn=conn) # null -> 999
     create_insert_files(url=link+"Qualificacoes.zip", pk="qualificacao", conn=conn) # null -> 0
 
-    creat_insert_aditional_tables(pk="porte_empresa", data=((0, 'NAO INFORMADO'),
-                                                            (1, 'MICRO EMPRESA'),
-                                                            (3, 'EMPRESA DE PEQUENO PORTE'),
-                                                            (5, 'DEMAIS')), conn=conn)
-    creat_insert_aditional_tables(pk="identificador", data=((0, 'VAZIO'),
-                                                            (1, 'MATRIZ'),
-                                                            (2, 'FILIAL')), conn=conn)
-    creat_insert_aditional_tables(pk="situacao_cadastral", data=((1, 'NULA'),
-                                                                 (2, 'ATIVA'),
-                                                                 (3, 'SUSPENSA'),
-                                                                 (4, 'INAPTA'),
-                                                                 (8, 'BAIXADA')), conn=conn)
-    creat_insert_aditional_tables(pk="opcao_simples", data=((1, 'SIM'),
-                                                            (0, 'NAO'),
-                                                            (2, 'OUTROS')), conn=conn)
-    creat_insert_aditional_tables(pk="opcao_mei", data=((1, 'SIM'),
-                                                        (0, 'NAO'),
-                                                        (2, 'OUTROS')), conn=conn)
-    creat_insert_aditional_tables(pk="identificador_socio", data=((0, 'NENHUM'),
-                                                                  (1, 'PESSOA JURIDICA'),
-                                                                  (2, 'PESSOA FISICA'),
-                                                                  (3, 'ESTRANGEIRO')), conn=conn)
+    creat_insert_aditional_tables(pk="porte_empresa", data=((0, "NAO INFORMADO"),
+                                                            (1, "MICRO EMPRESA"),
+                                                            (3, "EMPRESA DE PEQUENO PORTE"),
+                                                            (5, "DEMAIS")), conn=conn)
+    creat_insert_aditional_tables(pk="identificador", data=((0, "VAZIO"),
+                                                            (1, "MATRIZ"),
+                                                            (2, "FILIAL")), conn=conn)
+    creat_insert_aditional_tables(pk="situacao_cadastral", data=((1, "NULA"),
+                                                                 (2, "ATIVA"),
+                                                                 (3, "SUSPENSA"),
+                                                                 (4, "INAPTA"),
+                                                                 (8, "BAIXADA")), conn=conn)
+    creat_insert_aditional_tables(pk="opcao_simples", data=((1, "SIM"),
+                                                            (0, "NAO"),
+                                                            (2, "OUTROS")), conn=conn)
+    creat_insert_aditional_tables(pk="opcao_mei", data=((1, "SIM"),
+                                                        (0, "NAO"),
+                                                        (2, "OUTROS")), conn=conn)
+    creat_insert_aditional_tables(pk="identificador_socio", data=((0, "NENHUM"),
+                                                                  (1, "PESSOA JURIDICA"),
+                                                                  (2, "PESSOA FISICA"),
+                                                                  (3, "ESTRANGEIRO")), conn=conn)
     conn.commit()
 engine.dispose()

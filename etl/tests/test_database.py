@@ -1,3 +1,4 @@
+from etl_small_tables import creat_insert_aditional_tables
 from sqlalchemy import text
 from os import environ
 import pytest
@@ -15,8 +16,9 @@ def test_database_exists(my_engine) -> None:
         assert res == environ["DB_NAME"], "Database not found"
 
 @pytest.mark.dependency(depends=["test_database_exists"])
-def test_create_fk_table(my_engine):
+def test_creat_insert_aditional_tables(my_engine):
+    data = (1, "desc")
+    pk = "c3"
     with my_engine.connect() as conn:
-        conn.execute(text("DROP TABLE IF EXISTS id_c3;CREATE TABLE id_c3 (c3 INTEGER PRIMARY KEY, descricao VARCHAR(4));INSERT INTO id_c3 VALUES (1,'desc');"))
-        conn.commit()
-        assert conn.execute(text("SELECT * FROM id_c3;")).fetchall() == [(1, "desc")]
+        creat_insert_aditional_tables(pk=pk, data=(data,), conn=conn)
+        assert conn.execute(text(f"SELECT * FROM id_{pk};")).fetchall() == [data]
