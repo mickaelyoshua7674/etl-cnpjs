@@ -20,5 +20,7 @@ def test_creat_insert_aditional_tables(my_engine):
     data = (1, "desc")
     pk = "c3"
     with my_engine.connect() as conn:
+        conn.execute(text(f"DROP TABLE IF EXISTS id_{pk} CASCADE;"))
         creat_insert_aditional_tables(pk=pk, data=(data,), conn=conn)
+        conn.commit()
         assert conn.execute(text(f"SELECT * FROM id_{pk};")).fetchall() == [data]
