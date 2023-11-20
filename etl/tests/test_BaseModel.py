@@ -59,5 +59,6 @@ ORDER BY column_name;""")
     with my_engine.connect() as conn:
         res_fk = conn.execute(qry_fk).fetchall()[0][0]
         res_columns = tuple(c[0] for c in conn.execute(qry_columns).fetchall())
+        conn.execute(f"DROP TABLE {my_testclass.table_name};")
     assert res_fk == my_testclass.fk[0], "Foreign Key doesn't match"
     assert res_columns == my_testclass.get_columns(), "columns doesn't match"
