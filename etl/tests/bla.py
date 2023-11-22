@@ -1,9 +1,6 @@
-# 'conftest.py' will share the fixtures across all files
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.engine import URL
-
 from os import environ
-import pytest
 
 environ["DB_DRIVERNAME"] = "postgresql"
 environ["DB_USERNAME"] = "postgres"
@@ -19,6 +16,6 @@ engine =  create_engine(URL.create(drivername=environ["DB_DRIVERNAME"],
                                    port=environ["DB_PORT"],
                                    database=environ["DB_NAME"]))
 
-@pytest.fixture
-def my_engine():
-    return engine
+with engine.connect() as conn:
+    #print(conn.execute(text("SELECT * FROM test;")).fetchall())
+    print(conn.execute(text("SELECT * FROM id_c3;")).fetchall())

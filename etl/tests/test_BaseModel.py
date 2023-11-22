@@ -45,8 +45,6 @@ FROM information_schema.table_constraints AS tc
 JOIN information_schema.key_column_usage AS kcu
     ON tc.constraint_name = kcu.constraint_name
     AND tc.table_schema = kcu.table_schema
-JOIN information_schema.constraint_column_usage AS ccu
-    ON ccu.constraint_name = tc.constraint_name
 WHERE tc.constraint_type = 'FOREIGN KEY'
     AND tc.table_name='{my_testclass.table_name}';""")
 
@@ -60,7 +58,7 @@ ORDER BY column_name;""")
     with my_engine.connect() as conn:
         res_fk = conn.execute(qry_fk).fetchall()[0][0]
         res_columns = tuple(c[0] for c in conn.execute(qry_columns).fetchall())
-        conn.execute(text(f"DROP TABLE {my_testclass.table_name};"))
-        conn.execute(text(f"DROP TABLE id_{my_testclass.fk[0]};"))
+        conn.execute(text(f"DROP TABLE {my_testclass.table_name};DROP TABLE id_{my_testclass.fk[0]} CASCADE;"))
+        conn.commit()
     assert res_fk == my_testclass.fk[0], "Foreign Key doesn't match"
     assert res_columns == my_testclass.get_columns(), "columns doesn't match"
