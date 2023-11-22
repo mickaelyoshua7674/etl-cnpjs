@@ -1,7 +1,6 @@
 from etl_small_tables import create_insert_aditional_tables
 from sqlalchemy import text
 from os import environ
-import pytest
 
 def test_connection(my_engine) -> None:
     with my_engine.connect() as conn:
