@@ -52,4 +52,4 @@ services:
     volumes:
       - ./etl:/etl
     working_dir: /etl
-    command: sh -c "pytest && python etl-small-tables.py && python etl-big-tables.py"
+    command: sh -c "pytest ./etl/tests/test_database.py && pytest ./etl/tests/test_BaseModel.py && python etl-small-tables.py && python etl-big-tables.py"

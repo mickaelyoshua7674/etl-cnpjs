@@ -5,20 +5,11 @@ from sqlalchemy.engine import URL
 from os import environ
 import pytest
 
-environ["DB_DRIVERNAME"] = "postgresql"
-environ["DB_USERNAME"] = "postgres"
-environ["DB_PASSWORD"] = "0000"
-environ["DB_HOST"] = "localhost"
-environ["DB_PORT"] = "5432"
-environ["DB_NAME"] = "cnpjs"
-
-engine =  create_engine(URL.create(drivername=environ["DB_DRIVERNAME"],
-                                   username=environ["DB_USERNAME"],
-                                   password=environ["DB_PASSWORD"],
-                                   host=environ["DB_HOST"],
-                                   port=environ["DB_PORT"],
-                                   database=environ["DB_NAME"]))
-
-@pytest.fixture
+@pytest.fixture(scope="session")
 def my_engine():
-    return engine
+    return create_engine(URL.create(drivername=environ["DB_DRIVERNAME"],
+                                    username=environ["DB_USERNAME"],
+                                    password=environ["DB_PASSWORD"],
+                                    host=environ["DB_HOST"],
+                                    port=environ["DB_PORT"],
+                                    database=environ["DB_NAME"]))

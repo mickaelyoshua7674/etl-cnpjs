@@ -7,7 +7,7 @@ class TestClass(BaseModel):
     schema:dict={"c1":VARCHAR(3), "c2":FLOAT(), "c3":INTEGER(), "c4":DATE()}
     fk:tuple=("c3",)
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def my_testclass() -> TestClass:
     return TestClass()
 
@@ -27,17 +27,14 @@ def test_date_format(my_testclass, date_text, expected, failed) -> None:
 def test_get_insert_script(my_testclass) -> None:
     assert my_testclass.get_insert_script().text == "INSERT INTO test VALUES (:c1,:c2,:c3,:c4);", "text of insert values do not match"
 
-@pytest.mark.dependency(on=["./test_database.py::test_creat_insert_aditional_tables"], scope="session")
 def test_get_fk_values(my_testclass, my_engine) -> None:
     assert my_testclass.get_fk_values(my_testclass.fk[0], my_engine) == {1}, "Foreign Key values do not correspond to '{1}'"
 
-@pytest.mark.dependency(depends=["test_get_fk_values"])
 @pytest.mark.parametrize("value, expected, failed", ((1,1,"Value 1 is not on Foreign Keys"),(2,0,"Substitute value is supose to be 0")))
 def test_check_fk(my_testclass, my_engine, value, expected, failed) -> None:
     fk_values = my_testclass.get_fk_values(my_testclass.fk[0], my_engine)
     assert my_testclass.check_fk(value, 0, fk_values) == expected, failed
 
-@pytest.mark.dependency(on=["./test_database.py::test_create_insert_aditional_tables"], scope="session")
 def test_create_table(my_testclass, my_engine) -> None:
     qry_fk = text(f"""SELECT
     kcu.column_name
