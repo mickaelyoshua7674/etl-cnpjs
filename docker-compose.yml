@@ -29,14 +29,6 @@ services:
   etl:
     container_name: etl-cnpjs
     build: .
-    deploy:
-      resources:
-        limits:
-          cpus: '8'
-          memory: 2G
-        reservations:
-          cpus: '4'
-          memory: 500M
     depends_on: # db will start before etl
       db:
         condition: service_healthy
@@ -47,9 +39,9 @@ services:
       - DB_HOST=postgres-database # name given to db container
       - DB_PORT=5432
       - DB_NAME=cnpjs
-      - THREADS_NUMBER=4
+      - THREADS_NUMBER=8
       - CHUNKSIZE=10000
     volumes:
       - ./etl:/etl
     working_dir: /etl
-    command: sh -c "pytest ./etl/tests/test_database.py && pytest ./etl/tests/test_BaseModel.py && python etl-small-tables.py && python etl-big-tables.py"
+    command: sh -c "pytest ./tests/test_database.py && pytest ./tests/test_BaseModel.py && python etl_small_tables.py && python etl_big_tables.py"
