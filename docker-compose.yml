@@ -41,6 +41,7 @@ services:
       - DB_NAME=cnpjs
       - THREADS_NUMBER=8
       - CHUNKSIZE=10000
+      - URL="https://dadosabertos.rfb.gov.br/CNPJ/"
     volumes:
       - ./etl:/etl
     working_dir: /etl
