@@ -31,7 +31,7 @@ async def download_all_files() -> None:
 print("Downloading all files simultaneously...\n")
 start = time()
 asyncio.run(download_all_files())
-exec_time_s = start-time()
+exec_time_s = time()-start
 exec_time_min = exec_time_s/60
 exec_time_hr = exec_time_min/60
 print(f"All finished.\nExecution time: {exec_time_s}s / {exec_time_min}min / {exec_time_hr}hr")
