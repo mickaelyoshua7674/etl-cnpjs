@@ -1,5 +1,5 @@
 from aiohttp import ClientSession
-from __init__ import ZIPFILES
+from __init__ import LARGE_ZIPFILES, SMALL_ZIPFILES
 from time import time
 import aiofiles
 import asyncio
@@ -22,7 +22,7 @@ async def download_file(session:ClientSession, url:str) -> None:
                 await f.write(data)
     print(f"{file_name} downloaded.\n")
 
-urls = (URL+zf for zf in ZIPFILES)
+urls = (URL+zf for zf in LARGE_ZIPFILES+SMALL_ZIPFILES)
 async def download_all_files() -> None:
     async with ClientSession() as session: # start a session
         tasks = [asyncio.create_task(download_file(session, url)) for url in urls] # create tasks to all url downloads

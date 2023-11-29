@@ -8,11 +8,11 @@ from sqlalchemy.engine import URL
 FILES_FOLDER = os.environ["FILES_FOLDER"]
 
 engine = create_engine(URL.create(drivername=os.environ["DB_DRIVERNAME"],
-                                    username=os.environ["DB_USERNAME"],
-                                    password=os.environ["DB_PASSWORD"],
-                                    host=os.environ["DB_HOST"],
-                                    port=os.environ["DB_PORT"],
-                                    database=os.environ["DB_NAME"]))
+                                  username=os.environ["DB_USERNAME"],
+                                  password=os.environ["DB_PASSWORD"],
+                                  host=os.environ["DB_HOST"],
+                                  port=os.environ["DB_PORT"],
+                                  database=os.environ["DB_NAME"]))
 
 def create_insert_files(path:str, pk:str, conn) -> None:
     """
@@ -28,6 +28,7 @@ def create_insert_files(path:str, pk:str, conn) -> None:
     len_descricao = int(df["descricao"].str.len().max()*1.2) # add a 20% margin
     df.to_sql(name=f"id_{pk}", con=conn, if_exists="replace", index=False, dtype={pk:INTEGER(), "descricao":VARCHAR(len_descricao)})
     conn.execute(text(f"ALTER TABLE id_{pk} ADD PRIMARY KEY ({pk});"))
+    os.remove(path)
 
 def create_insert_aditional_tables(pk:str, data:tuple[tuple], conn) -> None:
     """

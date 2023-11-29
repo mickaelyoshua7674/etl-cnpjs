@@ -1,4 +1,4 @@
-from etl_small_tables import create_insert_aditional_tables
+from ..etl_small_tables import create_insert_aditional_tables
 from sqlalchemy import text
 from os import environ
 
