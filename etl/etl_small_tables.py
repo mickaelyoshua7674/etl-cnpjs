@@ -1,20 +1,20 @@
-from os import environ
 import pandas as pd
+import os
 
 from sqlalchemy.types import INTEGER, VARCHAR
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import URL
 
-engine = create_engine(URL.create(drivername=environ["DB_DRIVERNAME"],
-                                    username=environ["DB_USERNAME"],
-                                    password=environ["DB_PASSWORD"],
-                                    host=environ["DB_HOST"],
-                                    port=environ["DB_PORT"],
-                                    database=environ["DB_NAME"]))
+FILES_FOLDER = os.environ["FILES_FOLDER"]
 
-link = "https://dadosabertos.rfb.gov.br/CNPJ/"
+engine = create_engine(URL.create(drivername=os.environ["DB_DRIVERNAME"],
+                                    username=os.environ["DB_USERNAME"],
+                                    password=os.environ["DB_PASSWORD"],
+                                    host=os.environ["DB_HOST"],
+                                    port=os.environ["DB_PORT"],
+                                    database=os.environ["DB_NAME"]))
 
-def create_insert_files(url:str, pk:str, conn) -> None:
+def create_insert_files(path:str, pk:str, conn) -> None:
     """
     Create table and insert data of small files.
     All tables have the following pattern:
@@ -23,7 +23,7 @@ def create_insert_files(url:str, pk:str, conn) -> None:
                                         * second column -> descricao
     """
     print(f"Creating and inserting on table id_{pk}...")
-    df = pd.read_csv(url, compression="zip", header=None, encoding="latin-1", sep=";", dtype={0:int,1:str})
+    df = pd.read_csv(path, compression="zip", header=None, encoding="latin-1", sep=";", dtype={0:int,1:str})
     df.columns = (pk, "descricao")
     len_descricao = int(df["descricao"].str.len().max()*1.2) # add a 20% margin
     df.to_sql(name=f"id_{pk}", con=conn, if_exists="replace", index=False, dtype={pk:INTEGER(), "descricao":VARCHAR(len_descricao)})
@@ -44,13 +44,13 @@ def create_insert_aditional_tables(pk:str, data:tuple[tuple], conn) -> None:
     conn.execute(text(f"ALTER TABLE id_{pk} ADD PRIMARY KEY ({pk});"))
 
 with engine.connect() as conn:
-    create_insert_files(url=link+"Cnaes.zip", pk="cnae", conn=conn) # null -> 8888888
-    create_insert_files(url=link+"Motivos.zip", pk="motivo_situacao_cadastral", conn=conn) # null -> 0
-    create_insert_files(url=link+"Municipios.zip", pk="municipio", conn=conn) # null -> inserted next (9999)
+    create_insert_files(path=os.path.join(FILES_FOLDER,"Cnaes.zip"), pk="cnae", conn=conn) # null -> 8888888
+    create_insert_files(path=os.path.join(FILES_FOLDER,"Motivos.zip"), pk="motivo_situacao_cadastral", conn=conn) # null -> 0
+    create_insert_files(path=os.path.join(FILES_FOLDER,"Municipios.zip"), pk="municipio", conn=conn) # null -> inserted next (9999)
     conn.execute(text("INSERT INTO id_municipio VALUES (9999,'NÃO INFORMADO')")) # null -> 9999
-    create_insert_files(url=link+"Naturezas.zip", pk="natureza_juridica", conn=conn) # null -> 0
-    create_insert_files(url=link+"Paises.zip", pk="pais", conn=conn) # null -> 999
-    create_insert_files(url=link+"Qualificacoes.zip", pk="qualificacao", conn=conn) # null -> 0
+    create_insert_files(path=os.path.join(FILES_FOLDER,"Naturezas.zip"), pk="natureza_juridica", conn=conn) # null -> 0
+    create_insert_files(path=os.path.join(FILES_FOLDER,"Paises.zip"), pk="pais", conn=conn) # null -> 999
+    create_insert_files(path=os.path.join(FILES_FOLDER,"Qualificacoes.zip"), pk="qualificacao", conn=conn) # null -> 0
 
     create_insert_aditional_tables(pk="porte_empresa", data=((0, "NAO INFORMADO"),
                                                             (1, "MICRO EMPRESA"),
@@ -75,4 +75,3 @@ with engine.connect() as conn:
                                                                   (2, "PESSOA FISICA"),
                                                                   (3, "ESTRANGEIRO")), conn=conn)
     conn.commit()
-engine.dispose()

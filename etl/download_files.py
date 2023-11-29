@@ -6,9 +6,9 @@ import asyncio
 import os
 
 URL = os.environ["URL"]
-FILES_DIR = "Files"
-if not os.path.exists(FILES_DIR):
-    os.mkdir(FILES_DIR)
+FILES_FOLDER = os.environ["FILES_FOLDER"]
+if not os.path.exists(FILES_FOLDER):
+    os.mkdir(FILES_FOLDER)
 
 async def download_file(session:ClientSession, url:str) -> None:
     """
@@ -17,7 +17,7 @@ async def download_file(session:ClientSession, url:str) -> None:
     async with session.get(url, timeout=None) as response: # make get requests to url / deactivate timeout
         file_name = url.split("/")[-1]
         print(f"Downloading file {file_name}...")
-        async with aiofiles.open(os.path.join(FILES_DIR,file_name), mode="ab") as f:
+        async with aiofiles.open(os.path.join(FILES_FOLDER,file_name), mode="ab") as f:
             async for data, _ in response.content.iter_chunks():
                 await f.write(data)
     print(f"{file_name} downloaded.\n")
