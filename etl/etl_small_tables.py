@@ -1,3 +1,4 @@
+from __init__ import SMALL_ZIPFILES
 import pandas as pd
 import os
 
@@ -44,35 +45,36 @@ def create_insert_aditional_tables(pk:str, data:tuple[tuple], conn) -> None:
     df.to_sql(name=f"id_{pk}", con=conn, if_exists="replace", index=False, dtype={pk:INTEGER(), "descricao":VARCHAR(len_descricao)})
     conn.execute(text(f"ALTER TABLE id_{pk} ADD PRIMARY KEY ({pk});"))
 
-with engine.connect() as conn:
-    create_insert_files(path=os.path.join(FILES_FOLDER,"Cnaes.zip"), pk="cnae", conn=conn) # null -> 8888888
-    create_insert_files(path=os.path.join(FILES_FOLDER,"Motivos.zip"), pk="motivo_situacao_cadastral", conn=conn) # null -> 0
-    create_insert_files(path=os.path.join(FILES_FOLDER,"Municipios.zip"), pk="municipio", conn=conn) # null -> inserted next (9999)
-    conn.execute(text("INSERT INTO id_municipio VALUES (9999,'NÃO INFORMADO')")) # null -> 9999
-    create_insert_files(path=os.path.join(FILES_FOLDER,"Naturezas.zip"), pk="natureza_juridica", conn=conn) # null -> 0
-    create_insert_files(path=os.path.join(FILES_FOLDER,"Paises.zip"), pk="pais", conn=conn) # null -> 999
-    create_insert_files(path=os.path.join(FILES_FOLDER,"Qualificacoes.zip"), pk="qualificacao", conn=conn) # null -> 0
+if __name__ == "__main__":
+    with engine.connect() as conn:
+        create_insert_files(path=os.path.join(FILES_FOLDER,SMALL_ZIPFILES[0]), pk="cnae", conn=conn) # Cnaes.zip / null -> 8888888
+        create_insert_files(path=os.path.join(FILES_FOLDER,SMALL_ZIPFILES[1]), pk="motivo_situacao_cadastral", conn=conn) # Motivos.zip / null -> 0
+        create_insert_files(path=os.path.join(FILES_FOLDER,SMALL_ZIPFILES[2]), pk="municipio", conn=conn) # Municipios.zip / null -> inserted next (9999)
+        conn.execute(text("INSERT INTO id_municipio VALUES (9999,'NÃO INFORMADO')")) # null -> 9999
+        create_insert_files(path=os.path.join(FILES_FOLDER,SMALL_ZIPFILES[3]), pk="natureza_juridica", conn=conn) # Naturezas.zip / null -> 0
+        create_insert_files(path=os.path.join(FILES_FOLDER,SMALL_ZIPFILES[4]), pk="pais", conn=conn) # Paises.zip / null -> 999
+        create_insert_files(path=os.path.join(FILES_FOLDER,SMALL_ZIPFILES[5]), pk="qualificacao", conn=conn) # Qualificacoes.zip / null -> 0
 
-    create_insert_aditional_tables(pk="porte_empresa", data=((0, "NAO INFORMADO"),
-                                                            (1, "MICRO EMPRESA"),
-                                                            (3, "EMPRESA DE PEQUENO PORTE"),
-                                                            (5, "DEMAIS")), conn=conn)
-    create_insert_aditional_tables(pk="identificador", data=((0, "VAZIO"),
-                                                            (1, "MATRIZ"),
-                                                            (2, "FILIAL")), conn=conn)
-    create_insert_aditional_tables(pk="situacao_cadastral", data=((1, "NULA"),
-                                                                 (2, "ATIVA"),
-                                                                 (3, "SUSPENSA"),
-                                                                 (4, "INAPTA"),
-                                                                 (8, "BAIXADA")), conn=conn)
-    create_insert_aditional_tables(pk="opcao_simples", data=((1, "SIM"),
+        create_insert_aditional_tables(pk="porte_empresa", data=((0, "NAO INFORMADO"),
+                                                                (1, "MICRO EMPRESA"),
+                                                                (3, "EMPRESA DE PEQUENO PORTE"),
+                                                                (5, "DEMAIS")), conn=conn)
+        create_insert_aditional_tables(pk="identificador", data=((0, "VAZIO"),
+                                                                (1, "MATRIZ"),
+                                                                (2, "FILIAL")), conn=conn)
+        create_insert_aditional_tables(pk="situacao_cadastral", data=((1, "NULA"),
+                                                                     (2, "ATIVA"),
+                                                                     (3, "SUSPENSA"),
+                                                                     (4, "INAPTA"),
+                                                                     (8, "BAIXADA")), conn=conn)
+        create_insert_aditional_tables(pk="opcao_simples", data=((1, "SIM"),
+                                                                (0, "NAO"),
+                                                                (2, "OUTROS")), conn=conn)
+        create_insert_aditional_tables(pk="opcao_mei", data=((1, "SIM"),
                                                             (0, "NAO"),
                                                             (2, "OUTROS")), conn=conn)
-    create_insert_aditional_tables(pk="opcao_mei", data=((1, "SIM"),
-                                                        (0, "NAO"),
-                                                        (2, "OUTROS")), conn=conn)
-    create_insert_aditional_tables(pk="identificador_socio", data=((0, "NENHUM"),
-                                                                  (1, "PESSOA JURIDICA"),
-                                                                  (2, "PESSOA FISICA"),
-                                                                  (3, "ESTRANGEIRO")), conn=conn)
-    conn.commit()
+        create_insert_aditional_tables(pk="identificador_socio", data=((0, "NENHUM"),
+                                                                      (1, "PESSOA JURIDICA"),
+                                                                      (2, "PESSOA FISICA"),
+                                                                      (3, "ESTRANGEIRO")), conn=conn)
+        conn.commit()

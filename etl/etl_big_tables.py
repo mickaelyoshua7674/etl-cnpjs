@@ -6,7 +6,7 @@ from models.Socio import Socio
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 
-from __init__ import ZIPFILES
+from __init__ import LARGE_ZIPFILES
 from multiprocessing import Pool
 from threading import Thread
 from queue import Empty
@@ -25,20 +25,6 @@ engine = create_engine(URL.create(drivername=os.environ["DB_DRIVERNAME"],
                                   port=os.environ["DB_PORT"],
                                   database=os.environ["DB_NAME"]))
 
-estab = Estabelecimento()
-socio = Socio()
-empresa = Empresa()
-simples = Simples()
-
-if len(files_path) == len(ZIPFILES): # when a file is fully loaded into the DataBase it's deleted,
-                                     # so if all files are still there create the tables
-    # Create objects of all table classes and create the DataBase table
-    print("Creating tables...")
-    estab.create_table(engine)
-    socio.create_table(engine)
-    empresa.create_table(engine)
-    simples.create_table(engine)
-    print("Tables created.")
 
 def insert_data(engine, insert_script, my_queue) -> None:
     """
@@ -88,6 +74,21 @@ def process_and_insert(path:str) -> None:
 print(f"Start multiprocessing pool...")
 engine.dispose()
 if __name__ == "__main__":
+    estab = Estabelecimento()
+    socio = Socio()
+    empresa = Empresa()
+    simples = Simples()
+
+    if len(files_path) == len(LARGE_ZIPFILES): # when a file is fully loaded into the DataBase it's deleted,
+                                         # so if all files are still there create the tables
+        # Create objects of all table classes and create the DataBase table
+        print("Creating tables...")
+        estab.create_table(engine)
+        socio.create_table(engine)
+        empresa.create_table(engine)
+        simples.create_table(engine)
+        print("Tables created.")
+
     with Pool() as pool:
         start_all = time()
         pool.map(process_and_insert, files_path)

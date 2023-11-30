@@ -1,9 +1,7 @@
 from aiohttp import ClientSession
 from __init__ import LARGE_ZIPFILES, SMALL_ZIPFILES
+import aiofiles, asyncio, os
 from time import time
-import aiofiles
-import asyncio
-import os
 
 URL = os.environ["URL"]
 FILES_FOLDER = os.environ["FILES_FOLDER"]
@@ -22,17 +20,18 @@ async def download_file(session:ClientSession, url:str) -> None:
                 await f.write(data)
     print(f"{file_name} downloaded.\n")
 
-urls = (URL+zf for zf in LARGE_ZIPFILES+SMALL_ZIPFILES)
+urls = (URL+zf for zf in filter(lambda x: x not in os.listdir(FILES_FOLDER),LARGE_ZIPFILES+SMALL_ZIPFILES))
 async def download_all_files() -> None:
     async with ClientSession() as session: # start a session
         tasks = [asyncio.create_task(download_file(session, url)) for url in urls] # create tasks to all url downloads
         await asyncio.gather(*tasks) # schedule them
 
-print("Downloading all files simultaneously...\n")
-start = time()
-asyncio.run(download_all_files())
-exec_time_s = time()-start
-exec_time_min = exec_time_s/60
-exec_time_hr = exec_time_min/60
-print(f"All finished.\nExecution time: {exec_time_s}s / {exec_time_min}min / {exec_time_hr}hr")
-# giving this error -> aiohttp.client_exceptions.ClientPayloadError: Response payload is not completed
+if __name__ == "__main__":
+    print("Downloading all files simultaneously...\n")
+    start = time()
+    asyncio.run(download_all_files())
+    exec_time_s = time()-start
+    exec_time_min = exec_time_s/60
+    exec_time_hr = exec_time_min/60
+    print(f"All finished.\nExecution time: {exec_time_s}s / {exec_time_min}min / {exec_time_hr}hr")
+    # giving this error -> aiohttp.client_exceptions.ClientPayloadError: Response payload is not completed

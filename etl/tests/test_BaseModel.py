@@ -1,4 +1,4 @@
-from models.BaseModel import *
+from ..models.BaseModel import *
 from sqlalchemy import text
 import pytest
 
