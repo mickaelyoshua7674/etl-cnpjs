@@ -6,15 +6,6 @@ from sqlalchemy.types import INTEGER, VARCHAR
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import URL
 
-FILES_FOLDER = os.environ["FILES_FOLDER"]
-
-engine = create_engine(URL.create(drivername=os.environ["DB_DRIVERNAME"],
-                                  username=os.environ["DB_USERNAME"],
-                                  password=os.environ["DB_PASSWORD"],
-                                  host=os.environ["DB_HOST"],
-                                  port=os.environ["DB_PORT"],
-                                  database=os.environ["DB_NAME"]))
-
 def create_insert_files(path:str, pk:str, conn) -> None:
     """
     Create table and insert data of small files.
@@ -46,6 +37,14 @@ def create_insert_aditional_tables(pk:str, data:tuple[tuple], conn) -> None:
     conn.execute(text(f"ALTER TABLE id_{pk} ADD PRIMARY KEY ({pk});"))
 
 if __name__ == "__main__":
+    FILES_FOLDER = os.environ["FILES_FOLDER"]
+    engine = create_engine(URL.create(drivername=os.environ["DB_DRIVERNAME"],
+                                      username=os.environ["DB_USERNAME"],
+                                      password=os.environ["DB_PASSWORD"],
+                                      host=os.environ["DB_HOST"],
+                                      port=os.environ["DB_PORT"],
+                                      database=os.environ["DB_NAME"]))
+
     with engine.connect() as conn:
         create_insert_files(path=os.path.join(FILES_FOLDER,SMALL_ZIPFILES[0]), pk="cnae", conn=conn) # Cnaes.zip / null -> 8888888
         create_insert_files(path=os.path.join(FILES_FOLDER,SMALL_ZIPFILES[1]), pk="motivo_situacao_cadastral", conn=conn) # Motivos.zip / null -> 0

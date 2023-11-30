@@ -3,11 +3,6 @@ from __init__ import LARGE_ZIPFILES, SMALL_ZIPFILES
 import aiofiles, asyncio, os
 from time import time
 
-URL = os.environ["URL"]
-FILES_FOLDER = os.environ["FILES_FOLDER"]
-if not os.path.exists(FILES_FOLDER):
-    os.mkdir(FILES_FOLDER)
-
 async def download_file(session:ClientSession, url:str) -> None:
     """
     Coroutine to download a single zip file from given url
@@ -20,13 +15,18 @@ async def download_file(session:ClientSession, url:str) -> None:
                 await f.write(data)
     print(f"{file_name} downloaded.\n")
 
-urls = (URL+zf for zf in filter(lambda x: x not in os.listdir(FILES_FOLDER),LARGE_ZIPFILES+SMALL_ZIPFILES))
 async def download_all_files() -> None:
     async with ClientSession() as session: # start a session
         tasks = [asyncio.create_task(download_file(session, url)) for url in urls] # create tasks to all url downloads
         await asyncio.gather(*tasks) # schedule them
 
 if __name__ == "__main__":
+    URL = os.environ["URL"]
+    FILES_FOLDER = os.environ["FILES_FOLDER"]
+    if not os.path.exists(FILES_FOLDER):
+        os.mkdir(FILES_FOLDER)
+    urls = (URL+zf for zf in filter(lambda x: x not in os.listdir(FILES_FOLDER),LARGE_ZIPFILES+SMALL_ZIPFILES))
+
     print("Downloading all files simultaneously...\n")
     start = time()
     asyncio.run(download_all_files())

@@ -13,19 +13,6 @@ from queue import Empty
 from time import time
 import os
 
-FILES_FOLDER = os.environ["FILES_FOLDER"]
-files_path = [os.path.join(FILES_FOLDER,f) for f in os.listdir(FILES_FOLDER)]
-THREADS_NUMBER = int(os.environ["THREADS_NUMBER"]) # Warning -> the number of threads will be multiplied by the number of processes
-CHUNKSIZE = int(os.environ["CHUNKSIZE"]) # Warning -> the size of chunk will be for each process
-
-engine = create_engine(URL.create(drivername=os.environ["DB_DRIVERNAME"],
-                                  username=os.environ["DB_USERNAME"],
-                                  password=os.environ["DB_PASSWORD"],
-                                  host=os.environ["DB_HOST"],
-                                  port=os.environ["DB_PORT"],
-                                  database=os.environ["DB_NAME"]))
-
-
 def insert_data(engine, insert_script, my_queue) -> None:
     """
     Function to run inside Threads and load data into database
@@ -71,9 +58,20 @@ def process_and_insert(path:str) -> None:
     print(f"\n---Finished file {path}---\n")
     os.remove(path)
 
-print(f"Start multiprocessing pool...")
-engine.dispose()
 if __name__ == "__main__":
+    print(f"Start multiprocessing pool...")
+    FILES_FOLDER = os.environ["FILES_FOLDER"]
+    files_path = [os.path.join(FILES_FOLDER,f) for f in os.listdir(FILES_FOLDER)]
+    THREADS_NUMBER = int(os.environ["THREADS_NUMBER"]) # Warning -> the number of threads will be multiplied by the number of processes
+    CHUNKSIZE = int(os.environ["CHUNKSIZE"]) # Warning -> the size of chunk will be for each process
+    engine = create_engine(URL.create(drivername=os.environ["DB_DRIVERNAME"],
+                                      username=os.environ["DB_USERNAME"],
+                                      password=os.environ["DB_PASSWORD"],
+                                      host=os.environ["DB_HOST"],
+                                      port=os.environ["DB_PORT"],
+                                      database=os.environ["DB_NAME"]))
+    engine.dispose()
+
     estab = Estabelecimento()
     socio = Socio()
     empresa = Empresa()
