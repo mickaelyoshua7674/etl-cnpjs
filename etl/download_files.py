@@ -31,7 +31,7 @@ if __name__ == "__main__":
     start = time()
     asyncio.run(download_all_files())
     exec_time_s = time()-start
-    exec_time_min = exec_time_s/60
-    exec_time_hr = exec_time_min/60
-    print(f"All finished.\nExecution time: {exec_time_s}s / {exec_time_min}min / {exec_time_hr}hr")
+    exec_time_min = exec_time_s/60.
+    exec_time_hr = exec_time_min/60.
+    print(f"All finished.\nExecution time: {round(exec_time_s,2)}s / {round(exec_time_min,2)}min / {round(exec_time_hr,2)}hr")
     # giving this error -> aiohttp.client_exceptions.ClientPayloadError: Response payload is not completed

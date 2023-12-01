@@ -77,7 +77,7 @@ if __name__ == "__main__":
     empresa = Empresa()
     simples = Simples()
 
-    if len(files_path) == len(LARGE_ZIPFILES): # when a file is fully loaded into the DataBase it's deleted,
+    if all(f in [os.path.join(FILES_FOLDER,zf) for zf in LARGE_ZIPFILES] for f in files_path): # when a file is fully loaded into the DataBase it's deleted,
                                          # so if all files are still there create the tables
         # Create objects of all table classes and create the DataBase table
         print("Creating tables...")
@@ -88,7 +88,9 @@ if __name__ == "__main__":
         print("Tables created.")
 
     with Pool() as pool:
-        start_all = time()
+        start = time()
         pool.map(process_and_insert, files_path)
-        exec_time_hr = ((time()-start_all)/60)/60
-        print(f"\n\n############ Total time of execution {round(exec_time_hr,2)}hr ############\n\n")
+        exec_time_s = time()-start
+        exec_time_min = exec_time_s/60.
+        exec_time_hr = exec_time_min/60.
+        print(f"All finished.\nExecution time: {round(exec_time_s,2)}s / {round(exec_time_min,2)}min / {round(exec_time_hr,2)}hr")

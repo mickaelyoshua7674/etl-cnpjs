@@ -1,4 +1,3 @@
-from __init__ import SMALL_ZIPFILES
 import pandas as pd
 import os
 
@@ -37,6 +36,7 @@ def create_insert_aditional_tables(pk:str, data:tuple[tuple], conn) -> None:
     conn.execute(text(f"ALTER TABLE id_{pk} ADD PRIMARY KEY ({pk});"))
 
 if __name__ == "__main__":
+    from __init__ import SMALL_ZIPFILES
     FILES_FOLDER = os.environ["FILES_FOLDER"]
     engine = create_engine(URL.create(drivername=os.environ["DB_DRIVERNAME"],
                                       username=os.environ["DB_USERNAME"],
