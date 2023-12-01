@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 
 from __init__ import LARGE_ZIPFILES
-from multiprocessing import Pool
+from multiprocessing import Pool, current_process
 from threading import Thread
 from queue import Empty
 from time import time
@@ -32,6 +32,7 @@ def process_and_insert(path:str) -> None:
     Function to map all files in multiprocessing.Pool making the transformation and insertion of data into the DataBase.
     """
     chunk_count = 0
+    print(f"***current process {current_process()}***")
     print(f"Processing {path}...")
     # Switch to correct table
     obj = None
@@ -43,6 +44,8 @@ def process_and_insert(path:str) -> None:
         obj = empresa
     elif "Simples" in path:
         obj = simples
+    else:
+        return
 
     df = obj.get_reader_file(path, CHUNKSIZE)
     for chunk in df:
@@ -70,7 +73,6 @@ if __name__ == "__main__":
                                       host=os.environ["DB_HOST"],
                                       port=os.environ["DB_PORT"],
                                       database=os.environ["DB_NAME"]))
-    engine.dispose()
 
     estab = Estabelecimento()
     socio = Socio()
@@ -80,12 +82,12 @@ if __name__ == "__main__":
     if all(f in [os.path.join(FILES_FOLDER,zf) for zf in LARGE_ZIPFILES] for f in files_path): # when a file is fully loaded into the DataBase it's deleted,
                                          # so if all files are still there create the tables
         # Create objects of all table classes and create the DataBase table
-        print("Creating tables...")
+        print("\nCreating tables...")
         estab.create_table(engine)
         socio.create_table(engine)
         empresa.create_table(engine)
         simples.create_table(engine)
-        print("Tables created.")
+        print("Tables created.\n")
 
     with Pool() as pool:
         start = time()
