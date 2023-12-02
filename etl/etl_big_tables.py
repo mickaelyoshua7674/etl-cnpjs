@@ -7,11 +7,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 
 from __init__ import LARGE_ZIPFILES
-from multiprocessing import Pool, current_process
-from threading import Thread
+from multiprocessing import Pool, set_start_method, get_context
+from multiprocessing.pool import ThreadPool
 from queue import Empty
 from time import time
-import os
+import os, psutil
 
 def insert_data(engine, insert_script, my_queue) -> None:
     """
@@ -32,8 +32,7 @@ def process_and_insert(path:str) -> None:
     Function to map all files in multiprocessing.Pool making the transformation and insertion of data into the DataBase.
     """
     chunk_count = 0
-    print(f"***current process {current_process()}***")
-    print(f"Processing {path}...")
+    print(f"Processing {path}... PID: {os.getpid()}")
     # Switch to correct table
     obj = None
     if "Estabelecimento" in path:
@@ -51,17 +50,19 @@ def process_and_insert(path:str) -> None:
     for chunk in df:
         my_queue = obj.process_chunk(chunk, engine)
         # the threads will insert one chunck at a time
-        threads = [Thread(target=insert_data, args=(engine, obj.get_insert_script(), my_queue)) for _ in range(THREADS_NUMBER)]
-        for thread in threads: # Start all threads
-            thread.start()
-        for thread in threads: # wait all to finish
-            thread.join()
+        insert_data(engine, obj.get_insert_script(), my_queue)
+        #threads = [Thread(target=insert_data, args=(engine, obj.get_insert_script(), my_queue)) for _ in range(THREADS_NUMBER)]
+        #for thread in threads: # Start all threads
+        #    thread.start()
+        #for thread in threads: # wait all to finish
+        #    thread.join()
         chunk_count += 1
         print(f"\nChunk number {chunk_count} from {path}\n")
     print(f"\n---Finished file {path}---\n")
     os.remove(path)
 
 if __name__ == "__main__":
+    set_start_method("fork")
     print(f"Start multiprocessing pool...")
     FILES_FOLDER = os.environ["FILES_FOLDER"]
     files_path = [os.path.join(FILES_FOLDER,f) for f in os.listdir(FILES_FOLDER)]
