@@ -1,35 +1,24 @@
 # alpine is a light version of Linux
-FROM python:3.12-alpine3.18
+FROM python:3.12-slim
 LABEL maintainer="mickaelyoshua7674"
 
 # copy files to image
 COPY ./requirements.txt /tmp/requirements.txt
 
-    # best practice not use the root user
-RUN adduser \
-        # no password necessary
-        --disabled-password \
-        # user name
-        etl-user
+# the output of python will be printed directly on console
+ENV PYTHONUNBUFFERED=1
 
-# Adding folder of created user where pip will install packages to PATH
-ENV PATH="/home/etl-user/.local/bin:$PATH" PYTHONUNBUFFERED="1"
-                                            # the output of python will be printed directly on console
-
+    # update Debian
+RUN apt-get update && apt-get upgrade && \
+    # in order to psycopg2 connect to postgres the dependencie 'libpq-dev' must be installed
+    apt-get install libpq-dev -y && \
+    # install gcc
+    apt-get install gcc -y && \
+    # remove apt cache
+    rm -rf /var/lib/apt/lists/* && \
     # upgrade pip
-RUN python -m pip install --upgrade pip && \
-    # in order to psycopg2 connect to postgres the dependencie 'postgresql-client' must be installed
-    apk add --update --no-cache postgresql-client && \
-    # sets virtual dependencies package inside '.tmp-build-deps'
-    apk add --update --no-cache --virtual .tmp-build-deps \
-        # packages to set the postgres adaptor
-        build-base postgresql-dev musl-dev && \
+    python -m pip install --upgrade pip && \
     # install requirements
     python -m pip install -r /tmp/requirements.txt && \
     # remove temporary folder
-    rm -rf /tmp && \
-    # remove the installed packages
-    apk del .tmp-build-deps
-
-# change to created user
-USER etl-user
+    rm -rf /tmp 

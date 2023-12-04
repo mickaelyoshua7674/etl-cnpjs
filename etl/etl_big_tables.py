@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 
 from __init__ import LARGE_ZIPFILES
-from multiprocessing import Pool, set_start_method, get_context
+from multiprocessing import Pool
 from multiprocessing.pool import ThreadPool
 from queue import Empty
 from time import time
@@ -32,7 +32,8 @@ def process_and_insert(path:str) -> None:
     Function to map all files in multiprocessing.Pool making the transformation and insertion of data into the DataBase.
     """
     chunk_count = 0
-    print(f"Processing {path}... PID: {os.getpid()}")
+    p = psutil.Process()
+    print(f"File: {path} / PID: {os.getpid()}")
     # Switch to correct table
     obj = None
     if "Estabelecimento" in path:
@@ -62,7 +63,9 @@ def process_and_insert(path:str) -> None:
     os.remove(path)
 
 if __name__ == "__main__":
-    set_start_method("fork")
+    cpu_count = psutil.cpu_count(logical=False)
+    print(f"--- Physical CPU count: {cpu_count} ---")
+
     print(f"Start multiprocessing pool...")
     FILES_FOLDER = os.environ["FILES_FOLDER"]
     files_path = [os.path.join(FILES_FOLDER,f) for f in os.listdir(FILES_FOLDER)]
@@ -90,9 +93,10 @@ if __name__ == "__main__":
         simples.create_table(engine)
         print("Tables created.\n")
 
-    with Pool() as pool:
+    
+    with Pool(cpu_count) as pool:
         start = time()
-        pool.map(process_and_insert, files_path)
+        pool.map(insert_data, files_path)
         exec_time_s = time()-start
         exec_time_min = exec_time_s/60.
         exec_time_hr = exec_time_min/60.
