@@ -27,4 +27,4 @@ RUN apt-get update && apt-get upgrade && \
     # remove temporary folder
     rm -rf /tmp 
 
-ENV PATH="./etl/venv/bin:$PATH"
+ENV PATH="/venv/bin:$PATH"
