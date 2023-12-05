@@ -4,6 +4,8 @@ LABEL maintainer="mickaelyoshua7674"
 
 # copy files to image
 COPY ./requirements.txt /tmp/requirements.txt
+COPY ./etl etl
+WORKDIR /etl
 
 # the output of python will be printed directly on console
 ENV PYTHONUNBUFFERED=1
@@ -16,9 +18,13 @@ RUN apt-get update && apt-get upgrade && \
     apt-get install gcc -y && \
     # remove apt cache
     rm -rf /var/lib/apt/lists/* && \
+    # create virtual environment
+    python -m venv /venv && \
     # upgrade pip
-    python -m pip install --upgrade pip && \
+    /venv/bin/pip install --upgrade pip && \
     # install requirements
-    python -m pip install -r /tmp/requirements.txt && \
+    /venv/bin/pip install -r /tmp/requirements.txt && \
     # remove temporary folder
     rm -rf /tmp 
+
+ENV PATH="./etl/venv/bin:$PATH"

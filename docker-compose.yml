@@ -45,5 +45,4 @@ services:
       - FILES_FOLDER=Files
     volumes:
       - ./etl:/etl
-    working_dir: /etl
     command: tail -F anything # sh -c "pytest ./tests/test_database.py && pytest ./tests/test_BaseModel.py"
