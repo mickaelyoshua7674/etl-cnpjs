@@ -1,10 +1,9 @@
-# alpine is a light version of Linux
 FROM python:3.12-slim
 LABEL maintainer="mickaelyoshua7674"
 
 # copy files to image
 COPY ./requirements.txt /tmp/requirements.txt
-COPY ./etl etl
+COPY ./etl /etl
 WORKDIR /etl
 
 # the output of python will be printed directly on console
