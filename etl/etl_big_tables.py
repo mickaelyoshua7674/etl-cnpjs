@@ -7,8 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 
 from __init__ import LARGE_ZIPFILES
-from multiprocessing import Pool
-from multiprocessing.pool import ThreadPool
+from multiprocessing import Process, cpu_count, Queue
 from queue import Empty
 from time import time
 import os, psutil
@@ -27,40 +26,44 @@ def insert_data(engine, insert_script, my_queue) -> None:
             else:
                 conn.execute(insert_script, row)
 
-def process_and_insert(path:str) -> None:
+def process_and_insert(files_queue:Queue) -> None:
     """
     Function to map all files in multiprocessing.Pool making the transformation and insertion of data into the DataBase.
     """
-    chunk_count = 0
-    p = psutil.Process()
-    print(f"File: {path} / PID: {os.getpid()}")
-    # Switch to correct table
-    obj = None
-    if "Estabelecimento" in path:
-        obj = estab
-    elif "Socio" in path:
-        obj = socio
-    elif "Empresa" in path:
-        obj = empresa
-    elif "Simples" in path:
-        obj = simples
-    else:
+    try:
+        path = files_queue.get(block=False)
+    except Empty:
         return
-
-    df = obj.get_reader_file(path, CHUNKSIZE)
-    for chunk in df:
-        my_queue = obj.process_chunk(chunk, engine)
-        # the threads will insert one chunck at a time
-        insert_data(engine, obj.get_insert_script(), my_queue)
-        #threads = [Thread(target=insert_data, args=(engine, obj.get_insert_script(), my_queue)) for _ in range(THREADS_NUMBER)]
-        #for thread in threads: # Start all threads
-        #    thread.start()
-        #for thread in threads: # wait all to finish
-        #    thread.join()
-        chunk_count += 1
-        print(f"\nChunk number {chunk_count} from {path}\n")
-    print(f"\n---Finished file {path}---\n")
-    os.remove(path)
+    else:
+        print(f"File: {path} / PID: {os.getpid()}")
+        # Switch to correct table
+        obj = None
+        if "Estabelecimento" in path:
+            obj = estab
+        elif "Socio" in path:
+            obj = socio
+        elif "Empresa" in path:
+            obj = empresa
+        elif "Simples" in path:
+            obj = simples
+        else:
+            return
+        
+        chunk_count = 0
+        df = obj.get_reader_file(path, CHUNKSIZE)
+        for chunk in df:
+            my_queue = obj.process_chunk(chunk, engine)
+            # the threads will insert one chunck at a time
+            insert_data(engine, obj.get_insert_script(), my_queue)
+            #threads = [Thread(target=insert_data, args=(engine, obj.get_insert_script(), my_queue)) for _ in range(THREADS_NUMBER)]
+            #for thread in threads: # Start all threads
+            #    thread.start()
+            #for thread in threads: # wait all to finish
+            #    thread.join()
+            chunk_count += 1
+            print(f"\nChunk number {chunk_count} from {path}\n")
+        print(f"\n---Finished file {path}---\n")
+        os.remove(path)
 
 if __name__ == "__main__":
     cpu_count = psutil.cpu_count(logical=False)
@@ -69,6 +72,9 @@ if __name__ == "__main__":
     print(f"Start multiprocessing pool...")
     FILES_FOLDER = os.environ["FILES_FOLDER"]
     files_path = [os.path.join(FILES_FOLDER,f) for f in os.listdir(FILES_FOLDER)]
+    files_path_q = Queue()
+    for f in files_path:
+        files_path_q.put(f)
     THREADS_NUMBER = int(os.environ["THREADS_NUMBER"]) # Warning -> the number of threads will be multiplied by the number of processes
     CHUNKSIZE = int(os.environ["CHUNKSIZE"]) # Warning -> the size of chunk will be for each process
     engine = create_engine(URL.create(drivername=os.environ["DB_DRIVERNAME"],
@@ -93,11 +99,13 @@ if __name__ == "__main__":
         simples.create_table(engine)
         print("Tables created.\n")
 
-    
-    with Pool(cpu_count) as pool:
-        start = time()
-        pool.map(insert_data, files_path)
-        exec_time_s = time()-start
-        exec_time_min = exec_time_s/60.
-        exec_time_hr = exec_time_min/60.
-        print(f"All finished.\nExecution time: {round(exec_time_s,2)}s / {round(exec_time_min,2)}min / {round(exec_time_hr,2)}hr")
+    start = time()
+    processes = [Process(target=process_and_insert, args=(files_path_q,)) for _ in range(cpu_count)]
+    for process in processes:
+        process.start()
+    for process in processes:
+        process.join()
+    exec_time_s = time() - start
+    exec_time_min = exec_time_s/60.
+    exec_time_hr = exec_time_min/60.
+    print(f"All finished.\nExecution time: {round(exec_time_s,2)}s / {round(exec_time_min,2)}min / {round(exec_time_hr,2)}hr")
