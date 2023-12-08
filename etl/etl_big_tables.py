@@ -7,7 +7,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 
 from __init__ import LARGE_ZIPFILES
-from multiprocessing import Process, cpu_count, Queue
+from multiprocessing import Process, Queue
+from threading import Thread
 from queue import Empty
 from time import time
 import os, psutil
@@ -30,40 +31,41 @@ def process_and_insert(files_queue:Queue) -> None:
     """
     Function to map all files in multiprocessing.Pool making the transformation and insertion of data into the DataBase.
     """
-    try:
-        path = files_queue.get(block=False)
-    except Empty:
-        return
-    else:
-        print(f"File: {path} / PID: {os.getpid()}")
-        # Switch to correct table
-        obj = None
-        if "Estabelecimento" in path:
-            obj = estab
-        elif "Socio" in path:
-            obj = socio
-        elif "Empresa" in path:
-            obj = empresa
-        elif "Simples" in path:
-            obj = simples
-        else:
+    while True:
+        try:
+            path = files_queue.get(block=False)
+        except Empty:
             return
-        
-        chunk_count = 0
-        df = obj.get_reader_file(path, CHUNKSIZE)
-        for chunk in df:
-            my_queue = obj.process_chunk(chunk, engine)
-            # the threads will insert one chunck at a time
-            insert_data(engine, obj.get_insert_script(), my_queue)
-            #threads = [Thread(target=insert_data, args=(engine, obj.get_insert_script(), my_queue)) for _ in range(THREADS_NUMBER)]
-            #for thread in threads: # Start all threads
-            #    thread.start()
-            #for thread in threads: # wait all to finish
-            #    thread.join()
-            chunk_count += 1
-            print(f"\nChunk number {chunk_count} from {path}\n")
-        print(f"\n---Finished file {path}---\n")
-        os.remove(path)
+        else:
+            print(f"File: {path} / PID: {os.getpid()}")
+            # Switch to correct table
+            obj = None
+            if "Estabelecimento" in path:
+                obj = estab
+            elif "Socio" in path:
+                obj = socio
+            elif "Empresa" in path:
+                obj = empresa
+            elif "Simples" in path:
+                obj = simples
+            else:
+                return
+            
+            chunk_count = 0
+            df = obj.get_reader_file(path, CHUNKSIZE)
+            for chunk in df:
+                my_queue = obj.process_chunk(chunk, engine)
+                # the threads will insert one chunck at a time
+                # insert_data(engine, obj.get_insert_script(), my_queue)
+                threads = [Thread(target=insert_data, args=(engine, obj.get_insert_script(), my_queue)) for _ in range(THREADS_NUMBER)]
+                for thread in threads: # Start all threads
+                    thread.start()
+                for thread in threads: # wait all to finish
+                    thread.join()
+                chunk_count += 1
+                print(f"\nChunk number {chunk_count} from {path}\n")
+            print(f"\n---Finished file {path}---\n")
+            os.remove(path)
 
 if __name__ == "__main__":
     cpu_count = psutil.cpu_count(logical=False)
@@ -99,6 +101,7 @@ if __name__ == "__main__":
         simples.create_table(engine)
         print("Tables created.\n")
 
+    engine.dispose()
     start = time()
     processes = [Process(target=process_and_insert, args=(files_path_q,)) for _ in range(cpu_count)]
     for process in processes:

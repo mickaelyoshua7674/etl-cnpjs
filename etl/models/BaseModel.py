@@ -61,7 +61,7 @@ class BaseModel():
         """
         with engine.begin() as conn:
             res = conn.execute(text(f"SELECT {column_name} FROM id_{column_name};"))
-            return set(v[0] for v in res.fetchall())
+        return set(v[0] for v in res.fetchall())
 
     def check_fk(self, value:int, substitute_value:int, fk_values:set) -> int: # return an int because all Foreign Keys are int
         """

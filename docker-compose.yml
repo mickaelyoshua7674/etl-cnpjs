@@ -39,7 +39,7 @@ services:
       - DB_HOST=postgres-database # name given to db container
       - DB_PORT=5432
       - DB_NAME=cnpjs
-      - THREADS_NUMBER=4
+      - THREADS_NUMBER=10
       - CHUNKSIZE=50000
       - URL=https://dadosabertos.rfb.gov.br/CNPJ/
       - FILES_FOLDER=Files
