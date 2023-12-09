@@ -53,4 +53,4 @@ services:
         limits:
           cpus: "4"
           memory: 6G
-    command: tail -F anything # sh -c "pytest ./tests/test_database.py && pytest ./tests/test_BaseModel.py"
+    command: sh -c "pytest ./tests/test_database.py && pytest ./tests/test_BaseModel.py && tail -F anything"
