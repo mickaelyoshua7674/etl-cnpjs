@@ -68,8 +68,6 @@ def process_and_insert(files_queue:Queue) -> None:
             os.remove(path)
 
 if __name__ == "__main__":
-    cpu_count = psutil.cpu_count(logical=False)
-    print(f"--- Physical CPU count: {cpu_count} ---")
 
     print(f"Start multiprocessing pool...")
     FILES_FOLDER = os.environ["FILES_FOLDER"]
@@ -101,8 +99,10 @@ if __name__ == "__main__":
         simples.create_table(engine)
         print("Tables created.\n")
 
-    engine.dispose()
+    engine.dispose() # close connection pool so is only new connection from now on
     start = time()
+    cpu_count = psutil.cpu_count(logical=False)
+    print(f"--- Physical CPU count: {cpu_count} ---")
     processes = [Process(target=process_and_insert, args=(files_path_q,)) for _ in range(cpu_count)]
     for process in processes:
         process.start()
