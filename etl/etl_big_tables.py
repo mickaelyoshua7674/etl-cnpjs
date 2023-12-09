@@ -52,12 +52,13 @@ def process_and_insert(files_queue:Queue) -> None:
             else:
                 return
             
+            last_chunk = 0
             for file in os.listdir("./"):
                 if path in file and path.split(".")[-1] == "pkl":
                     with open(file, "rb") as f:
                         last_chunk = pk.load(f)[-1]
             
-            chunk_count = 0
+            chunk_count = 1
             df = obj.get_reader_file(path, CHUNKSIZE)
             for chunk in df:
                 if chunk_count > last_chunk:
@@ -72,7 +73,7 @@ def process_and_insert(files_queue:Queue) -> None:
                             thread.join()
                         print(f"\nChunk number {chunk_count} from {path}\n")
                     except:
-                        with open(f"failed_{path}_chunk_{chunk_count}.pkl", "wb") as f:
+                        with open(f"failed_{path.split("/")[-1].split(".")[0]}_chunk_{chunk_count}.pkl", "wb") as f:
                             pk.dump((path,chunk_count), f)
                             return
                 chunk_count += 1

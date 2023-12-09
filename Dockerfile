@@ -10,7 +10,7 @@ WORKDIR /etl
 ENV PYTHONUNBUFFERED=1
 
     # update Debian
-RUN apt-get update && apt-get upgrade && \
+RUN apt-get update && apt-get upgrade -y && \
     # in order to psycopg2 connect to postgres the dependencie 'libpq-dev' must be installed
     apt-get install libpq-dev -y && \
     # install gcc
