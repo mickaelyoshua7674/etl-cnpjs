@@ -11,6 +11,7 @@ from multiprocessing import Process, Queue
 from threading import Thread
 from queue import Empty
 from time import time
+import pickle as pk
 import os, psutil
 
 def insert_data(engine, insert_script, my_queue) -> None:
@@ -51,24 +52,34 @@ def process_and_insert(files_queue:Queue) -> None:
             else:
                 return
             
+            for file in os.listdir("./"):
+                if path in file and path.split(".")[-1] == "pkl":
+                    with open(file, "rb") as f:
+                        last_chunk = pk.load(f)[-1]
+            
             chunk_count = 0
             df = obj.get_reader_file(path, CHUNKSIZE)
             for chunk in df:
-                my_queue = obj.process_chunk(chunk, engine)
-                # the threads will insert one chunck at a time
-                # insert_data(engine, obj.get_insert_script(), my_queue)
-                threads = [Thread(target=insert_data, args=(engine, obj.get_insert_script(), my_queue)) for _ in range(THREADS_NUMBER)]
-                for thread in threads: # Start all threads
-                    thread.start()
-                for thread in threads: # wait all to finish
-                    thread.join()
+                if chunk_count > last_chunk:
+                    try:
+                        my_queue = obj.process_chunk(chunk, engine)
+                        # the threads will insert one chunck at a time
+                        # insert_data(engine, obj.get_insert_script(), my_queue)
+                        threads = [Thread(target=insert_data, args=(engine, obj.get_insert_script(), my_queue)) for _ in range(THREADS_NUMBER)]
+                        for thread in threads: # Start all threads
+                            thread.start()
+                        for thread in threads: # wait all to finish
+                            thread.join()
+                        print(f"\nChunk number {chunk_count} from {path}\n")
+                    except:
+                        with open(f"failed_{path}_chunk_{chunk_count}.pkl", "wb") as f:
+                            pk.dump((path,chunk_count), f)
+                            return
                 chunk_count += 1
-                print(f"\nChunk number {chunk_count} from {path}\n")
             print(f"\n---Finished file {path}---\n")
             os.remove(path)
 
 if __name__ == "__main__":
-
     print(f"Start multiprocessing pool...")
     FILES_FOLDER = os.environ["FILES_FOLDER"]
     files_path = [os.path.join(FILES_FOLDER,f) for f in os.listdir(FILES_FOLDER)]
