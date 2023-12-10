@@ -57,6 +57,7 @@ def process_and_insert(files_queue:Queue) -> None:
                 if path in file and path.split(".")[-1] == "pkl":
                     with open(file, "rb") as f:
                         last_chunk = pk.load(f)[-1]
+                    os.remove(file)
             
             chunk_count = 1
             df = obj.get_reader_file(path, CHUNKSIZE)
@@ -111,10 +112,10 @@ if __name__ == "__main__":
         simples.create_table(engine)
         print("Tables created.\n")
 
-    engine.dispose() # close connection pool so is only new connection from now on
     start = time()
     cpu_count = psutil.cpu_count(logical=False)
     print(f"--- Physical CPU count: {cpu_count} ---")
+    engine.dispose() # close connection pool so is only new connection from now on
     processes = [Process(target=process_and_insert, args=(files_path_q,)) for _ in range(cpu_count)]
     for process in processes:
         process.start()
