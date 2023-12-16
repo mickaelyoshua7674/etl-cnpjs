@@ -5,7 +5,6 @@ services:
   db:
     container_name: postgres-database
     image: postgres:16-alpine3.18 # alpine is a light version of Linux
-    network_mode: host # will use the actual machine to host / use the machine ports
     restart: always # allowing to restart the container
     environment:
       - POSTGRES_USER=postgres # defining username
@@ -30,7 +29,6 @@ services:
   etl:
     container_name: etl-cnpjs
     build: .
-    network_mode: host # will use the actual machine to host / use the machine ports
     depends_on: # db will start before etl
       db:
         condition: service_healthy
