@@ -54,3 +54,15 @@ services:
           cpus: "4"
           memory: 6G
     command: sh -c "pytest ./tests/test_database.py && pytest ./tests/test_BaseModel.py && tail -F anything"
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    hostname: pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+      - PGADMIN_LISTEN_HOST=5050
+    depends_on:
+      db:
+        condition: service_healthy

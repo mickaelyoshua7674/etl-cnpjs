@@ -95,7 +95,7 @@ if __name__ == "__main__":
                                       password=os.environ["DB_PASSWORD"],
                                       host=os.environ["DB_HOST"],
                                       port=os.environ["DB_PORT"],
-                                      database=os.environ["DB_NAME"]))
+                                      database=os.environ["DB_NAME"]), pool_size=100, max_overflow=0)
 
     estab = Estabelecimento()
     socio = Socio()
