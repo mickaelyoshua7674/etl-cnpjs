@@ -113,7 +113,7 @@ if __name__ == "__main__":
         print("Tables created.\n")
 
     start = time()
-    cpu_count = psutil.cpu_count(logical=False)
+    cpu_count = 3 # psutil.cpu_count(logical=False)
     print(f"--- Physical CPU count: {cpu_count} ---")
     engine.dispose() # close connection pool so is only new connection from now on
     processes = [Process(target=process_and_insert, args=(files_path_q,)) for _ in range(cpu_count)]
