@@ -39,7 +39,7 @@ class Estabelecimento(BaseModel):
     
     fk:tuple=("identificador","situacao_cadastral","motivo_situacao_cadastral","pais","cnae","municipio")
 
-    def process_chunk(self, chunk, engine) -> None:
+    def process_chunk(self, chunk, engine) -> Queue:
         """
         Process the data of each chunk to make a clean insertion into the DataBase.
         """

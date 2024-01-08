@@ -16,7 +16,7 @@ class Simples(BaseModel):
     
     fk:tuple=("opcao_simples","opcao_mei")
 
-    def process_chunk(self, chunk, engine) -> None:
+    def process_chunk(self, chunk, engine) -> Queue:
         """
         Process the data of each chunk to make a clean insertion into the DataBase.
         """

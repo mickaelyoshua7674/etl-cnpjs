@@ -16,7 +16,7 @@ class Empresa(BaseModel):
     
     fk:tuple=("natureza_juridica","qualificacao","porte_empresa")
 
-    def process_chunk(self, chunk, engine) -> None:
+    def process_chunk(self, chunk, engine) -> Queue:
         """
         Process the data of each chunk to make a clean insertion into the DataBase.
         """
